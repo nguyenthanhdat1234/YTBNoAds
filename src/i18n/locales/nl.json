@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "player": "Speler",
+    "settings": "Instellingen", 
+    "about": "Over"
+  },
+  "header": {
+    "subtitle": "Streamen zonder advertenties",
+    "toggleTheme": "Thema wisselen",
+    "changeLanguage": "Taal wijzigen"
+  },
+  "urlInput": {
+    "title": "YouTube URL invoeren",
+    "description": "Plak een YouTube video, playlist of kanaal URL om te beginnen met streamen",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "Plakken",
+    "play": "Afspelen",
+    "loading": "Laden...",
+    "supportedFormats": "Ondersteunde URL formaten:",
+    "formats": {
+      "video": "Enkele video",
+      "playlist": "Afspeellijst",
+      "channel": "Kanaal",
+      "user": "Gebruikerskanaal",
+      "handle": "Handle (@gebruikersnaam)"
+    }
+  }
+}

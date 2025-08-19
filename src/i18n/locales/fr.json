@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "player": "Lecteur",
+    "settings": "Paramètres",
+    "about": "À propos"
+  },
+  "header": {
+    "subtitle": "Lecture sans publicité",
+    "toggleTheme": "Changer de thème",
+    "changeLanguage": "Changer de langue"
+  },
+  "urlInput": {
+    "title": "Entrez l'URL YouTube",
+    "description": "Collez n'importe quelle URL de vidéo, playlist ou chaîne YouTube pour commencer la lecture",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "Coller",
+    "play": "Lire",
+    "loading": "Chargement...",
+    "supportedFormats": "Formats d'URL supportés:",
+    "formats": {
+      "video": "Vidéo unique",
+      "playlist": "Playlist",
+      "channel": "Chaîne",
+      "user": "Chaîne utilisateur",
+      "handle": "Identifiant (@username)"
+    }
+  },
+  "welcome": {
+    "title": "Bienvenue sur YouTube Web Player",
+    "description": "Entrez une URL YouTube ci-dessus pour commencer à regarder des vidéos sans publicité et avec des fonctionnalités améliorées."
+  },
+  "features": {
+    "noAds": "Sans publicité",
+    "metadata": "Extraction automatique des métadonnées",
+    "multiLanguage": "Support multilingue",
+    "themes": "Thèmes sombre/clair"
+  }
+}

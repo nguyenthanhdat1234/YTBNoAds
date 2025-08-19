@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "player": "Lettore",
+    "settings": "Impostazioni",
+    "about": "Informazioni"
+  },
+  "header": {
+    "subtitle": "Streaming senza pubblicità",
+    "toggleTheme": "Cambia tema",
+    "changeLanguage": "Cambia lingua"
+  },
+  "urlInput": {
+    "title": "Inserisci URL YouTube",
+    "description": "Incolla qualsiasi URL di video, playlist o canale YouTube per iniziare lo streaming",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "Incolla",
+    "play": "Riproduci",
+    "loading": "Caricamento...",
+    "supportedFormats": "Formati URL supportati:",
+    "formats": {
+      "video": "Video singolo",
+      "playlist": "Playlist",
+      "channel": "Canale",
+      "user": "Canale utente",
+      "handle": "Handle (@username)"
+    }
+  }
+}

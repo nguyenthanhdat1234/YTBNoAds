@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "player": "Плеер",
+    "settings": "Настройки",
+    "about": "О программе"
+  },
+  "header": {
+    "subtitle": "Воспроизведение без рекламы",
+    "toggleTheme": "Сменить тему",
+    "changeLanguage": "Изменить язык"
+  },
+  "urlInput": {
+    "title": "Введите URL YouTube",
+    "description": "Вставьте любую ссылку на видео, плейлист или канал YouTube для начала воспроизведения",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "Вставить",
+    "play": "Воспроизвести",
+    "loading": "Загрузка...",
+    "supportedFormats": "Поддерживаемые форматы URL:",
+    "formats": {
+      "video": "Одиночное видео",
+      "playlist": "Плейлист",
+      "channel": "Канал",
+      "user": "Пользовательский канал",
+      "handle": "Хэндл (@username)"
+    }
+  }
+}

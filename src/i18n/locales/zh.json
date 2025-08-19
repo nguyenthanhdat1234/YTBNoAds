@@ -1,0 +1,133 @@
+{
+  "nav": {
+    "player": "播放器",
+    "settings": "设置",
+    "about": "关于"
+  },
+  "header": {
+    "subtitle": "无广告播放",
+    "toggleTheme": "切换主题",
+    "changeLanguage": "更改语言"
+  },
+  "urlInput": {
+    "title": "输入YouTube链接",
+    "description": "粘贴任何YouTube视频、播放列表或频道链接开始播放",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "粘贴",
+    "play": "播放",
+    "loading": "加载中...",
+    "supportedFormats": "支持的链接格式：",
+    "formats": {
+      "video": "单个视频",
+      "playlist": "播放列表",
+      "channel": "频道",
+      "user": "用户频道",
+      "handle": "用户名 (@username)"
+    }
+  },
+  "welcome": {
+    "title": "欢迎使用YouTube网页播放器",
+    "description": "在上方输入YouTube链接开始无广告播放视频并享受增强功能。"
+  },
+  "features": {
+    "noAds": "无广告",
+    "metadata": "自动元数据提取",
+    "multiLanguage": "多语言支持",
+    "themes": "深色/浅色主题"
+  },
+  "errors": {
+    "emptyUrl": "请输入YouTube链接",
+    "invalidUrl": "无效的YouTube链接",
+    "unsupportedUrlType": "不支持的链接类型",
+    "loadingFailed": "加载视频失败",
+    "networkError": "网络错误",
+    "videoNotFound": "视频未找到",
+    "videoUnavailable": "视频不可用"
+  },
+  "success": {
+    "videoLoaded": "视频加载成功",
+    "settingsSaved": "设置已保存"
+  },
+  "info": {
+    "playlistSupport": "播放列表支持即将推出",
+    "channelSupport": "频道支持即将推出"
+  },
+  "loading": {
+    "video": "加载视频中...",
+    "playlist": "加载播放列表中...",
+    "channel": "加载频道中..."
+  },
+  "settings": {
+    "title": "设置",
+    "video": {
+      "title": "视频设置",
+      "quality": "默认画质",
+      "autoplay": "自动播放",
+      "preferHighestFPS": "优先最高帧率"
+    },
+    "audio": {
+      "title": "音频设置",
+      "audioOnly": "仅音频模式",
+      "bitrate": "音频比特率"
+    },
+    "interface": {
+      "title": "界面",
+      "theme": "主题",
+      "language": "语言",
+      "accent": "强调色"
+    },
+    "advanced": {
+      "title": "高级",
+      "tagAudioFile": "提取元数据",
+      "filenamePattern": "文件名模式",
+      "resetSettings": "重置为默认"
+    },
+    "themes": {
+      "light": "浅色",
+      "dark": "深色",
+      "auto": "自动"
+    },
+    "accents": {
+      "blue": "蓝色",
+      "red": "红色",
+      "green": "绿色",
+      "purple": "紫色",
+      "orange": "橙色"
+    }
+  },
+  "about": {
+    "title": "关于YouTube网页播放器",
+    "description": "一个现代化的网页应用程序，用于无广告播放YouTube视频，具有自动元数据提取和多语言支持功能。",
+    "features": {
+      "title": "功能特色",
+      "noAds": "无广告播放体验",
+      "metadata": "从视频标题自动提取艺术家、专辑和标题",
+      "multiLanguage": "支持14种语言",
+      "themes": "美观的深色和浅色主题",
+      "formats": "支持多种视频和音频格式",
+      "openSource": "开源且免费使用"
+    },
+    "version": "版本 1.0.0",
+    "credits": "基于原版YouTube播放列表下载器"
+  },
+  "player": {
+    "controls": {
+      "play": "播放",
+      "pause": "暂停",
+      "mute": "静音",
+      "unmute": "取消静音",
+      "fullscreen": "全屏",
+      "settings": "设置"
+    }
+  },
+  "metadata": {
+    "title": "标题",
+    "artist": "艺术家",
+    "album": "专辑",
+    "genre": "类型",
+    "duration": "时长",
+    "channel": "频道",
+    "extracted": "提取的元数据",
+    "original": "原始标题"
+  }
+}

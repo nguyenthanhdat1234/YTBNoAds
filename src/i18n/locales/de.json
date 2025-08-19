@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "player": "Player",
+    "settings": "Einstellungen",
+    "about": "Über"
+  },
+  "header": {
+    "subtitle": "Werbefrei streamen",
+    "toggleTheme": "Design wechseln",
+    "changeLanguage": "Sprache ändern"
+  },
+  "urlInput": {
+    "title": "YouTube-URL eingeben",
+    "description": "Fügen Sie eine beliebige YouTube-Video-, Playlist- oder Kanal-URL ein, um mit dem Streaming zu beginnen",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "Einfügen",
+    "play": "Abspielen",
+    "loading": "Lädt...",
+    "supportedFormats": "Unterstützte URL-Formate:",
+    "formats": {
+      "video": "Einzelnes Video",
+      "playlist": "Playlist",
+      "channel": "Kanal",
+      "user": "Benutzerkanal",
+      "handle": "Handle (@username)"
+    }
+  },
+  "welcome": {
+    "title": "Willkommen bei YouTube Web Player",
+    "description": "Geben Sie oben eine YouTube-URL ein, um Videos ohne Werbung und mit erweiterten Funktionen zu streamen."
+  },
+  "features": {
+    "noAds": "Keine Werbung",
+    "metadata": "Automatische Metadaten-Extraktion",
+    "multiLanguage": "Mehrsprachiger Support",
+    "themes": "Dunkle/Helle Designs"
+  }
+}

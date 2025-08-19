@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "player": "Reproductor",
+    "settings": "Configuración",
+    "about": "Acerca de"
+  },
+  "header": {
+    "subtitle": "Reproducir sin anuncios",
+    "toggleTheme": "Cambiar tema",
+    "changeLanguage": "Cambiar idioma"
+  },
+  "urlInput": {
+    "title": "Ingresa URL de YouTube",
+    "description": "Pega cualquier URL de video, lista de reproducción o canal de YouTube para comenzar a reproducir",
+    "placeholder": "https://www.youtube.com/watch?v=...",
+    "paste": "Pegar",
+    "play": "Reproducir",
+    "loading": "Cargando...",
+    "supportedFormats": "Formatos de URL soportados:",
+    "formats": {
+      "video": "Video único",
+      "playlist": "Lista de reproducción",
+      "channel": "Canal",
+      "user": "Canal de usuario",
+      "handle": "Handle (@usuario)"
+    }
+  }
+}
