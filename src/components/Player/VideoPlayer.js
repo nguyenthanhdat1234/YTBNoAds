@@ -53,6 +53,19 @@ const VideoPlayer = ({ video }) => {
     }, 3000);
   };
 
+  const toggleControls = () => {
+    if (showControls) {
+      // If controls are visible, hide them immediately
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+      setShowControls(false);
+    } else {
+      // If controls are hidden, show them temporarily
+      showControlsTemporarily();
+    }
+  };
+
   const keepControlsVisible = () => {
     setShowControls(true);
     if (controlsTimeoutRef.current) {
@@ -339,8 +352,8 @@ const VideoPlayer = ({ video }) => {
         className={`relative bg-black group ${isFullscreen ? 'fixed inset-0 z-50' : 'aspect-video'} focus:outline-none`}
         onMouseEnter={keepControlsVisible}
         onMouseLeave={hideControlsImmediately}
-        onTouchStart={showControlsTemporarily}
-        onClick={showControlsTemporarily}
+        onTouchStart={toggleControls}
+        onClick={toggleControls}
         tabIndex={0}
       >
         {/* React Player */}

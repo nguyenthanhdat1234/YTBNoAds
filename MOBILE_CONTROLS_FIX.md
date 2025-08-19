@@ -71,8 +71,9 @@ Tất cả control buttons và inputs đều được cập nhật:
 - **Hover**: Controls hiển thị
 - **Mouse leave**: Controls ẩn ngay lập tức (nếu đang play)
 
-### Mobile/Tablet  
-- **Tap anywhere**: Controls hiển thị 3 giây
+### Mobile/Tablet
+- **First tap**: Controls hiển thị 3 giây
+- **Second tap**: Controls ẩn ngay lập tức (toggle)
 - **Tap controls**: Reset timer 3 giây
 - **Auto-hide**: Chỉ khi video đang play
 
@@ -83,8 +84,17 @@ Tất cả control buttons và inputs đều được cập nhật:
 
 ## Testing
 
+### 📱 **Test trên mobile:**
+1. Mở app trên điện thoại/tablet
+2. Play một video YouTube
+3. **Tap lần 1** → Controls hiện 3 giây rồi tự ẩn
+4. **Tap lần 2** → Controls ẩn ngay lập tức
+5. Tap bất kỳ control nào → Reset timer 3 giây
+6. Pause video → Controls luôn hiển thị
+
+### 🖥️ **Test methods:**
 1. **Desktop**: Hover/leave để test mouse behavior
-2. **Mobile**: Tap screen để test touch behavior  
+2. **Mobile**: Tap screen để test toggle behavior
 3. **Test page**: Visit `/test-mobile` để test riêng
 4. **Real video**: Test với actual YouTube video
 

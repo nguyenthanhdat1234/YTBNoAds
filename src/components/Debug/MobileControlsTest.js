@@ -8,16 +8,29 @@ const MobileControlsTest = () => {
 
   const showControlsTemporarily = () => {
     setShowControls(true);
-    
+
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
     }
-    
+
     controlsTimeoutRef.current = setTimeout(() => {
       if (playing) {
         setShowControls(false);
       }
     }, 3000);
+  };
+
+  const toggleControls = () => {
+    if (showControls) {
+      // If controls are visible, hide them immediately
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+      setShowControls(false);
+    } else {
+      // If controls are hidden, show them temporarily
+      showControlsTemporarily();
+    }
   };
 
   const keepControlsVisible = () => {
@@ -65,8 +78,8 @@ const MobileControlsTest = () => {
         className="relative bg-black aspect-video rounded-lg overflow-hidden"
         onMouseEnter={keepControlsVisible}
         onMouseLeave={hideControlsImmediately}
-        onTouchStart={showControlsTemporarily}
-        onClick={showControlsTemporarily}
+        onTouchStart={toggleControls}
+        onClick={toggleControls}
       >
         {/* Fake video content */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
@@ -157,10 +170,12 @@ const MobileControlsTest = () => {
         <h3 className="font-bold mb-2">Test Instructions:</h3>
         <ul className="text-sm space-y-1">
           <li>• <strong>Desktop:</strong> Hover to show controls, move mouse away to hide</li>
-          <li>• <strong>Mobile/Tablet:</strong> Tap anywhere to show controls for 3 seconds</li>
+          <li>• <strong>Mobile/Tablet:</strong> Tap to toggle controls (show/hide)</li>
+          <li>• <strong>First tap:</strong> Shows controls for 3 seconds</li>
+          <li>• <strong>Second tap:</strong> Hides controls immediately</li>
           <li>• <strong>Playing:</strong> Controls auto-hide after 3 seconds when playing</li>
           <li>• <strong>Paused:</strong> Controls stay visible when paused</li>
-          <li>• <strong>Interaction:</strong> Any button click resets the 3-second timer</li>
+          <li>• <strong>Button clicks:</strong> Reset the 3-second timer</li>
         </ul>
       </div>
     </div>
