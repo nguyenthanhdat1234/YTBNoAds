@@ -34,9 +34,44 @@ const VideoPlayer = ({ video }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const playerContainerRef = useRef(null);
+  const controlsTimeoutRef = useRef(null);
+
+  // Auto-hide controls functions
+  const showControlsTemporarily = () => {
+    setShowControls(true);
+
+    // Clear existing timeout
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+
+    // Set new timeout to hide controls after 3 seconds
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (playing) { // Only hide if video is playing
+        setShowControls(false);
+      }
+    }, 3000);
+  };
+
+  const keepControlsVisible = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+  };
+
+  const hideControlsImmediately = () => {
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    if (playing) {
+      setShowControls(false);
+    }
+  };
 
   const handlePlayPause = () => {
     setPlaying(!playing);
+    showControlsTemporarily();
   };
 
   const handleVolumeChange = (e) => {
@@ -162,6 +197,24 @@ const VideoPlayer = ({ video }) => {
     };
   }, []);
 
+  // Auto-hide controls when video starts playing
+  useEffect(() => {
+    if (playing) {
+      showControlsTemporarily();
+    } else {
+      keepControlsVisible();
+    }
+  }, [playing]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -284,8 +337,10 @@ const VideoPlayer = ({ video }) => {
       <div
         ref={playerContainerRef}
         className={`relative bg-black group ${isFullscreen ? 'fixed inset-0 z-50' : 'aspect-video'} focus:outline-none`}
-        onMouseEnter={() => setShowControls(true)}
-        onMouseLeave={() => setShowControls(false)}
+        onMouseEnter={keepControlsVisible}
+        onMouseLeave={hideControlsImmediately}
+        onTouchStart={showControlsTemporarily}
+        onClick={showControlsTemporarily}
         tabIndex={0}
       >
         {/* React Player */}
@@ -312,7 +367,10 @@ const VideoPlayer = ({ video }) => {
           {/* Center Play Button */}
           <div className="absolute inset-0 flex items-center justify-center">
             <button
-              onClick={handlePlayPause}
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePlayPause();
+              }}
               className="w-16 h-16 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 hover:scale-110"
             >
               {playing ? (
@@ -324,7 +382,11 @@ const VideoPlayer = ({ video }) => {
           </div>
 
           {/* Bottom Controls */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
+          <div
+            className="absolute bottom-0 left-0 right-0 p-4 space-y-2"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          >
             {/* Progress Bar */}
             <div className="flex items-center space-x-2">
               <span className="text-white text-sm font-mono">
@@ -336,7 +398,11 @@ const VideoPlayer = ({ video }) => {
                 max={1}
                 step={0.01}
                 value={played}
-                onChange={handleSeekChange}
+                onChange={(e) => {
+                  handleSeekChange(e);
+                  showControlsTemporarily();
+                }}
+                onTouchStart={showControlsTemporarily}
                 className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
               />
               <span className="text-white text-sm font-mono">
@@ -349,7 +415,10 @@ const VideoPlayer = ({ video }) => {
               <div className="flex items-center space-x-2">
                 {/* Seek Backward 30s */}
                 <button
-                  onClick={handleSeekBackward30}
+                  onClick={() => {
+                    handleSeekBackward30();
+                    showControlsTemporarily();
+                  }}
                   className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua lùi 30 giây"
                 >
@@ -358,7 +427,10 @@ const VideoPlayer = ({ video }) => {
 
                 {/* Seek Backward 10s */}
                 <button
-                  onClick={handleSeekBackward}
+                  onClick={() => {
+                    handleSeekBackward();
+                    showControlsTemporarily();
+                  }}
                   className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua lùi 10 giây"
                 >
@@ -379,7 +451,10 @@ const VideoPlayer = ({ video }) => {
 
                 {/* Seek Forward 10s */}
                 <button
-                  onClick={handleSeekForward}
+                  onClick={() => {
+                    handleSeekForward();
+                    showControlsTemporarily();
+                  }}
                   className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua tới 10 giây"
                 >
@@ -388,7 +463,10 @@ const VideoPlayer = ({ video }) => {
 
                 {/* Seek Forward 30s */}
                 <button
-                  onClick={handleSeekForward30}
+                  onClick={() => {
+                    handleSeekForward30();
+                    showControlsTemporarily();
+                  }}
                   className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua tới 30 giây"
                 >
@@ -398,7 +476,10 @@ const VideoPlayer = ({ video }) => {
                 {/* Volume */}
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={handleToggleMute}
+                    onClick={() => {
+                      handleToggleMute();
+                      showControlsTemporarily();
+                    }}
                     className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   >
                     {muted || volume === 0 ? (
@@ -413,7 +494,11 @@ const VideoPlayer = ({ video }) => {
                     max={1}
                     step={0.1}
                     value={muted ? 0 : volume}
-                    onChange={handleVolumeChange}
+                    onChange={(e) => {
+                      handleVolumeChange(e);
+                      showControlsTemporarily();
+                    }}
+                    onTouchStart={showControlsTemporarily}
                     className="w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
@@ -428,7 +513,10 @@ const VideoPlayer = ({ video }) => {
 
                 {/* Settings */}
                 <button
-                  onClick={() => setShowSettings(!showSettings)}
+                  onClick={() => {
+                    setShowSettings(!showSettings);
+                    showControlsTemporarily();
+                  }}
                   className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                 >
                   <Settings className="w-5 h-5 text-white" />
@@ -436,7 +524,10 @@ const VideoPlayer = ({ video }) => {
 
                 {/* Fullscreen */}
                 <button
-                  onClick={handleFullscreen}
+                  onClick={() => {
+                    handleFullscreen();
+                    showControlsTemporarily();
+                  }}
                   className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title={isFullscreen ? t('player.controls.exitFullscreen') : t('player.controls.fullscreen')}
                 >
