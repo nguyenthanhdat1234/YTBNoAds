@@ -31,9 +31,11 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('related'); // related, trending, history, favorites
   const [error, setError] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     loadRecommendations();
+    setShowAll(false); // Reset show all when tab changes
   }, [currentVideo, activeTab]);
 
   const loadRecommendations = async () => {
@@ -193,6 +195,7 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
         likeCount: video.statistics?.likeCount
       };
       onVideoSelect(videoData);
+      // Video will be played in the current context (sidebar recommendations)
     }
   };
 
@@ -203,69 +206,69 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
     const publishedAt = video.snippet.publishedAt;
 
     return (
-      <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer overflow-hidden group"
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer overflow-hidden group h-full"
         onClick={() => handleVideoClick(video)}
       >
         <div className="relative">
-          <img 
-            src={thumbnail} 
+          <img
+            src={thumbnail}
             alt={video.snippet.title}
-            className="w-full h-32 object-cover"
+            className="w-full h-36 object-cover"
           />
           {duration && (
             <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 py-0.5 rounded">
               {formatDuration(duration)}
             </div>
           )}
-          
+
           {video.isFromHistory && (
             <div className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1 py-0.5 rounded flex items-center space-x-1">
               <History className="w-3 h-3" />
             </div>
           )}
-          
+
           {video.isFromFavorites && (
             <div className="absolute top-1 left-1 bg-red-600 text-white text-xs px-1 py-0.5 rounded flex items-center space-x-1">
               <Heart className="w-3 h-3" />
             </div>
           )}
-          
+
           <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
             <Play className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           </div>
         </div>
-        
-        <div className="p-3">
-          <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 text-sm mb-1">
+
+        <div className="p-3 flex-1">
+          <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 text-sm mb-2 leading-tight">
             {video.snippet.title}
           </h3>
-          
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 truncate">
             {video.snippet.channelTitle}
           </p>
-          
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-            <div className="flex items-center space-x-2">
-              {viewCount && (
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-3 h-3" />
-                  <span>{formatViewCount(viewCount)}</span>
-                </div>
-              )}
-            </div>
-            
+
+          <div className="space-y-1">
+            {viewCount && (
+              <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500">
+                <Eye className="w-3 h-3" />
+                <span>{formatViewCount(viewCount)}</span>
+              </div>
+            )}
+
             {publishedAt && (
-              <span>{formatPublishDate(publishedAt)}</span>
+              <div className="text-xs text-gray-500 dark:text-gray-500">
+                {formatPublishDate(publishedAt)}
+              </div>
             )}
           </div>
-          
+
           {video.watchedAt && (
             <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
               Watched {formatPublishDate(video.watchedAt)}
             </div>
           )}
-          
+
           {video.addedAt && (
             <div className="text-xs text-red-600 dark:text-red-400 mt-1">
               Favorited {formatPublishDate(video.addedAt)}
@@ -354,10 +357,37 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
           </button>
         </div>
       ) : recommendations.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {recommendations.map((video, index) => (
-            <VideoCard key={`${video.id.videoId}-${index}`} video={video} />
-          ))}
+        <div className="space-y-4">
+          {/* Single row with horizontal scroll */}
+          <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+            {(showAll ? recommendations : recommendations.slice(0, 10)).map((video, index) => (
+              <div key={`${video.id.videoId}-${index}`} className="flex-shrink-0 w-64">
+                <VideoCard video={video} />
+              </div>
+            ))}
+          </div>
+
+          {/* View More/Less Button */}
+          {recommendations.length > 10 && (
+            <div className="text-center">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="btn-secondary flex items-center space-x-2 mx-auto"
+              >
+                <span>{showAll ? 'Show Less' : `View More (${recommendations.length - 10} more)`}</span>
+                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${showAll ? 'rotate-90' : ''}`} />
+              </button>
+            </div>
+          )}
+
+          {/* Grid view when showing all */}
+          {showAll && recommendations.length > 10 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+              {recommendations.slice(10).map((video, index) => (
+                <VideoCard key={`${video.id.videoId}-${index + 10}`} video={video} />
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-8">

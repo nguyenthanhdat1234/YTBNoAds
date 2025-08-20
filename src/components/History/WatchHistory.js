@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   History,
   Play,
@@ -28,6 +29,7 @@ import toast from 'react-hot-toast';
 
 const WatchHistory = ({ onVideoSelect }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [stats, setStats] = useState(null);
@@ -76,6 +78,8 @@ const WatchHistory = ({ onVideoSelect }) => {
   const handleVideoClick = (video) => {
     if (onVideoSelect) {
       onVideoSelect(video);
+      // Navigate to home page to play the video
+      navigate('/');
     }
   };
 

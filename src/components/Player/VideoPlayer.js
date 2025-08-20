@@ -299,24 +299,53 @@ const VideoPlayer = ({ video }) => {
     }
   }, [playing]);
 
-  // Handle Page Visibility API to prevent video from stopping when tab is hidden
+  // Handle Page Visibility API để video tiếp tục phát khi chuyển tab
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Tab is hidden - remember if video was playing but don't pause
+        // Tab is hidden - remember playing state but DON'T pause the video
         setWasPlayingBeforeHidden(playing);
+        // Video will continue playing in background
       } else {
-        // Tab is visible again - restore playing state if it was playing before
-        if (wasPlayingBeforeHidden && !playing) {
+        // Tab is visible again - ensure video is still playing if it was before
+        if (wasPlayingBeforeHidden) {
+          // Force video to continue playing
           setPlaying(true);
+          // Also ensure ReactPlayer internal state is correct
+          if (playerRef.current) {
+            const internalPlayer = playerRef.current.getInternalPlayer();
+            if (internalPlayer && typeof internalPlayer.playVideo === 'function') {
+              // For YouTube player
+              setTimeout(() => {
+                if (internalPlayer.getPlayerState() !== 1) { // 1 = playing
+                  internalPlayer.playVideo();
+                }
+              }, 100);
+            }
+          }
         }
       }
     };
 
+    // Also handle focus/blur events for additional reliability
+    const handleWindowFocus = () => {
+      if (wasPlayingBeforeHidden && !playing) {
+        setPlaying(true);
+      }
+    };
+
+    const handleWindowBlur = () => {
+      setWasPlayingBeforeHidden(playing);
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
+    window.addEventListener('blur', handleWindowBlur);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleWindowFocus);
+      window.removeEventListener('blur', handleWindowBlur);
     };
   }, [playing, wasPlayingBeforeHidden]);
 

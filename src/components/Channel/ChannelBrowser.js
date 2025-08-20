@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   Users,
   Play,
@@ -37,6 +38,7 @@ import toast from 'react-hot-toast';
 
 const ChannelBrowser = ({ channelId, onVideoSelect, onClose }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [channel, setChannel] = useState(null);
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -172,6 +174,8 @@ const ChannelBrowser = ({ channelId, onVideoSelect, onClose }) => {
         likeCount: video.statistics?.likeCount
       };
       onVideoSelect(videoData);
+      // Navigate to home page to play the video
+      navigate('/');
     }
   };
 

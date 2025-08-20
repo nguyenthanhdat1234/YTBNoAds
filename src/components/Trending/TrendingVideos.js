@@ -90,6 +90,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
         likeCount: video.statistics?.likeCount
       };
       onVideoSelect(videoData);
+      // Video will be played in the current tab (MainPlayer handles tab switching)
     }
   };
 

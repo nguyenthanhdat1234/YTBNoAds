@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   Heart,
   Play,
@@ -28,6 +29,7 @@ import toast from 'react-hot-toast';
 
 const FavoritesList = ({ onVideoSelect }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [filteredFavorites, setFilteredFavorites] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -117,6 +119,8 @@ const FavoritesList = ({ onVideoSelect }) => {
   const handleVideoClick = (video) => {
     if (onVideoSelect) {
       onVideoSelect(video);
+      // Navigate to home page to play the video
+      navigate('/');
     }
   };
 
