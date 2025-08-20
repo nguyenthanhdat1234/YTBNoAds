@@ -9,6 +9,7 @@ import MainPlayer from './components/Player/MainPlayer';
 import Settings from './components/Settings/Settings';
 import About from './components/About/About';
 import MobileControlsTest from './components/Debug/MobileControlsTest';
+import MobileResponsiveTest from './components/Debug/MobileResponsiveTest';
 
 // Context
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -34,6 +35,7 @@ const AppContent = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/about" element={<About />} />
             <Route path="/test-mobile" element={<MobileControlsTest />} />
+            <Route path="/test-responsive" element={<MobileResponsiveTest />} />
           </Routes>
         </main>
       </div>

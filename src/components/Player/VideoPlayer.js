@@ -33,6 +33,7 @@ const VideoPlayer = ({ video }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
+  const [wasPlayingBeforeHidden, setWasPlayingBeforeHidden] = useState(false);
   const playerContainerRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
 
@@ -219,6 +220,27 @@ const VideoPlayer = ({ video }) => {
     }
   }, [playing]);
 
+  // Handle Page Visibility API to prevent video from stopping when tab is hidden
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Tab is hidden - remember if video was playing but don't pause
+        setWasPlayingBeforeHidden(playing);
+      } else {
+        // Tab is visible again - restore playing state if it was playing before
+        if (wasPlayingBeforeHidden && !playing) {
+          setPlaying(true);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [playing, wasPlayingBeforeHidden]);
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -324,7 +346,15 @@ const VideoPlayer = ({ video }) => {
         vq: youtubeQuality, // Video quality
         hd: isHD ? 1 : 0,
         // Force quality
-        suggestedQuality: youtubeQuality
+        suggestedQuality: youtubeQuality,
+        // Prevent auto-pause when tab is hidden
+        playsinline: 1
+      }
+    },
+    // Additional config to prevent auto-pause
+    file: {
+      attributes: {
+        crossOrigin: 'anonymous'
       }
     }
   };
@@ -396,7 +426,7 @@ const VideoPlayer = ({ video }) => {
 
           {/* Bottom Controls */}
           <div
-            className="absolute bottom-0 left-0 right-0 p-4 space-y-2"
+            className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 space-y-2"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
           >
@@ -424,18 +454,19 @@ const VideoPlayer = ({ video }) => {
             </div>
 
             {/* Control Buttons */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                {/* Seek Backward 30s */}
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+              {/* Mobile: First row - Main controls */}
+              <div className="flex items-center justify-center space-x-1 sm:space-x-2 w-full sm:w-auto">
+                {/* Seek Backward 30s - Hidden on very small screens */}
                 <button
                   onClick={() => {
                     handleSeekBackward30();
                     showControlsTemporarily();
                   }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="hidden xs:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua lùi 30 giây"
                 >
-                  <RotateCcw className="w-4 h-4 text-white" />
+                  <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 </button>
 
                 {/* Seek Backward 10s */}
@@ -444,10 +475,10 @@ const VideoPlayer = ({ video }) => {
                     handleSeekBackward();
                     showControlsTemporarily();
                   }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua lùi 10 giây"
                 >
-                  <SkipBack className="w-4 h-4 text-white" />
+                  <SkipBack className="w-4 h-4 sm:w-4 sm:h-4 text-white" />
                 </button>
 
                 {/* Play/Pause */}
@@ -468,26 +499,26 @@ const VideoPlayer = ({ video }) => {
                     handleSeekForward();
                     showControlsTemporarily();
                   }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua tới 10 giây"
                 >
-                  <SkipForward className="w-4 h-4 text-white" />
+                  <SkipForward className="w-4 h-4 sm:w-4 sm:h-4 text-white" />
                 </button>
 
-                {/* Seek Forward 30s */}
+                {/* Seek Forward 30s - Hidden on very small screens */}
                 <button
                   onClick={() => {
                     handleSeekForward30();
                     showControlsTemporarily();
                   }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="hidden xs:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title="Tua tới 30 giây"
                 >
-                  <RotateCw className="w-4 h-4 text-white" />
+                  <RotateCw className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 </button>
 
-                {/* Volume */}
-                <div className="flex items-center space-x-2">
+                {/* Volume - Hidden on mobile, shown on tablet+ */}
+                <div className="hidden md:flex items-center space-x-2">
                   <button
                     onClick={() => {
                       handleToggleMute();
@@ -512,42 +543,60 @@ const VideoPlayer = ({ video }) => {
                       showControlsTemporarily();
                     }}
                     onTouchStart={showControlsTemporarily}
-                    className="w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
+                    className="w-16 lg:w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                {/* Quality Selector */}
-                <QualitySelector
-                  currentQuality={currentQuality}
-                  onQualityChange={handleQualityChange}
-                />
+              {/* Mobile: Second row / Desktop: Right side - Secondary controls */}
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                {/* Volume button only on mobile */}
+                <button
+                  onClick={() => {
+                    handleToggleMute();
+                    showControlsTemporarily();
+                  }}
+                  className="md:hidden p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                >
+                  {muted || volume === 0 ? (
+                    <VolumeX className="w-4 h-4 text-white" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-white" />
+                  )}
+                </button>
 
-                {/* Settings */}
+                {/* Quality Selector - Hidden on very small screens */}
+                <div className="hidden sm:block">
+                  <QualitySelector
+                    currentQuality={currentQuality}
+                    onQualityChange={handleQualityChange}
+                  />
+                </div>
+
+                {/* Settings - Hidden on very small screens */}
                 <button
                   onClick={() => {
                     setShowSettings(!showSettings);
                     showControlsTemporarily();
                   }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                 >
-                  <Settings className="w-5 h-5 text-white" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </button>
 
-                {/* Fullscreen */}
+                {/* Fullscreen - Always visible but smaller on mobile */}
                 <button
                   onClick={() => {
                     handleFullscreen();
                     showControlsTemporarily();
                   }}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                   title={isFullscreen ? t('player.controls.exitFullscreen') : t('player.controls.fullscreen')}
                 >
                   {isFullscreen ? (
-                    <Minimize className="w-5 h-5 text-white" />
+                    <Minimize className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   ) : (
-                    <Maximize className="w-5 h-5 text-white" />
+                    <Maximize className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   )}
                 </button>
               </div>
