@@ -12,11 +12,22 @@ import {
   SkipBack,
   SkipForward,
   RotateCcw,
-  RotateCw
+  RotateCw,
+  PictureInPicture,
+  Monitor,
+  Repeat,
+  Shuffle,
+  Gauge,
+  Heart,
+  Bell,
+  BellOff
 } from 'lucide-react';
 
 import { useSettings } from '../../contexts/SettingsContext';
+import { addToWatchHistory, isInFavorites, toggleFavorite } from '../../services/userDataService';
+import { isSubscribedToChannel, toggleChannelSubscription } from '../../services/subscriptionService';
 import QualitySelector from './QualitySelector';
+import toast from 'react-hot-toast';
 
 const VideoPlayer = ({ video }) => {
   const { t } = useTranslation();
@@ -34,6 +45,14 @@ const VideoPlayer = ({ video }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [wasPlayingBeforeHidden, setWasPlayingBeforeHidden] = useState(false);
+  const [theaterMode, setTheaterMode] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [loop, setLoop] = useState(false);
+  const [isPiPSupported, setIsPiPSupported] = useState(false);
+  const [isPiPActive, setIsPiPActive] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [hasAddedToHistory, setHasAddedToHistory] = useState(false);
   const playerContainerRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
 
@@ -166,6 +185,66 @@ const VideoPlayer = ({ video }) => {
     }
   };
 
+  // Advanced player features
+  const handleTheaterMode = () => {
+    setTheaterMode(!theaterMode);
+  };
+
+  const handlePlaybackRateChange = (rate) => {
+    setPlaybackRate(rate);
+  };
+
+  const handleLoop = () => {
+    setLoop(!loop);
+  };
+
+  const handleToggleFavorite = () => {
+    if (toggleFavorite(video)) {
+      setIsFavorite(!isFavorite);
+      toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+    } else {
+      toast.error('Failed to update favorites');
+    }
+  };
+
+  const handleToggleSubscription = () => {
+    if (!video.channelId) {
+      toast.error('Channel information not available');
+      return;
+    }
+
+    const channelData = {
+      id: video.channelId,
+      title: video.channel,
+      thumbnail: video.thumbnail, // Use video thumbnail as fallback
+      description: `Channel: ${video.channel}`
+    };
+
+    if (toggleChannelSubscription(channelData)) {
+      setIsSubscribed(!isSubscribed);
+      toast.success(isSubscribed ? 'Unsubscribed successfully' : 'Subscribed successfully');
+    } else {
+      toast.error('Failed to update subscription');
+    }
+  };
+
+  const handlePictureInPicture = async () => {
+    if (!isPiPSupported) return;
+
+    try {
+      const videoElement = playerRef.current?.getInternalPlayer();
+      if (videoElement && videoElement.requestPictureInPicture) {
+        if (document.pictureInPictureElement) {
+          await document.exitPictureInPicture();
+        } else {
+          await videoElement.requestPictureInPicture();
+        }
+      }
+    } catch (error) {
+      console.error('Picture-in-Picture error:', error);
+    }
+  };
+
   const handleFullscreen = () => {
     if (!playerContainerRef.current) return;
 
@@ -241,6 +320,23 @@ const VideoPlayer = ({ video }) => {
     };
   }, [playing, wasPlayingBeforeHidden]);
 
+  // Check Picture-in-Picture support
+  useEffect(() => {
+    setIsPiPSupported('pictureInPictureEnabled' in document);
+
+    const handlePiPChange = () => {
+      setIsPiPActive(!!document.pictureInPictureElement);
+    };
+
+    document.addEventListener('enterpictureinpicture', handlePiPChange);
+    document.addEventListener('leavepictureinpicture', handlePiPChange);
+
+    return () => {
+      document.removeEventListener('enterpictureinpicture', handlePiPChange);
+      document.removeEventListener('leavepictureinpicture', handlePiPChange);
+    };
+  }, []);
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -249,6 +345,23 @@ const VideoPlayer = ({ video }) => {
       }
     };
   }, []);
+
+  // Check if video is in favorites and subscribed to channel when video changes
+  useEffect(() => {
+    if (video) {
+      setIsFavorite(isInFavorites(video.id));
+      setIsSubscribed(video.channelId ? isSubscribedToChannel(video.channelId) : false);
+      setHasAddedToHistory(false);
+    }
+  }, [video]);
+
+  // Add to watch history when video starts playing
+  useEffect(() => {
+    if (playing && video && !hasAddedToHistory) {
+      addToWatchHistory(video);
+      setHasAddedToHistory(true);
+    }
+  }, [playing, video, hasAddedToHistory]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -376,10 +489,16 @@ const VideoPlayer = ({ video }) => {
   const videoUrlWithQuality = getVideoUrlWithQuality(video.url, settings.quality);
 
   return (
-    <div className="card overflow-hidden">
+    <div className={`card overflow-hidden ${theaterMode ? 'fixed inset-x-0 top-0 z-40 rounded-none' : ''}`}>
       <div
         ref={playerContainerRef}
-        className={`relative bg-black group ${isFullscreen ? 'fixed inset-0 z-50' : 'aspect-video'} focus:outline-none`}
+        className={`relative bg-black group focus:outline-none ${
+          isFullscreen
+            ? 'fixed inset-0 z-50'
+            : theaterMode
+              ? 'h-screen w-full'
+              : 'aspect-video'
+        }`}
         onMouseEnter={keepControlsVisible}
         onMouseLeave={hideControlsImmediately}
         onTouchStart={toggleControls}
@@ -395,8 +514,15 @@ const VideoPlayer = ({ video }) => {
           height="100%"
           playing={playing}
           volume={muted ? 0 : volume}
+          playbackRate={playbackRate}
+          loop={loop}
           onProgress={handleProgress}
           onDuration={handleDuration}
+          onEnded={() => {
+            if (!loop) {
+              setPlaying(false);
+            }
+          }}
           config={playerConfig}
           className="absolute inset-0"
         />
@@ -573,6 +699,36 @@ const VideoPlayer = ({ video }) => {
                   />
                 </div>
 
+                {/* Subscribe - Hidden on very small screens */}
+                {video.channelId && (
+                  <button
+                    onClick={() => {
+                      handleToggleSubscription();
+                      showControlsTemporarily();
+                    }}
+                    className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                    title={isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+                  >
+                    {isSubscribed ? (
+                      <BellOff className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
+                    ) : (
+                      <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    )}
+                  </button>
+                )}
+
+                {/* Favorite - Hidden on very small screens */}
+                <button
+                  onClick={() => {
+                    handleToggleFavorite();
+                    showControlsTemporarily();
+                  }}
+                  className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-white'}`} />
+                </button>
+
                 {/* Settings - Hidden on very small screens */}
                 <button
                   onClick={() => {
@@ -582,6 +738,32 @@ const VideoPlayer = ({ video }) => {
                   className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
                 >
                   <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                </button>
+
+                {/* Picture-in-Picture - Hidden on mobile */}
+                {isPiPSupported && (
+                  <button
+                    onClick={() => {
+                      handlePictureInPicture();
+                      showControlsTemporarily();
+                    }}
+                    className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                    title={isPiPActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
+                  >
+                    <PictureInPicture className={`w-4 h-4 sm:w-5 sm:h-5 text-white ${isPiPActive ? 'text-primary-400' : ''}`} />
+                  </button>
+                )}
+
+                {/* Theater Mode - Hidden on mobile */}
+                <button
+                  onClick={() => {
+                    handleTheaterMode();
+                    showControlsTemporarily();
+                  }}
+                  className="hidden md:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
+                  title={theaterMode ? 'Exit Theater Mode' : 'Theater Mode'}
+                >
+                  <Monitor className={`w-4 h-4 sm:w-5 sm:h-5 text-white ${theaterMode ? 'text-primary-400' : ''}`} />
                 </button>
 
                 {/* Fullscreen - Always visible but smaller on mobile */}
@@ -647,6 +829,49 @@ const VideoPlayer = ({ video }) => {
                 <span
                   className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200 ${
                     captionsEnabled ? 'translate-x-5' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Playback Speed */}
+            <div className="space-y-2">
+              <label className="text-gray-300 text-xs flex items-center space-x-1">
+                <Gauge className="w-3 h-3" />
+                <span>Playback Speed</span>
+              </label>
+              <div className="grid grid-cols-4 gap-1">
+                {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(rate => (
+                  <button
+                    key={rate}
+                    onClick={() => handlePlaybackRateChange(rate)}
+                    className={`px-2 py-1 text-xs rounded transition-colors duration-200 ${
+                      playbackRate === rate
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {rate}x
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Loop Setting */}
+            <div className="flex items-center justify-between">
+              <label className="text-gray-300 text-xs flex items-center space-x-1">
+                <Repeat className="w-3 h-3" />
+                <span>Loop Video</span>
+              </label>
+              <button
+                onClick={handleLoop}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 ${
+                  loop ? 'bg-primary-600' : 'bg-gray-600'
+                }`}
+              >
+                <span
+                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200 ${
+                    loop ? 'translate-x-5' : 'translate-x-1'
                   }`}
                 />
               </button>

@@ -7,7 +7,10 @@ import {
   Info,
   Moon,
   Sun,
-  Youtube
+  Youtube,
+  History,
+  Heart,
+  Users
 } from 'lucide-react';
 
 import { useTheme } from '../../contexts/ThemeContext';
@@ -22,6 +25,9 @@ const Header = ({ onVideoSelect }) => {
 
   const navItems = [
     { path: '/', icon: Play, label: t('nav.player') },
+    { path: '/history', icon: History, label: 'History' },
+    { path: '/favorites', icon: Heart, label: 'Favorites' },
+    { path: '/subscriptions', icon: Users, label: 'Subscriptions' },
     { path: '/settings', icon: Settings, label: t('nav.settings') },
     { path: '/about', icon: Info, label: t('nav.about') }
   ];

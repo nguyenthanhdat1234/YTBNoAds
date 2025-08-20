@@ -10,6 +10,9 @@ import Settings from './components/Settings/Settings';
 import About from './components/About/About';
 import MobileControlsTest from './components/Debug/MobileControlsTest';
 import MobileResponsiveTest from './components/Debug/MobileResponsiveTest';
+import WatchHistory from './components/History/WatchHistory';
+import FavoritesList from './components/Favorites/FavoritesList';
+import SubscriptionsManager from './components/Subscriptions/SubscriptionsManager';
 
 // Context
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -36,6 +39,9 @@ const AppContent = () => {
             <Route path="/about" element={<About />} />
             <Route path="/test-mobile" element={<MobileControlsTest />} />
             <Route path="/test-responsive" element={<MobileResponsiveTest />} />
+            <Route path="/history" element={<WatchHistory onVideoSelect={handleVideoSelect} />} />
+            <Route path="/favorites" element={<FavoritesList onVideoSelect={handleVideoSelect} />} />
+            <Route path="/subscriptions" element={<SubscriptionsManager onVideoSelect={handleVideoSelect} />} />
           </Routes>
         </main>
       </div>

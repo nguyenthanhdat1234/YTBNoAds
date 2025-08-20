@@ -8,6 +8,9 @@ import EnhancedVideoInfo from './EnhancedVideoInfo';
 import PlaylistManager from '../Playlist/PlaylistManager';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import SuggestedVideos from '../Home/SuggestedVideos';
+import VideoSearch from '../Search/VideoSearch';
+import TrendingVideos from '../Trending/TrendingVideos';
+import VideoRecommendations from '../Recommendations/VideoRecommendations';
 
 import { useVideo } from '../../contexts/VideoContext';
 import { parseYouTubeURL } from '../../utils/youtubeHelpers';
@@ -20,6 +23,7 @@ const MainPlayer = () => {
   const [playlist, setPlaylist] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('url'); // url, search, trending
 
   // Listen for video selection from search
   useEffect(() => {
@@ -103,10 +107,6 @@ const MainPlayer = () => {
     toast.info(t('info.channelSupport'));
   };
 
-  const handleVideoSelect = (video) => {
-    setCurrentVideo(video);
-  };
-
   const handleAddToPlaylist = (video) => {
     // This will be handled by the PlaylistManager component
     console.log('Adding to playlist:', video);
@@ -118,15 +118,61 @@ const MainPlayer = () => {
     }
   };
 
+  // Handle video selection from search or trending
+  const handleVideoSelect = (video) => {
+    setCurrentVideo(video);
+    setActiveTab('url'); // Switch back to player view
+    setError(null);
+  };
+
+  const tabs = [
+    { id: 'url', label: 'Enter URL', icon: '🔗' },
+    { id: 'search', label: 'Search Videos', icon: '🔍' },
+    { id: 'trending', label: 'Trending', icon: '🔥' }
+  ];
+
   return (
     <div className="max-w-8xl mx-auto space-y-6">
-      {/* URL Input */}
-      <div className="card p-6">
-        <URLInput onSubmit={handleURLSubmit} loading={loading} />
+      {/* Tab Navigation */}
+      <div className="card p-1">
+        <div className="flex space-x-1">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                activeTab === tab.id
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Error Display */}
-      {error && (
+      {/* Tab Content */}
+      {activeTab === 'url' && (
+        <>
+          {/* URL Input */}
+          <div className="card p-6">
+            <URLInput onSubmit={handleURLSubmit} loading={loading} />
+          </div>
+        </>
+      )}
+
+      {activeTab === 'search' && (
+        <VideoSearch onVideoSelect={handleVideoSelect} />
+      )}
+
+      {activeTab === 'trending' && (
+        <TrendingVideos onVideoSelect={handleVideoSelect} />
+      )}
+
+      {/* Error Display - Only show for URL tab */}
+      {activeTab === 'url' && error && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-red-500 rounded-full"></div>
@@ -137,8 +183,8 @@ const MainPlayer = () => {
         </div>
       )}
 
-      {/* Loading State */}
-      {loading && (
+      {/* Loading State - Only show for URL tab */}
+      {activeTab === 'url' && loading && (
         <div className="card p-8">
           <LoadingSpinner message={t('loading.video')} />
         </div>
@@ -163,13 +209,57 @@ const MainPlayer = () => {
               onVideoSelect={handleVideoSelect}
               onVideoRemove={handleVideoRemove}
             />
+
+            <VideoRecommendations
+              currentVideo={currentVideo}
+              onVideoSelect={handleVideoSelect}
+            />
           </div>
         </div>
       )}
 
-      {/* Suggested Videos */}
-      {!currentVideo && !loading && !error && (
-        <SuggestedVideos />
+      {/* Welcome Message & Suggested Videos - Only show for URL tab when no video */}
+      {activeTab === 'url' && !currentVideo && !loading && !error && (
+        <>
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 mb-6">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🎉</span>
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
+                  Welcome to YouTube No Ads!
+                </h3>
+                <p className="text-green-700 dark:text-green-300 mb-3">
+                  Your app is ready to use with full YouTube API access. You can now:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-600 dark:text-green-400">
+                  <div>✅ Search unlimited YouTube videos</div>
+                  <div>✅ Browse trending content</div>
+                  <div>✅ Get smart recommendations</div>
+                  <div>✅ Manage subscriptions & favorites</div>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setActiveTab('search')}
+                    className="btn-primary text-sm"
+                  >
+                    🔍 Start Searching
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('trending')}
+                    className="btn-secondary text-sm"
+                  >
+                    🔥 Browse Trending
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <SuggestedVideos />
+        </>
       )}
     </div>
   );

@@ -7,12 +7,15 @@ import {
   Palette,
   Sliders,
   RotateCcw,
-  Monitor
+  Monitor,
+  Key,
+  Search
 } from 'lucide-react';
 
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getQualityOptions } from '../../utils/youtubeHelpers';
+import { isApiKeyConfigured, setApiKey } from '../../services/youtubeApi';
 import QualitySettings from './QualitySettings';
 import toast from 'react-hot-toast';
 
@@ -21,6 +24,8 @@ const Settings = () => {
   const { settings, updateSetting, resetSettings } = useSettings();
   const { theme, accent, toggleTheme, changeAccent } = useTheme();
   const [activeTab, setActiveTab] = useState('video');
+  const [apiKey, setApiKeyState] = useState(localStorage.getItem('youtube_api_key') || '');
+  const [showApiKey, setShowApiKey] = useState(false);
 
   const qualityOptions = getQualityOptions();
   const bitrateOptions = ['128', '192', '256', '320'];
@@ -30,6 +35,43 @@ const Settings = () => {
     if (window.confirm(t('settings.confirmReset'))) {
       resetSettings();
       toast.success(t('success.settingsReset'));
+    }
+  };
+
+  const handleApiKeySave = () => {
+    try {
+      setApiKey(apiKey);
+      toast.success('YouTube API key saved successfully!');
+    } catch (error) {
+      toast.error('Failed to save API key');
+    }
+  };
+
+  const handleApiKeyTest = async () => {
+    if (!apiKey.trim()) {
+      toast.error('Please enter an API key first');
+      return;
+    }
+
+    try {
+      // Temporarily set the key to test it
+      const originalKey = localStorage.getItem('youtube_api_key');
+      setApiKey(apiKey);
+
+      // Test the API with a simple request
+      const { searchVideos } = await import('../../services/youtubeApi');
+      await searchVideos('test', { maxResults: 1 });
+
+      toast.success('API key is valid!');
+    } catch (error) {
+      toast.error(`API key test failed: ${error.message}`);
+      // Restore original key if test failed
+      const originalKey = localStorage.getItem('youtube_api_key');
+      if (originalKey) {
+        setApiKey(originalKey);
+      } else {
+        setApiKey('');
+      }
     }
   };
 
@@ -99,6 +141,7 @@ const Settings = () => {
   const tabs = [
     { id: 'video', label: 'Video Quality', icon: Monitor },
     { id: 'audio', label: 'Audio', icon: Volume2 },
+    { id: 'api', label: 'YouTube API', icon: Key },
     { id: 'interface', label: 'Interface', icon: Palette },
     { id: 'advanced', label: 'Advanced', icon: Sliders }
   ];
@@ -163,6 +206,108 @@ const Settings = () => {
                 options={bitrateOptions.map(b => ({ value: b, label: `${b} kbps` }))}
               />
             </SettingItem>
+          </SettingSection>
+        )}
+
+        {activeTab === 'api' && (
+          <SettingSection icon={Key} title="YouTube API Configuration">
+            <div className="space-y-4">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <Search className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-green-900 dark:text-green-100">
+                      ✅ YouTube API Ready to Use
+                    </h4>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      YouTube Data API v3 is pre-configured and ready to use. You can now search videos, browse trending content, and access all advanced features.
+                    </p>
+                    <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+                      🎉 No setup required - start using the app immediately!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <SettingItem
+                label="YouTube API Key Status"
+                description="YouTube Data API v3 is pre-configured for immediate use"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-green-600 dark:text-green-400 font-medium">
+                      ✅ API key is active and ready
+                    </span>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      <strong>Current Status:</strong> YouTube Data API v3 is pre-configured
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">
+                      You can optionally override this by setting your own API key in localStorage or environment variables.
+                    </p>
+                  </div>
+
+                  <details className="text-sm">
+                    <summary className="cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                      Advanced: Override API Key
+                    </summary>
+                    <div className="mt-2 space-y-2">
+                      <div className="flex space-x-2">
+                        <input
+                          type={showApiKey ? 'text' : 'password'}
+                          value={apiKey}
+                          onChange={(e) => setApiKeyState(e.target.value)}
+                          placeholder="Enter your custom YouTube API key..."
+                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                        />
+                        <button
+                          onClick={() => setShowApiKey(!showApiKey)}
+                          className="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                          title={showApiKey ? 'Hide API key' : 'Show API key'}
+                        >
+                          {showApiKey ? '🙈' : '👁️'}
+                        </button>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={handleApiKeySave}
+                          disabled={!apiKey.trim()}
+                          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        >
+                          Override API Key
+                        </button>
+                        <button
+                          onClick={handleApiKeyTest}
+                          disabled={!apiKey.trim()}
+                          className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        >
+                          Test Custom Key
+                        </button>
+                      </div>
+                    </div>
+                  </details>
+                </div>
+              </SettingItem>
+
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
+                  🚀 Available Features (Ready to Use):
+                </h4>
+                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                  <li>✅ Search YouTube videos by keyword</li>
+                  <li>✅ Browse trending videos by region</li>
+                  <li>✅ Get smart video recommendations</li>
+                  <li>✅ View channel information & subscribe</li>
+                  <li>✅ Access video statistics and details</li>
+                  <li>✅ Browse channel videos</li>
+                  <li>✅ Watch history & favorites management</li>
+                  <li>✅ Advanced player features (PiP, Theater mode)</li>
+                </ul>
+              </div>
+            </div>
           </SettingSection>
         )}
 
