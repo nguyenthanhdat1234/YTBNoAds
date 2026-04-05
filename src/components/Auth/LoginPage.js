@@ -25,10 +25,10 @@ const LoginPage = () => {
     // Artificial delay for cinematic effect
     setTimeout(() => {
       if (login(password, rememberMe)) {
-        toast.success(t('auth.loginSuccess', 'Authorized // Access Granted'));
+        toast.success(t('auth.accessGranted'));
         navigate(from, { replace: true });
       } else {
-        toast.error(t('auth.loginError', 'Unauthorized // Access Denied'));
+        toast.error(t('auth.wrongPasscode'));
         setLoading(false);
       }
     }, 1500);
@@ -61,10 +61,10 @@ const LoginPage = () => {
         <div className="glass-card p-10 space-y-8 animate-slide-up">
           <div className="space-y-2 border-l-2 border-cinema-red pl-5">
             <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white">
-              {t('auth.authorizationTitle', 'System Authorization')}
+              {t('auth.passcode')}
             </h2>
             <p className="text-[10px] font-medium text-cinema-gray/60 uppercase tracking-widest">
-              {t('auth.protocolInfo', 'Please initialize your session protocols to proceed.')}
+              {t('auth.requireLogin')}
             </p>
           </div>
 
@@ -78,7 +78,7 @@ const LoginPage = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t('auth.passcodePlaceholder', 'SECURITY PASSCODE')}
+                  placeholder={t('auth.enterPasscode')}
                   className="w-full bg-white/[0.01] border border-white/5 focus:border-white/20 focus:bg-white/[0.03] text-white placeholder:text-cinema-gray/10 pl-14 pr-14 py-5 text-[11px] font-black uppercase tracking-[0.4em] rounded-sm transition-all focus:ring-0"
                   required
                 />
@@ -109,7 +109,7 @@ const LoginPage = () => {
                     </div>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-cinema-gray/40 group-hover:text-cinema-gray/80 transition-colors">
-                    {t('auth.rememberMe', 'Remember Session')}
+                    {t('auth.rememberMe')}
                   </span>
                 </label>
               </div>
@@ -128,7 +128,7 @@ const LoginPage = () => {
               ) : (
                 <>
                   <PlayCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.5em]">{t('auth.initializeSession', 'Initialize Session')}</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.5em]">{t('urlInput.initializeSession')}</span>
                 </>
               )}
             </button>

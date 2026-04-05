@@ -122,11 +122,11 @@ const Settings = () => {
   );
 
   const tabs = [
-    { id: 'video', label: 'Visual', fullLabel: 'Visual Quality', icon: Monitor },
-    { id: 'audio', label: 'Sonic', fullLabel: 'Sonic Profile', icon: Volume2 },
-    { id: 'api', label: 'API', fullLabel: 'Protocol Config', icon: Key },
-    { id: 'interface', label: 'Theme', fullLabel: 'Aesthetic', icon: Palette },
-    { id: 'advanced', label: 'System', fullLabel: 'System Logic', icon: Sliders },
+    { id: 'video', label: t('settings.tabs.visual'), fullLabel: t('settings.tabs.visualFull'), icon: Monitor },
+    { id: 'audio', label: t('settings.tabs.sonic'), fullLabel: t('settings.tabs.sonicFull'), icon: Volume2 },
+    { id: 'api', label: t('settings.tabs.api'), fullLabel: t('settings.tabs.apiFull'), icon: Key },
+    { id: 'interface', label: t('settings.tabs.theme'), fullLabel: t('settings.tabs.themeFull'), icon: Palette },
+    { id: 'advanced', label: t('settings.tabs.system'), fullLabel: t('settings.tabs.systemFull'), icon: Sliders },
   ];
 
   return (
@@ -135,13 +135,13 @@ const Settings = () => {
       <div className="text-center space-y-3 md:space-y-4">
         <div className="inline-flex items-center space-x-3 px-4 py-1 bg-cinema-red/10 border border-cinema-red/20 rounded-full mb-3">
           <SettingsIcon className="w-3 h-3 text-cinema-red animate-spin-slow" />
-          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-cinema-red">System Core</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-cinema-red">{t('settings.systemCore')}</span>
         </div>
         <h1 className="text-2xl md:text-4xl font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-white leading-none">
-          Production <span className="text-cinema-red">Console</span>
+          {t('settings.productionConsole').split(' ')[0]} <span className="text-cinema-red">{t('settings.productionConsole').split(' ')[1]}</span>
         </h1>
         <p className="text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-cinema-gray/40 max-w-lg mx-auto">
-          Synchronizing personalized parameters.
+          {t('settings.syncParams')}
         </p>
       </div>
 
@@ -180,20 +180,19 @@ const Settings = () => {
         )}
 
         {activeTab === 'audio' && (
-          <SettingSection icon={Volume2} title="Sonic Parameters">
+          <SettingSection icon={Volume2} title={t('settings.sonic.title')}>
             <SettingItem
-              label="Pure Audio Protocol"
-              description="Isolate sonic channel and suspend visual rendering."
+              label={t('settings.sonic.pureAudio')}
+              description={t('settings.sonic.pureAudioDesc')}
             >
               <Toggle
                 checked={settings.audioOnly}
                 onChange={(value) => updateSetting('audioOnly', value)}
               />
             </SettingItem>
-
             <SettingItem
-              label="Bitrate Fidelity"
-              description="Maximum frequency output (kbps)."
+              label={t('settings.sonic.bitrate')}
+              description={t('settings.sonic.bitrateDesc')}
             >
               <select
                 value={settings.bitrate}
@@ -201,7 +200,7 @@ const Settings = () => {
                 className="bg-black/60 border border-white/10 px-4 py-2.5 md:px-6 md:py-3 text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 focus:border-cinema-red rounded-sm appearance-none w-full md:w-auto md:min-w-[160px]"
               >
                 {bitrateOptions.map(b => (
-                  <option key={b} value={b}>{b} KBPS</option>
+                  <option key={b} value={b}>{b} {t('player.bitrate').toUpperCase()}</option>
                 ))}
               </select>
             </SettingItem>
@@ -209,7 +208,7 @@ const Settings = () => {
         )}
 
         {activeTab === 'api' && (
-          <SettingSection icon={Key} title="Neural Network Link">
+          <SettingSection icon={Key} title={t('settings.api.title')}>
             <div className="space-y-8 md:space-y-12">
               <div className="relative group overflow-hidden bg-cinema-red/[0.02] border border-cinema-red/10 rounded-sm p-5 md:p-8">
                 <div className="absolute top-0 left-0 w-1 h-full bg-cinema-red opacity-20" />
@@ -219,22 +218,22 @@ const Settings = () => {
                   </div>
                   <div>
                     <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white mb-2">
-                      Global Link Synchronized
+                       {t('settings.api.globalLink')}
                     </h4>
                     <p className="text-[10px] font-medium text-cinema-gray/60 uppercase tracking-widest leading-relaxed">
-                      YouTube Data Protocol v3. Search, trending & recommendations active.
+                      {t('settings.api.globalLinkDesc')}
                     </p>
                     <div className="mt-4 flex items-center space-x-2">
                       <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-green-500">Protocol Ready</span>
+                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-green-500">{t('settings.api.protocolReady')}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               <SettingItem
-                label="Neural Override"
-                description="Manually synchronize with custom API credentials."
+                label={t('settings.api.neuralOverride')}
+                description={t('settings.api.neuralOverrideDesc')}
               >
                 <div className="space-y-4 w-full">
                   <div className="relative">
@@ -242,7 +241,7 @@ const Settings = () => {
                       type={showApiKey ? 'text' : 'password'}
                       value={apiKey}
                       onChange={(e) => setApiKeyState(e.target.value)}
-                      placeholder="ENTER NEURAL ACCESS KEY..."
+                      placeholder={t('settings.api.enterKey')}
                       className="w-full pl-4 pr-12 py-3.5 bg-black/40 border border-white/5 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-white placeholder:text-cinema-gray/20 focus:ring-0 focus:border-white/20 transition-all font-mono"
                     />
                     <button
@@ -259,14 +258,14 @@ const Settings = () => {
                       disabled={!apiKey.trim()}
                       className="px-4 py-3.5 bg-white/5 hover:bg-white/10 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20"
                     >
-                      Sync Key
+                      {t('settings.api.syncKey')}
                     </button>
                     <button
                       onClick={handleApiKeyTest}
                       disabled={!apiKey.trim()}
                       className="px-4 py-3.5 bg-cinema-red text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20 shadow-lg shadow-cinema-red/10"
                     >
-                      Verify Link
+                      {t('settings.api.verifyLink')}
                     </button>
                   </div>
                 </div>
@@ -274,12 +273,12 @@ const Settings = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  'Scan global frequency records',
-                  'Calibrate trending sectors',
-                  'Retrieve neural recommendations',
-                  'Archive production metadata',
-                  'Analyze production metrics',
-                  'Manage session archives'
+                  t('settings.api.features.scan'),
+                  t('settings.api.features.calibrate'),
+                  t('settings.api.features.retrieve'),
+                  t('settings.api.features.archive'),
+                  t('settings.api.features.analyze'),
+                  t('settings.api.features.manage')
                 ].map((feature, i) => (
                   <div key={i} className="flex items-center space-x-3 p-3.5 bg-white/[0.01] border border-white/5 rounded-sm">
                     <div className="w-1.5 h-1.5 bg-cinema-red opacity-40 rounded-full flex-shrink-0" />
@@ -292,10 +291,10 @@ const Settings = () => {
         )}
 
         {activeTab === 'interface' && (
-          <SettingSection icon={Palette} title="Aesthetic Calibration">
+          <SettingSection icon={Palette} title={t('settings.aesthetic.title')}>
             <SettingItem
-              label="Vision Core Profile"
-              description="Calibrate luminosity and contrast profile."
+              label={t('settings.aesthetic.visionCore')}
+              description={t('settings.aesthetic.visionCoreDesc')}
             >
               <button
                 onClick={toggleTheme}
@@ -306,8 +305,8 @@ const Settings = () => {
             </SettingItem>
 
             <SettingItem
-              label="Accent Frequency"
-              description="Primary chromatic identifier for active elements."
+              label={t('settings.aesthetic.accent')}
+              description={t('settings.aesthetic.accentDesc')}
             >
               <div className="flex items-center space-x-4 md:space-x-6 flex-wrap gap-y-2">
                 {accentOptions.map((color) => (
@@ -337,10 +336,10 @@ const Settings = () => {
         )}
 
         {activeTab === 'advanced' && (
-          <SettingSection icon={Sliders} title="System Logic">
+          <SettingSection icon={Sliders} title={t('settings.logic.title')}>
             <SettingItem
-              label="Metadata Extraction"
-              description="Automated log parsing for assets and session ID."
+              label={t('settings.logic.metadata')}
+              description={t('settings.logic.metadataDesc')}
             >
               <Toggle
                 checked={settings.tagAudioFile}
@@ -349,8 +348,8 @@ const Settings = () => {
             </SettingItem>
 
             <SettingItem
-              label="Identifier Protocol"
-              description="Pattern schema for generating asset identifiers."
+              label={t('settings.logic.idProtocol')}
+              description={t('settings.logic.idProtocolDesc')}
             >
               <input
                 type="text"
@@ -362,15 +361,15 @@ const Settings = () => {
             </SettingItem>
 
             <SettingItem
-              label="System Wipe"
-              description="Permanent termination of all localized parameters."
+              label={t('common.wipe').toUpperCase()}
+              description={t('settings.logic.wipeDesc')}
             >
               <button
                 onClick={handleResetSettings}
                 className="w-full md:w-auto flex items-center justify-center space-x-3 px-6 py-3.5 bg-cinema-red/10 border border-cinema-red/20 text-cinema-red hover:bg-cinema-red hover:text-white transition-all duration-500 rounded-sm"
               >
                 <RotateCcw className="w-4 h-4 flex-shrink-0" />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Initialize Wipe</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t('settings.logic.initWipe')}</span>
               </button>
             </SettingItem>
           </SettingSection>

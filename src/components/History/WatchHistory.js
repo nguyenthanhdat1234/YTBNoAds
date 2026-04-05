@@ -183,7 +183,7 @@ const WatchHistory = ({ onVideoSelect }) => {
             <button
               onClick={(e) => handleRemoveVideo(video.id, e)}
               className="p-2 bg-cinema-red/80 backdrop-blur-md border border-cinema-red/20 hover:bg-cinema-red text-white rounded-sm transition-all shadow-2xl"
-              title="Purge Entry"
+              title={t('history.deleteLog')}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -244,10 +244,10 @@ const WatchHistory = ({ onVideoSelect }) => {
     if (!stats) return null;
 
     const statTiles = [
-      { label: 'Total Logs', value: stats.totalVideos, icon: Play, color: 'text-blue-400' },
-      { label: 'Air Time', value: formatWatchTime(stats.totalWatchTime), icon: Clock, color: 'text-cinema-red' },
-      { label: 'Network Spread', value: stats.uniqueChannels, icon: Eye, color: 'text-purple-400' },
-      { label: 'Primary Frequency', value: stats.topChannel?.name || 'N/A', icon: BarChart3, color: 'text-orange-400' }
+      { label: t('history.totalEntries'), value: stats.totalVideos, icon: Play, color: 'text-blue-400' },
+      { label: t('history.airTime'), value: formatWatchTime(stats.totalWatchTime), icon: Clock, color: 'text-cinema-red' },
+      { label: t('history.networkSpread'), value: stats.uniqueChannels, icon: Eye, color: 'text-purple-400' },
+      { label: t('history.primaryFreq'), value: stats.topChannel?.name || 'N/A', icon: BarChart3, color: 'text-orange-400' }
     ];
 
     return (
@@ -277,7 +277,7 @@ const WatchHistory = ({ onVideoSelect }) => {
     return (
       <div className="py-48 flex flex-col items-center justify-center space-y-8 animate-fade-in">
         <div className="w-12 h-12 border-2 border-cinema-red border-t-transparent rounded-full animate-spin shadow-2xl shadow-cinema-red/20" />
-        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-cinema-gray animate-pulse">Retrieving Historical Records</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-cinema-gray animate-pulse">{t('history.retrievingLogs')}</p>
       </div>
     );
   }
@@ -295,10 +295,10 @@ const WatchHistory = ({ onVideoSelect }) => {
           </div>
           <div>
             <h1 className="text-xl md:text-3xl font-black uppercase tracking-[0.1em] md:tracking-[0.3em] text-white leading-none mb-1">
-              Director's <span className="text-cinema-red">Archive</span>
+              {t('history.session')} <span className="text-cinema-red">{t('history.archives')}</span>
             </h1>
             <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-cinema-gray/60">
-              {history.length} Entries
+              {history.length} {t('history.entries')}
             </p>
           </div>
         </div>
@@ -317,7 +317,7 @@ const WatchHistory = ({ onVideoSelect }) => {
           <button
             onClick={handleExportData}
             className="p-2.5 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
-            title="Export"
+            title={t('common.export')}
           >
             <Download className="w-3.5 h-3.5" />
           </button>
@@ -331,7 +331,7 @@ const WatchHistory = ({ onVideoSelect }) => {
             <button
               onClick={handleClearHistory}
               className="p-2.5 bg-white/[0.02] border border-white/5 text-cinema-red/40 hover:text-cinema-red hover:bg-cinema-red/5 rounded-sm transition-all"
-              title="Clear History"
+              title={t('history.purgeMetadata')}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -367,7 +367,7 @@ const WatchHistory = ({ onVideoSelect }) => {
         <div className="py-32 text-center border border-dashed border-white/5 rounded-sm">
           <Search className="w-12 h-12 text-cinema-gray/10 mx-auto mb-6" />
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray/40">
-            No matching records found in system archive
+            {t('header.results.noResults')}
           </p>
         </div>
       ) : (
@@ -375,9 +375,11 @@ const WatchHistory = ({ onVideoSelect }) => {
           <div className="space-y-6">
             <History className="w-16 h-16 text-cinema-gray/10 mx-auto" />
             <div className="space-y-3">
-              <h3 className="text-xl font-black uppercase tracking-[0.4em] text-white">Archive Null</h3>
+              <h3 className="text-xl font-black uppercase tracking-[0.4em] text-white">
+                {t('playlist.empty').split(' - ')[0]}
+              </h3>
               <p className="text-[10px] font-medium text-cinema-gray uppercase tracking-widest max-w-sm mx-auto">
-                System awaiting first production session to initialize archival logging protocols.
+                {t('history.noLogs')}
               </p>
             </div>
           </div>

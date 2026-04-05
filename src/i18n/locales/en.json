@@ -1,225 +1,174 @@
 {
-  "nav": {
-    "player": "Player",
+  "common": {
+    "search": "Search",
+    "home": "Home",
+    "library": "Library",
+    "history": "History",
     "settings": "Settings",
-    "about": "About"
-  },
-  "header": {
-    "subtitle": "Stream without ads",
-    "toggleTheme": "Toggle theme",
-    "changeLanguage": "Change language"
-  },
-  "urlInput": {
-    "title": "Enter YouTube URL",
-    "description": "Paste any YouTube video, playlist, or channel URL to start streaming",
-    "placeholder": "https://www.youtube.com/watch?v=...",
-    "paste": "Paste",
-    "play": "Play",
+    "trending": "Trending",
+    "login": "Login",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "clear": "Clear",
+    "more": "More",
     "loading": "Loading...",
-    "supportedFormats": "Supported URL formats:",
-    "formats": {
-      "video": "Single video: youtube.com/watch?v=VIDEO_ID",
-      "playlist": "Playlist: youtube.com/playlist?list=PLAYLIST_ID",
-      "channel": "Channel: youtube.com/channel/CHANNEL_ID",
-      "user": "User channel: youtube.com/user/USERNAME",
-      "handle": "Handle: youtube.com/@HANDLE"
-    }
-    
-  },
-  "welcome": {
-    "title": "Welcome to YouTube Web Player",
-    "description": "Enter a YouTube URL above to start streaming videos without ads and with enhanced features.",
-    "quickStart": "Quick Start Guide",
-    "steps": {
-      "step1": "Paste any YouTube URL in the input field above",
-      "step2": "Click Play to start streaming without ads",
-      "step3": "Use the quality selector to adjust video quality",
-      "step4": "Create playlists for continuous playback"
-    }
-  },
-  "features": {
-    "noAds": "No advertisements",
-    "metadata": "Automatic metadata extraction",
-    "multiLanguage": "Multi-language support",
-    "themes": "Dark/Light themes"
-  },
-  "errors": {
-    "emptyUrl": "Please enter a YouTube URL",
-    "invalidUrl": "Invalid YouTube URL",
-    "unsupportedUrlType": "Unsupported URL type",
-    "loadingFailed": "Failed to load video",
-    "networkError": "Network error occurred",
-    "videoNotFound": "Video not found",
-    "videoUnavailable": "Video is unavailable"
-  },
-  "success": {
-    "videoLoaded": "Video loaded successfully",
-    "settingsSaved": "Settings saved",
-    "settingsReset": "Settings reset to defaults"
-  },
-  "info": {
-    "playlistSupport": "Playlist support coming soon",
-    "channelSupport": "Channel support coming soon"
-  },
-  "loading": {
-    "video": "Loading video...",
-    "playlist": "Loading playlist...",
-    "channel": "Loading channel..."
-  },
-  "settings": {
-    "title": "Settings",
-    "video": {
-      "title": "Video Settings",
-      "quality": "Default Quality",
-      "autoplay": "Autoplay",
-      "preferHighestFPS": "Prefer Highest FPS"
-    },
-    "audio": {
-      "title": "Audio Settings",
-      "audioOnly": "Audio Only Mode",
-      "bitrate": "Audio Bitrate"
-    },
-    "interface": {
-      "title": "Interface",
-      "theme": "Theme",
-      "language": "Language",
-      "accent": "Accent Color"
-    },
-    "advanced": {
-      "title": "Advanced",
-      "tagAudioFile": "Extract Metadata",
-      "filenamePattern": "Filename Pattern",
-      "resetSettings": "Reset to Defaults"
-    },
-    "confirmReset": "Are you sure you want to reset all settings to defaults?",
-    "themes": {
-      "light": "Light",
-      "dark": "Dark",
-      "auto": "Auto"
-    },
-    "accents": {
-      "blue": "Blue",
-      "red": "Red",
-      "green": "Green",
-      "purple": "Purple",
-      "orange": "Orange"
-    }
-  },
-  "about": {
-    "title": "About YouTube Web Player",
-    "description": "A modern web application for streaming YouTube videos without advertisements, featuring automatic metadata extraction and multi-language support.",
-    "features": {
-      "title": "Features",
-      "noAds": "Ad-free streaming experience",
-      "metadata": "Automatic artist, album, and title extraction from video titles",
-      "multiLanguage": "Support for 14 languages",
-      "themes": "Beautiful dark and light themes",
-      "formats": "Multiple video and audio format support",
-      "openSource": "Open source and free to use"
-    },
-    "version": "Version 1.0.0",
-    "credits": "Based on the original YouTube Playlist Downloader"
-  },
-  "player": {
-    "controls": {
-      "play": "Play",
-      "pause": "Pause",
-      "mute": "Mute",
-      "unmute": "Unmute",
-      "fullscreen": "Fullscreen",
-      "exitFullscreen": "Exit Fullscreen",
-      "settings": "Settings",
-      "quality": "Quality",
-      "addToPlaylist": "Add to Playlist",
-      "removeFromPlaylist": "Remove from Playlist",
-      "toggleCaptions": "Toggle Captions",
-      "disableCaptions": "Disable Captions",
-      "seekBackward": "Seek Backward",
-      "seekForward": "Seek Forward",
-      "seekBackward30": "Seek Backward 30s",
-      "seekForward30": "Seek Forward 30s"
-    },
-    "settings": {
-      "title": "Player Settings",
-      "quality": "Video Quality",
-      "autoplay": "Autoplay",
-      "captions": "Captions",
-      "close": "Close",
-      "keyboardShortcuts": "Keyboard Shortcuts"
-    },
-    "quality": {
-      "auto": "Auto",
-      "144p": "144p",
-      "240p": "240p",
-      "360p": "360p",
-      "480p": "480p",
-      "720p": "720p HD",
-      "1080p": "1080p Full HD",
-      "1440p": "1440p 2K",
-      "2160p": "2160p 4K"
-    }
-  },
-  "metadata": {
-    "title": "Title",
-    "artist": "Artist",
-    "album": "Album",
-    "genre": "Genre",
-    "duration": "Duration",
-    "channel": "Channel",
-    "extracted": "Extracted Metadata",
-    "original": "Original Title",
-    "views": "Views",
-    "likes": "Likes",
-    "publishedAt": "Published",
-    "description": "Description"
-  },
-  "playlist": {
-    "title": "Playlist",
-    "create": "Create Playlist",
-    "addCurrent": "Add Current Video",
-    "addLink": "Add YouTube Link",
-    "addLinkPlaceholder": "Paste YouTube URL here...",
-    "addLinkButton": "Add to Playlist",
-    "remove": "Remove",
-    "clear": "Clear All",
-    "empty": "Playlist is empty",
-    "videos": "videos",
-    "totalDuration": "Total Duration",
-    "autoplay": "Auto-play next video",
-    "shuffle": "Shuffle",
-    "repeat": "Repeat",
-    "currentlyPlaying": "Currently Playing",
-    "upNext": "Up Next",
-    "addToQueue": "Add to Queue",
-    "removeFromQueue": "Remove from Queue",
-    "moveUp": "Move Up",
-    "moveDown": "Move Down"
-  },
-  "videoInfo": {
-    "loading": "Loading video information...",
-    "error": "Failed to load video information",
-    "openOnYoutube": "Open on YouTube",
-    "copyLink": "Copy Link",
-    "share": "Share",
-    "download": "Download",
-    "report": "Report",
-    "channelInfo": "Channel Information",
-    "subscribers": "Subscribers",
-    "moreFromChannel": "More from this channel",
-    "relatedVideos": "Related Videos",
-    "comments": "Comments",
-    "showMore": "Show More",
-    "showLess": "Show Less"
+    "noResults": "No results found",
+    "unknown": "Unknown",
+    "unknownSource": "Unknown Source",
+    "assets": "Assets",
+    "wipe": "Wipe",
+    "export": "Export",
+    "import": "Import"
   },
   "auth": {
-    "loginSuccess": "Authorized // Access Granted",
-    "loginError": "Unauthorized // Access Denied",
-    "passcodePlaceholder": "SECURITY PASSCODE",
+    "passcode": "Neural Access Key",
+    "enterPasscode": "Enter authorization code...",
+    "rememberMe": "Keep Session Logged",
+    "wrongPasscode": "Invalid credentials. Link denied.",
+    "accessGranted": "Access Granted. Syncing...",
+    "requireLogin": "Authorization required to access production environment."
+  },
+  "header": {
+    "searchPlaceholder": "Scan frequency for assets...",
+    "totalAssets": "Total Assets Loaded",
+    "syncStatus": "Status: Synchronized",
+    "suggestions": {
+      "title": "Related Frequency suggestions",
+      "noResults": "No matching frequencies discovered"
+    },
+    "results": {
+      "title": "Discovery Results",
+      "noResults": "No data matching your query discovered in the network"
+    }
+  },
+  "player": {
+    "nowPlaying": "Now Playing",
+    "bitrate": "kbps",
+    "quality": "Quality",
+    "speed": "Speed",
+    "play": "Play",
+    "pause": "Pause",
+    "next": "Next Asset",
+    "previous": "Previous Asset",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume": "Volume",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit Fullscreen",
+    "pip": "Picture-in-Picture"
+  },
+  "urlInput": {
+    "placeholder": "Input source URL or protocol ID...",
+    "syncClip": "Sync Clip",
+    "processingAssets": "Processing Assets",
     "initializeSession": "Initialize Session",
-    "authenticating": "Authenticating Unit",
-    "authorizationTitle": "System Authorization",
-    "protocolInfo": "Please initialize your session protocols to proceed.",
-    "footerInfo": "Authorized Personnel Only // AES-256 Vault Protocol",
-    "rememberMe": "Remember Session"
+    "engineActive": "Immersive Engine Active",
+    "directorsCut": "Director's Cut Mode"
+  },
+  "playlist": {
+    "title": "Production Queue",
+    "videos": "Assets",
+    "searchLibrary": "Search Archive",
+    "shuffle": "Shuffle Mode",
+    "repeat": "Repeat Mode",
+    "clear": "Clear All",
+    "addCurrent": "Archive Current Clip",
+    "totalLoad": "Total Load",
+    "remaining": "Remaining",
+    "empty": "Archive Null - No Assets Queued"
+  },
+  "settings": {
+    "title": "Production Console",
+    "systemCore": "System Core",
+    "productionConsole": "Production Console",
+    "syncParams": "Synchronizing personalized parameters.",
+    "tabs": {
+      "visual": "Visual",
+      "visualFull": "Visual Quality",
+      "sonic": "Sonic",
+      "sonicFull": "Sonic Profile",
+      "api": "API",
+      "apiFull": "Protocol Config",
+      "theme": "Theme",
+      "themeFull": "Aesthetic",
+      "system": "System",
+      "systemFull": "System Logic"
+    },
+    "sonic": {
+      "title": "Sonic Parameters",
+      "pureAudio": "Pure Audio Protocol",
+      "pureAudioDesc": "Isolate sonic channel and suspend visual rendering.",
+      "bitrate": "Bitrate Fidelity",
+      "bitrateDesc": "Maximum frequency output (kbps)."
+    },
+    "api": {
+      "title": "Neural Network Link",
+      "globalLink": "Global Link Synchronized",
+      "globalLinkDesc": "YouTube Data Protocol v3. Search, trending & recommendations active.",
+      "protocolReady": "Protocol Ready",
+      "neuralOverride": "Neural Override",
+      "neuralOverrideDesc": "Manually synchronize with custom API credentials.",
+      "enterKey": "ENTER NEURAL ACCESS KEY...",
+      "syncKey": "Sync Key",
+      "verifyLink": "Verify Link",
+      "features": {
+        "scan": "Scan global frequency records",
+        "calibrate": "Calibrate trending sectors",
+        "retrieve": "Retrieve neural recommendations",
+        "archive": "Archive production metadata",
+        "analyze": "Analyze production metrics",
+        "manage": "Manage session archives"
+      }
+    },
+    "aesthetic": {
+      "title": "Aesthetic Calibration",
+      "visionCore": "Vision Core Profile",
+      "visionCoreDesc": "Calibrate luminosity and contrast profile.",
+      "accent": "Accent Frequency",
+      "accentDesc": "Primary chromatic identifier for active elements."
+    },
+    "logic": {
+      "title": "System Logic",
+      "metadata": "Metadata Extraction",
+      "metadataDesc": "Automated log parsing for assets and session ID.",
+      "idProtocol": "Identifier Protocol",
+      "idProtocolDesc": "Pattern schema for generating asset identifiers.",
+      "wipeDesc": "Permanent termination of all localized parameters.",
+      "initWipe": "Initialize Wipe"
+    }
+  },
+  "history": {
+    "title": "Director's Archive",
+    "activityLog": "Activity Log",
+    "session": "Session",
+    "archives": "Archives",
+    "retrievingLogs": "Retrieving playback logs...",
+    "purgeMetadata": "Purge Metadata",
+    "totalEntries": "Total Entries",
+    "totalRuntime": "Total Runtime",
+    "activeAssets": "Active Assets",
+    "primaryFreq": "Primary Frequency",
+    "uniqueSources": "Unique Sources",
+    "entries": "Entries",
+    "noLogs": "No archived session logs found.",
+    "deleteLog": "Delete Log",
+    "airTime": "Air Time",
+    "networkSpread": "Network Spread"
+  },
+  "discover": {
+    "trending": "Trending",
+    "music": "Music",
+    "gaming": "Gaming",
+    "education": "Learn",
+    "entertainment": "Cinema",
+    "random": "Random",
+    "signal": "Signal Discovery",
+    "global": "Global",
+    "frequencies": "Frequencies",
+    "curated": "Curated metadata across localized sectors."
   }
 }

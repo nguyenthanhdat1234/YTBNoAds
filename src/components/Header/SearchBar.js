@@ -147,7 +147,7 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
           onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-          placeholder="Search cinematic content..."
+          placeholder={t('searchBar.placeholder')}
           className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-cinema-gray/50"
         />
 
@@ -174,7 +174,7 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
           {searchQuery && searchResults.length === 0 && !isSearching && (
             <div className="p-3">
               <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-cinema-gray px-3 py-2 mb-1">
-                Suggestions
+                {t('searchBar.suggestions')}
               </div>
               {mockSuggestions
                 .filter(suggestion => suggestion.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -197,7 +197,7 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
           {searchResults.length > 0 && !isSearching && (
             <div className="p-3">
               <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-cinema-gray px-3 py-2 mb-2">
-                Results ({searchResults.length})
+                {t('searchBar.results')} ({searchResults.length})
               </div>
               <div className="grid gap-2">
                 {searchResults.slice(0, 6).map((video) => (
@@ -222,7 +222,7 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
                         {video.title}
                       </h4>
                       <p className="text-[10px] text-cinema-gray uppercase tracking-widest mt-0.5">
-                        {video.channel} • {video.views} Views
+                        {video.channel} • {video.views} {t('common.views')}
                       </p>
                     </div>
                     <div className="text-[10px] font-bold text-cinema-gray tabular-nums">
@@ -238,7 +238,7 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
             <div className="p-8 text-center">
               <div className="flex flex-col items-center justify-center space-y-3">
                 <div className="w-6 h-6 border-2 border-cinema-red border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cinema-gray">Indexing Cinema...</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cinema-gray">{t('searchBar.indexing')}</span>
               </div>
             </div>
           )}

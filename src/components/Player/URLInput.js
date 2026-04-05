@@ -49,7 +49,7 @@ const URLInput = ({ onSubmit, loading }) => {
               className="absolute inset-y-0 right-4 flex items-center px-4 text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray hover:text-white transition-all border-l border-white/5 h-1/2 my-auto"
               disabled={loading}
             >
-              Sync Clip
+              {t('urlInput.syncClip')}
             </button>
           </div>
 
@@ -65,12 +65,12 @@ const URLInput = ({ onSubmit, loading }) => {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Processing Assets</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('urlInput.processingAssets')}</span>
               </>
             ) : (
               <>
                 <Play className="w-4 h-4 fill-white" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Initialize Session</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('urlInput.initializeSession')}</span>
               </>
             )}
           </button>
@@ -80,11 +80,11 @@ const URLInput = ({ onSubmit, loading }) => {
         <div className="mt-6 flex items-center justify-center space-x-8 opacity-40">
            <div className="flex items-center space-x-2 text-[8px] font-black uppercase tracking-widest text-cinema-gray">
               <div className="w-1 h-1 bg-cinema-red rounded-full animate-pulse" />
-              <span>Immersive Engine Active</span>
+              <span>{t('urlInput.engineActive')}</span>
            </div>
            <div className="flex items-center space-x-2 text-[8px] font-black uppercase tracking-widest text-cinema-gray">
               <div className="w-1 h-1 bg-white/20 rounded-full" />
-              <span>Director's Cut Mode</span>
+              <span>{t('urlInput.directorsCut')}</span>
            </div>
         </div>
       </form>

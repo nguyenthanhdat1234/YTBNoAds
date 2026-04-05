@@ -21,7 +21,8 @@ const LanguageSelector = () => {
     { code: 'ro', name: 'Romanian', nativeName: 'Română' },
     { code: 'ru', name: 'Russian', nativeName: 'Русский' },
     { code: 'es', name: 'Spanish', nativeName: 'Español' },
-    { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' }
+    { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
+    { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' }
   ];
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];

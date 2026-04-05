@@ -1,0 +1,174 @@
+{
+  "common": {
+    "search": "Tìm kiếm",
+    "home": "Trang chủ",
+    "library": "Thư viện",
+    "history": "Lịch sử",
+    "settings": "Cài đặt",
+    "trending": "Xu hướng",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "cancel": "Hủy bỏ",
+    "save": "Lưu lại",
+    "delete": "Xóa bỏ",
+    "edit": "Chỉnh sửa",
+    "add": "Thêm vào",
+    "clear": "Làm sạch",
+    "more": "Thêm nữa",
+    "loading": "Đang tải...",
+    "noResults": "Không tìm thấy kết quả",
+    "unknown": "Không xác định",
+    "unknownSource": "Nguồn không xác định",
+    "assets": "Tài nguyên",
+    "wipe": "Xóa sạch",
+    "export": "Xuất tệp",
+    "import": "Nhập tệp"
+  },
+  "auth": {
+    "passcode": "Khóa Truy Cập Neural",
+    "enterPasscode": "Nhập mã xác thực...",
+    "rememberMe": "Ghi nhớ phiên đăng nhập",
+    "wrongPasscode": "Thông tin không hợp lệ. Truy cập bị từ chối.",
+    "accessGranted": "Truy cập thành công. Đang đồng bộ...",
+    "requireLogin": "Yêu cầu xác thực để truy cập môi trường sản xuất."
+  },
+  "header": {
+    "searchPlaceholder": "Quét tần số tài nguyên...",
+    "totalAssets": "Tổng tài nguyên đã tải",
+    "syncStatus": "Trạng thái: Đã đồng bộ",
+    "suggestions": {
+      "title": "Gợi ý tần số liên quan",
+      "noResults": "Không phát hiện thấy tần số phù hợp"
+    },
+    "results": {
+      "title": "Kết quả khám phá",
+      "noResults": "Không tìm thấy dữ liệu phù hợp trong mạng"
+    }
+  },
+  "player": {
+    "nowPlaying": "Đang phát",
+    "bitrate": "kbps",
+    "quality": "Chất lượng",
+    "speed": "Tốc độ",
+    "play": "Phát",
+    "pause": "Tạm dừng",
+    "next": "Tài nguyên tiếp theo",
+    "previous": "Tài nguyên trước đó",
+    "mute": "Tắt tiếng",
+    "unmute": "Bật tiếng",
+    "volume": "Âm lượng",
+    "fullscreen": "Toàn màn hình",
+    "exitFullscreen": "Thoát toàn màn hình",
+    "pip": "Ảnh trong ảnh"
+  },
+  "urlInput": {
+    "placeholder": "Nhập URL nguồn hoặc ID giao thức...",
+    "syncClip": "Đồng bộ Clip",
+    "processingAssets": "Đang xử lý tài nguyên",
+    "initializeSession": "Khởi tạo phiên",
+    "engineActive": "Công cụ Immersive đang hoạt động",
+    "directorsCut": "Chế độ Director's Cut"
+  },
+  "playlist": {
+    "title": "Danh sách sản xuất",
+    "videos": "Tài nguyên",
+    "searchLibrary": "Tìm kiếm lưu trữ",
+    "shuffle": "Chế độ xáo trộn",
+    "repeat": "Chế độ lặp lại",
+    "clear": "Xóa tất cả",
+    "addCurrent": "Lưu clip hiện tại",
+    "totalLoad": "Tổng tải động",
+    "remaining": "Còn lại",
+    "empty": "Không có tài nguyên trong hàng đợi"
+  },
+  "settings": {
+    "title": "Bảng điều khiển sản xuất",
+    "systemCore": "Lõi hệ thống",
+    "productionConsole": "Bảng điều khiển",
+    "syncParams": "Đang đồng bộ hóa các tham số cá nhân.",
+    "tabs": {
+      "visual": "Hình ảnh",
+      "visualFull": "Chất lượng hình ảnh",
+      "sonic": "Âm thanh",
+      "sonicFull": "Cấu hình âm thanh",
+      "api": "API",
+      "apiFull": "Cấu hình giao thức",
+      "theme": "Giao diện",
+      "themeFull": "Thẩm mỹ",
+      "system": "Hệ thống",
+      "systemFull": "Logic hệ thống"
+    },
+    "sonic": {
+      "title": "Thông số âm thanh",
+      "pureAudio": "Giao thức âm thanh thuần",
+      "pureAudioDesc": "Cô lập kênh âm thanh và tạm dừng hiển thị hình ảnh.",
+      "bitrate": "Độ trung thực bitrate",
+      "bitrateDesc": "Tần số đầu ra tối đa (kbps)."
+    },
+    "api": {
+      "title": "Liên kết mạng Neural",
+      "globalLink": "Đồng bộ liên kết toàn cầu",
+      "globalLinkDesc": "Giao thức YouTube Data v3. Hoạt động tìm kiếm, xu hướng và gợi ý đã kích hoạt.",
+      "protocolReady": "Giao thức đã sẵn sàng",
+      "neuralOverride": "Ghi đè Neural",
+      "neuralOverrideDesc": "Đồng bộ hóa thủ công với thông tin xác thực API tùy chỉnh.",
+      "enterKey": "NHẬP KHÓA TRUY CẬP NEURAL...",
+      "syncKey": "Đồng bộ khóa",
+      "verifyLink": "Xác minh liên kết",
+      "features": {
+        "scan": "Quét bản ghi tần số toàn cầu",
+        "calibrate": "Hiệu chỉnh các khu vực xu hướng",
+        "retrieve": "Truy xuất các gợi ý Neural",
+        "archive": "Lưu trữ siêu dữ liệu sản xuất",
+        "analyze": "Phân tích các chỉ số sản xuất",
+        "manage": "Quản lý lưu trữ phiên"
+      }
+    },
+    "aesthetic": {
+      "title": "Hiệu chỉnh thẩm mỹ",
+      "visionCore": "Hồ sơ lõi tầm nhìn",
+      "visionCoreDesc": "Hiệu chỉnh độ sáng và tương phản.",
+      "accent": "Tần số màu nhấn",
+      "accentDesc": "Nhận diện màu sắc chính cho các thành phần đang hoạt động."
+    },
+    "logic": {
+      "title": "Logic hệ thống",
+      "metadata": "Trích xuất siêu dữ liệu",
+      "metadataDesc": "Tự động phân tích nhật ký cho tài nguyên và ID phiên.",
+      "idProtocol": "Giao thức định danh",
+      "idProtocolDesc": "Sơ đồ mẫu để tạo các mã định danh tài nguyên.",
+      "wipeDesc": "Chấm dứt vĩnh viễn tất cả các tham số cục bộ.",
+      "initWipe": "Khởi tạo xóa sạch"
+    }
+  },
+  "history": {
+    "title": "Lưu trữ của Director",
+    "activityLog": "Nhật ký hoạt động",
+    "session": "Phiên",
+    "archives": "Lưu trữ",
+    "retrievingLogs": "Đang truy xuất nhật ký phát...",
+    "purgeMetadata": "Xóa siêu dữ liệu",
+    "totalEntries": "Tổng số mục",
+    "totalRuntime": "Tổng thời gian",
+    "activeAssets": "Tài nguyên hoạt động",
+    "primaryFreq": "Tần số chính",
+    "uniqueSources": "Nguồn duy nhất",
+    "entries": "Mục",
+    "noLogs": "Không tìm thấy nhật ký phiên lưu trữ.",
+    "deleteLog": "Xóa nhật ký",
+    "airTime": "Thời gian phát",
+    "networkSpread": "Phạm vi mạng"
+  },
+  "discover": {
+    "trending": "Xu hướng",
+    "music": "Âm nhạc",
+    "gaming": "Trò chơi",
+    "education": "Học tập",
+    "entertainment": "Điện ảnh",
+    "random": "Ngẫu nhiên",
+    "signal": "Khám phá tín hiệu",
+    "global": "Tần số",
+    "frequencies": "Toàn cầu",
+    "curated": "Siêu dữ liệu được tuyển chọn từ các phân khúc địa phương."
+  }
+}

@@ -232,7 +232,7 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
               {t('playlist.title')}
             </h3>
             <p className="text-[10px] font-bold text-cinema-gray uppercase tracking-widest">
-              {playlist.length} {t('playlist.videos')} // Production Log
+              {playlist.length} {t('playlist.videos')}
             </p>
           </div>
         </div>
@@ -275,7 +275,7 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
               <button
                 onClick={() => setShowSearch(true)}
                 className="p-2.5 text-cinema-gray hover:text-white hover:bg-white/5 rounded-full transition-all"
-                title="Search Library"
+                title={t('playlist.searchLibrary')}
               >
                 <Search className="w-4 h-4" />
               </button>
@@ -369,11 +369,11 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
                       {video.title}
                     </h4>
                     <div className="flex items-center space-x-3 text-[9px] font-black uppercase tracking-widest text-cinema-gray/60 group-hover:text-cinema-gray transition-colors">
-                      <span className="truncate max-w-[100px]">{video.author?.name || 'Unknown Source'}</span>
+                      <span className="truncate max-w-[100px]">{video.author?.name || t('common.unknownSource')}</span>
                       {video.duration && (
                         <div className="flex items-center space-x-1.5">
                           <span className="w-1 h-1 bg-white/10 rounded-full" />
-                          <span className="tabular-nums">{formatDuration(video.duration)} // TC</span>
+                          <span className="tabular-nums">{formatDuration(video.duration)}</span>
                         </div>
                       )}
                     </div>
@@ -425,9 +425,9 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
               <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray">
                 <span className="flex items-center space-x-2">
                    <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                   <span>Total Load: {playlist.length} Assets</span>
+                   <span>{t('playlist.totalLoad')}: {playlist.length} {t('common.assets')}</span>
                 </span>
-                <span className="tabular-nums text-white/40">{formatDuration(getTotalDuration())} Remaining</span>
+                <span className="tabular-nums text-white/40">{formatDuration(getTotalDuration())} {t('playlist.remaining')}</span>
               </div>
             </div>
           )}

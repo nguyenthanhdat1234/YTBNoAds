@@ -17,6 +17,7 @@ import ro from './locales/ro.json';
 import ru from './locales/ru.json';
 import es from './locales/es.json';
 import tr from './locales/tr.json';
+import vi from './locales/vi.json';
 
 const resources = {
   en: { translation: en },
@@ -32,7 +33,8 @@ const resources = {
   ro: { translation: ro },
   ru: { translation: ru },
   es: { translation: es },
-  tr: { translation: tr }
+  tr: { translation: tr },
+  vi: { translation: vi }
 };
 
 i18n

@@ -35,12 +35,12 @@ const Header = ({ onVideoSelect }) => {
   const menuRef = useRef(null);
 
   const navItems = [
-    { path: '/', icon: Play, label: t('nav.player') || 'Player' },
-    { path: '/history', icon: History, label: 'History' },
-    { path: '/favorites', icon: Heart, label: 'Favorites' },
-    { path: '/subscriptions', icon: Users, label: 'Subscriptions' },
-    { path: '/settings', icon: Settings, label: t('nav.settings') || 'Settings' },
-    { path: '/about', icon: Info, label: 'About' },
+    { path: '/', icon: Play, label: t('common.home') },
+    { path: '/history', icon: History, label: t('common.history') },
+    { path: '/favorites', icon: Heart, label: t('common.library') },
+    { path: '/subscriptions', icon: Users, label: t('common.trending') },
+    { path: '/settings', icon: Settings, label: t('common.settings') },
+    { path: '/about', icon: Info, label: t('common.more') },
   ];
 
   const handleSearchVideoSelect = (url) => {
@@ -89,7 +89,7 @@ const Header = ({ onVideoSelect }) => {
                   Cinema <span className="text-cinema-red">Flow</span>
                 </span>
                 <span className="hidden sm:block text-[9px] font-bold text-cinema-gray uppercase tracking-[0.2em]">
-                  Pro Edition
+                  {t('settings.systemCore')}
                 </span>
               </div>
             </Link>
