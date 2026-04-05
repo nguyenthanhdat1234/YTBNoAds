@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Sparkles,
+  Zap,
   Play,
   Clock,
   Eye,
@@ -257,7 +257,7 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
   };
 
   const tabs = [
-    { id: 'related', label: 'Related Footage', icon: Sparkles, requiresVideo: true },
+    { id: 'related', label: 'Related Footage', icon: Zap, requiresVideo: true },
     { id: 'trending', label: 'Global Trends', icon: TrendingUp, requiresApi: true },
     { id: 'history', label: 'Recent Archive', icon: History },
     { id: 'favorites', label: 'Curated Picks', icon: Heart }
@@ -364,7 +364,7 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
       ) : (
         <div className="py-20 text-center border border-dashed border-white/5 rounded-sm">
           <div className="mb-6 opacity-20">
-            <Sparkles className="w-12 h-12 text-cinema-gray mx-auto" />
+            <Zap className="w-12 h-12 text-cinema-gray mx-auto" />
           </div>
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray/40">
             System Idle // No Recommendations Located

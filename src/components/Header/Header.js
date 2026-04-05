@@ -77,8 +77,8 @@ const Header = ({ onVideoSelect }) => {
             >
               <div className="relative">
                 <div className="absolute inset-0 bg-cinema-red blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-                <div className="relative p-1.5 md:p-2 bg-cinema-red rounded-sm transform group-hover:scale-110 transition-transform duration-500">
-                  <Youtube className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                <div className="relative p-0.5 bg-white/5 backdrop-blur-sm rounded-sm transform group-hover:scale-110 transition-transform duration-500 overflow-hidden border border-white/5">
+                  <img src="/logo.png" alt="Logo" className="w-8 h-8 md:w-10 md:h-10 object-contain shadow-2xl" />
                 </div>
               </div>
               <div className="flex flex-col -space-y-0.5">
