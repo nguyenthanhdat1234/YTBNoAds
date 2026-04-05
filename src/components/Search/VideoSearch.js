@@ -37,24 +37,24 @@ const VideoSearch = ({ onVideoSelect }) => {
   });
 
   const orderOptions = [
-    { value: 'relevance', label: 'Most Relevant', icon: Star },
-    { value: 'date', label: 'Upload Date', icon: Calendar },
-    { value: 'viewCount', label: 'View Count', icon: Eye },
-    { value: 'rating', label: 'Rating', icon: Star },
-    { value: 'title', label: 'Title A-Z', icon: SortAsc }
+    { value: 'relevance', label: t('search.options.relevance'), icon: Star },
+    { value: 'date', label: t('search.options.date'), icon: Calendar },
+    { value: 'viewCount', label: t('search.options.viewCount'), icon: Eye },
+    { value: 'rating', label: t('search.options.rating'), icon: Star },
+    { value: 'title', label: t('search.options.title'), icon: SortAsc }
   ];
 
   const durationOptions = [
-    { value: 'any', label: 'Any Duration' },
-    { value: 'short', label: 'Under 4 minutes' },
-    { value: 'medium', label: '4-20 minutes' },
-    { value: 'long', label: 'Over 20 minutes' }
+    { value: 'any', label: t('search.options.any') },
+    { value: 'short', label: t('search.options.short') },
+    { value: 'medium', label: t('search.options.medium') },
+    { value: 'long', label: t('search.options.long') }
   ];
 
   const definitionOptions = [
-    { value: 'any', label: 'Any Quality' },
-    { value: 'high', label: 'HD (720p+)' },
-    { value: 'standard', label: 'Standard (480p)' }
+    { value: 'any', label: t('search.options.any') },
+    { value: 'high', label: t('search.options.hd') },
+    { value: 'standard', label: t('search.options.sd') }
   ];
 
   const performSearch = useCallback(async (searchQuery, searchFilters, pageToken = null) => {
@@ -193,7 +193,7 @@ const VideoSearch = ({ onVideoSelect }) => {
             alt={video.snippet.title}
             className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-30 group-hover:opacity-50 transition-opacity" />
           
           {duration && (
             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
@@ -283,7 +283,7 @@ const VideoSearch = ({ onVideoSelect }) => {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Paste YouTube link or scan for cinematic titles..."
+                placeholder={t('search.placeholder')}
                 className="w-full pl-14 pr-6 py-5 bg-white/[0.02] border border-white/5 rounded-sm text-white placeholder:text-cinema-gray/20 text-sm font-medium focus:ring-0 focus:border-white/10 focus:bg-white/[0.04] transition-all tracking-wide shadow-2xl"
               />
             </div>
@@ -303,7 +303,7 @@ const VideoSearch = ({ onVideoSelect }) => {
                 ) : (
                   <Search className="w-4 h-4" />
                 )}
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Ignite Scan</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('search.igniteScan')}</span>
               </button>
 
               <button
@@ -314,7 +314,7 @@ const VideoSearch = ({ onVideoSelect }) => {
                 }`}
               >
                 <Filter className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Optimization</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('search.optimization')}</span>
                 {showFilters ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
             </div>
@@ -326,7 +326,7 @@ const VideoSearch = ({ onVideoSelect }) => {
               <div className="space-y-4">
                 <label className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2">
                   <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                  <span>Sort Logic</span>
+                  <span>{t('search.sortLogic')}</span>
                 </label>
                 <select
                   value={filters.order}
@@ -344,7 +344,7 @@ const VideoSearch = ({ onVideoSelect }) => {
               <div className="space-y-4">
                 <label className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2">
                   <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                  <span>Chronology</span>
+                  <span>{t('search.chronology')}</span>
                 </label>
                 <select
                   value={filters.duration}
@@ -362,7 +362,7 @@ const VideoSearch = ({ onVideoSelect }) => {
               <div className="space-y-4">
                 <label className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2">
                   <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                  <span>Definition Quality</span>
+                  <span>{t('search.definitionQuality')}</span>
                 </label>
                 <select
                   value={filters.definition}
@@ -387,7 +387,7 @@ const VideoSearch = ({ onVideoSelect }) => {
           <div className="flex items-center justify-between">
             <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray flex items-center space-x-3">
               <div className="w-2 h-[1px] bg-cinema-red" />
-              <span>Captured Footage: {results.length} Units</span>
+              <span>{t('search.capturedFootage', { count: results.length })}</span>
             </h2>
           </div>
 
@@ -411,7 +411,7 @@ const VideoSearch = ({ onVideoSelect }) => {
                   <Play className="w-4 h-4 text-cinema-gray group-hover:text-cinema-red transition-colors rotate-90" />
                 )}
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray group-hover:text-white transition-colors">
-                  Extend Library Scan
+                  {t('search.extendScan')}
                 </span>
               </button>
             </div>
@@ -427,10 +427,10 @@ const VideoSearch = ({ onVideoSelect }) => {
           </div>
           <div className="space-y-2">
             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white">
-              Zero Assets Located
+              {t('search.zeroAssets')}
             </h3>
             <p className="text-[9px] font-medium text-cinema-gray tracking-widest uppercase">
-              Recalibrate search parameters and re-scan library
+              {t('search.recalibrate')}
             </p>
           </div>
         </div>

@@ -547,7 +547,8 @@ const VideoPlayer = ({ video }) => {
               ? 'h-screen w-full'
               : 'aspect-video'
         }`}
-        onMouseEnter={keepControlsVisible}
+        onMouseEnter={showControlsTemporarily}
+        onMouseMove={showControlsTemporarily}
         onMouseLeave={hideControlsImmediately}
         onTouchStart={toggleControls}
         onClick={toggleControls}

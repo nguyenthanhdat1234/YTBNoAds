@@ -127,6 +127,8 @@ const MainPlayer = () => {
     setActiveTab('search');
     setError(null);
     setIsMinimized(false);
+    // Smooth scroll to playback interface
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleMinimize = () => {
@@ -144,8 +146,8 @@ const MainPlayer = () => {
 
 
   const tabs = [
-    { id: 'search', label: 'Director', shortLabel: 'Director', icon: Clapperboard },
-    { id: 'trending', label: 'Trends', shortLabel: 'Trends', icon: TrendingUp },
+    { id: 'search', label: t('main.director'), shortLabel: t('main.director'), icon: Clapperboard },
+    { id: 'trending', label: t('main.trends'), shortLabel: t('main.trends'), icon: TrendingUp },
   ];
 
   return (
@@ -178,7 +180,7 @@ const MainPlayer = () => {
 
           <div className="flex-shrink-0 pl-4">
             <span className="text-[9px] font-black tracking-widest text-cinema-gray/30 uppercase hidden md:block">
-              Production Ready
+              {t('main.productionReady')}
             </span>
           </div>
         </div>
@@ -186,18 +188,9 @@ const MainPlayer = () => {
         {/* Tab Content */}
         <div className="space-y-6 md:space-y-8 animate-fade-in">
 
-          {/* Search/Director Tab - Now at the Top when active */}
-          {activeTab === 'search' && !isMinimized && (
-            <div className="animate-fade-in">
-              <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
-                <VideoSearch onVideoSelect={handleVideoSelect} />
-              </div>
-            </div>
-          )}
-
-          {/* Player Grid */}
+          {/* Player Grid - Primary Playback Zone (Now at Top) */}
           {currentVideo && !loading && !isMinimized && (
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12 animate-slide-up">
               {/* Main Content */}
               <div className="xl:col-span-8 space-y-6 md:space-y-8">
                 {/* Video Wrapper */}
@@ -230,7 +223,7 @@ const MainPlayer = () => {
                   onClick={() => setShowSidebar(!showSidebar)}
                   className="xl:hidden w-full flex items-center justify-between p-4 bg-cinema-surface border border-white/5 rounded-sm"
                 >
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">Queue & Recommendations</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">{t('main.queueRecs')}</span>
                   <svg className={`w-4 h-4 text-cinema-gray transition-transform ${showSidebar ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -239,7 +232,7 @@ const MainPlayer = () => {
                 <div className={`space-y-6 md:space-y-8 ${showSidebar ? 'block' : 'hidden xl:block'}`}>
                   <div className="bg-cinema-surface rounded-sm border border-white/5 overflow-hidden">
                     <div className="px-5 py-3 border-b border-white/5 bg-white/[0.02]">
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">Production Queue</h3>
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">{t('main.prodQueue')}</h3>
                     </div>
                     <PlaylistManager
                       currentVideo={currentVideo}
@@ -250,7 +243,7 @@ const MainPlayer = () => {
 
                   <div className="bg-cinema-surface rounded-sm border border-white/5 overflow-hidden">
                     <div className="px-5 py-3 border-b border-white/5 bg-white/[0.02]">
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">Curated For You</h3>
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">{t('main.curatedForYou')}</h3>
                     </div>
                     <VideoRecommendations
                       currentVideo={currentVideo}
@@ -262,11 +255,20 @@ const MainPlayer = () => {
             </div>
           )}
 
+          {/* Search/Director Tab content */}
+          {activeTab === 'search' && !isMinimized && (
+            <div className="animate-fade-in">
+              <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+                <VideoSearch onVideoSelect={handleVideoSelect} />
+              </div>
+            </div>
+          )}
+
           {/* Spotlight Section (Suggested Videos) */}
           {activeTab === 'search' && !isMinimized && !currentVideo && !loading && !error && (
             <div className="pt-8 md:pt-12 border-t border-white/5">
               <div className="flex items-center justify-between mb-6 md:mb-8">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">Cinema Spotlight</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">{t('main.spotlight')}</h3>
               </div>
               <div className="bg-cinema-surface rounded-sm border border-white/5 p-2">
                 <SuggestedVideos />
@@ -294,7 +296,7 @@ const MainPlayer = () => {
             <div className="py-20 flex flex-col items-center justify-center space-y-4">
               <div className="w-8 h-8 border-2 border-cinema-red border-t-transparent rounded-full animate-spin" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray animate-pulse">
-                Initializing Cinema Engine
+                {t('main.initializing')}
               </span>
             </div>
           )}
@@ -311,16 +313,16 @@ const MainPlayer = () => {
               </div>
             </div>
             <div className="space-y-3">
-              <h3 className="text-xl md:text-2xl font-display font-black uppercase text-white tracking-widest">Cinema in Motion</h3>
+              <h3 className="text-xl md:text-2xl font-display font-black uppercase text-white tracking-widest">{t('main.motion')}</h3>
               <p className="text-cinema-gray text-sm max-w-sm mx-auto font-medium leading-relaxed">
-                Your production continues in the floating mini-player.
+                {t('main.motionDesc')}
               </p>
             </div>
             <button
               onClick={handleExpandFromMini}
               className="btn-cinema py-3 px-8 text-[10px] font-black tracking-[0.3em] uppercase hover:scale-105 transition-transform"
             >
-              Recall to Main Screen
+              {t('main.recall')}
             </button>
           </div>
         )}

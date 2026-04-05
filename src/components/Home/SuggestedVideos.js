@@ -79,12 +79,12 @@ const SuggestedVideos = () => {
       <div className="text-center space-y-3 md:space-y-4 px-2">
         <div className="inline-flex items-center space-x-3 px-4 py-1 bg-cinema-red/10 border border-cinema-red/20 rounded-full mb-2 md:mb-4">
           <TrendingUp className="w-3 h-3 text-cinema-red animate-pulse" />
-          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-cinema-red">{t('discover.signal')}</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-cinema-red">{t('discover.signal')}</span>
         </div>
-        <h2 className="text-2xl md:text-4xl font-black uppercase tracking-[0.15em] md:tracking-[0.3em] text-white leading-none">
+        <h2 className="text-2xl md:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
           {t('discover.global')} <span className="text-cinema-red">{t('discover.frequencies')}</span>
         </h2>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-cinema-gray/40 max-w-lg mx-auto">
+        <p className="text-[10px] font-bold tracking-[0.15em] text-cinema-gray/40 max-w-lg mx-auto">
           {t('discover.curated')}
         </p>
       </div>
@@ -125,7 +125,7 @@ const SuggestedVideos = () => {
                   e.target.src = `https://img.youtube.com/vi/${video.id}/default.jpg`;
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-30 group-hover:opacity-50 transition-opacity" />
 
               {/* Duration badge */}
               <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-md text-white text-[8px] md:text-[9px] font-black tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded-sm border border-white/10 uppercase tabular-nums">

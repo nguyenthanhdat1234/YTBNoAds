@@ -27,6 +27,12 @@ const Settings = () => {
   const [apiKey, setApiKeyState] = useState(localStorage.getItem('youtube_api_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    updateSetting('language', lng);
+    toast.success(t('settings.languageChanged') || `Language set to ${lng.toUpperCase()}`);
+  };
+
   const qualityOptions = getQualityOptions();
   const bitrateOptions = ['128', '192', '256', '320'];
   const accentOptions = ['blue', 'red', 'green', 'purple', 'orange'];
@@ -358,6 +364,20 @@ const Settings = () => {
                 className="w-full md:w-auto bg-black/60 border border-white/5 px-5 py-3.5 text-[10px] font-black uppercase tracking-[0.4em] text-white focus:ring-0 focus:border-cinema-red rounded-sm md:min-w-[240px] font-mono"
                 placeholder="$LOG_TITLE"
               />
+            </SettingItem>
+
+            <SettingItem
+              label={t('settings.logic.language') || 'Language / Ngôn ngữ'}
+              description={t('settings.logic.languageDesc') || 'Select your UI language / Chọn ngôn ngữ giao diện.'}
+            >
+              <select
+                value={i18n.language}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="bg-black/60 border border-white/10 px-4 py-2.5 md:px-6 md:py-3 text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 focus:border-cinema-red rounded-sm appearance-none w-full md:w-auto md:min-w-[160px]"
+              >
+                <option value="en">ENGLISH</option>
+                <option value="vi">TIẾNG VIỆT</option>
+              </select>
             </SettingItem>
 
             <SettingItem

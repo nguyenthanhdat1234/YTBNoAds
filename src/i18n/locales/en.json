@@ -169,6 +169,70 @@
     "signal": "Signal Discovery",
     "global": "Global",
     "frequencies": "Frequencies",
-    "curated": "Curated metadata across localized sectors."
+    "curated": "Curated metadata across localized sectors.",
+    "signalNull": "Signal Null",
+    "noFrequencies": "No frequencies found for this sector.",
+    "title": "Suggested Selection",
+    "subtitle": "A curated feed of high-fidelity content for your production environment.",
+    "randomButton": "Initialize Random",
+    "available": "{{count}} Modules Available",
+    "interactions": "Interactions",
+    "ready": "Ready to Stream",
+    "categoryOffline": "Category Offline",
+    "noModules": "No production modules detected in this sector.",
+    "resetSignal": "Reset Signal",
+    "protocolTitle": "Operational Protocol",
+    "protocolDesc": "Inject specific YouTube identifiers into the central command console to override discovery and initialize direct transmission.",
+    "categories": {
+      "trending": "Trending",
+      "music": "Music",
+      "entertainment": "Cinema",
+      "gaming": "Gaming",
+      "education": "Library"
+    }
+  },
+  "search": {
+    "placeholder": "Paste YouTube link or scan for cinematic titles...",
+    "igniteScan": "Ignite Scan",
+    "optimization": "Optimization",
+    "sortLogic": "Sort Logic",
+    "chronology": "Chronology",
+    "definitionQuality": "Definition Quality",
+    "capturedFootage": "Captured Footage: {{count}} Units",
+    "extendScan": "Extend Library Scan",
+    "zeroAssets": "Zero Assets Located",
+    "recalibrate": "Recalibrate search parameters and re-scan library",
+    "accessNeeded": "Access Protocol Needed",
+    "apiKeyRequired": "YouTube API key is required. Please configure it in Settings.",
+    "openControl": "Open Control Room",
+    "options": {
+      "relevance": "Most Relevant",
+      "date": "Upload Date",
+      "viewCount": "View Count",
+      "rating": "Rating",
+      "title": "Title A-Z",
+      "any": "Any",
+      "short": "Under 4 min",
+      "medium": "4-20 min",
+      "long": "Over 20 min",
+      "hd": "HD (720p+)",
+      "sd": "Standard (480p)"
+    }
+  },
+  "searchBar": {
+    "placeholder": "Scan frequency for assets..."
+  },
+  "main": {
+    "director": "Director",
+    "trends": "Trends",
+    "productionReady": "Production Ready",
+    "queueRecs": "Queue & Recommendations",
+    "prodQueue": "Production Queue",
+    "curatedForYou": "Curated For You",
+    "spotlight": "Cinema Spotlight",
+    "initializing": "Initializing Cinema Engine",
+    "motion": "Cinema in Motion",
+    "motionDesc": "Your production continues in the floating mini-player.",
+    "recall": "Recall to Main Screen"
   }
 }

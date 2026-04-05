@@ -167,8 +167,72 @@
     "entertainment": "Điện ảnh",
     "random": "Ngẫu nhiên",
     "signal": "Khám phá tín hiệu",
-    "global": "Tần số",
-    "frequencies": "Toàn cầu",
-    "curated": "Siêu dữ liệu được tuyển chọn từ các phân khúc địa phương."
+    "global": "Cảm Hứng",
+    "frequencies": "Toàn Cầu",
+    "curated": "Duyệt tìm nội dung đặc sắc từ các khu vực trên thế giới.",
+    "signalNull": "Mất tín hiệu",
+    "noFrequencies": "Không tìm thấy tần số nào cho lĩnh vực này.",
+    "title": "Lựa chọn Đề xuất",
+    "subtitle": "Một nguồn cung cấp nội dung có độ trung thực cao được tuyển chọn cho môi trường sản xuất của bạn.",
+    "randomButton": "Khởi tạo Ngẫu nhiên",
+    "available": "Sẵn có {{count}} Module",
+    "interactions": "Tương tác",
+    "ready": "Sẵn sàng Stream",
+    "categoryOffline": "Danh mục Ngoại tuyến",
+    "noModules": "Không phát hiện thấy module sản xuất nào trong khu vực này.",
+    "resetSignal": "Đặt lại Tín hiệu",
+    "protocolTitle": "Giao thức Vận hành",
+    "protocolDesc": "Nhập mã định danh YouTube cụ thể vào bảng điều khiển trung tâm để bỏ qua khám phá và bắt đầu truyền trực tiếp.",
+    "categories": {
+      "trending": "Sôi động",
+      "music": "Âm nhạc",
+      "entertainment": "Điện ảnh",
+      "gaming": "Trò chơi",
+      "education": "Thư viện"
+    }
+  },
+  "search": {
+    "placeholder": "Dán liên kết YouTube hoặc quét tiêu đề...",
+    "igniteScan": "Kích hoạt Quét",
+    "optimization": "Tối ưu hóa",
+    "sortLogic": "Logic Sắp xếp",
+    "chronology": "Thời gian",
+    "definitionQuality": "Chất lượng Định nghĩa",
+    "capturedFootage": "Đã bắt được: {{count}} Đơn vị",
+    "extendScan": "Mở rộng Quét lưu trữ",
+    "zeroAssets": "Không tìm thấy Tài nguyên",
+    "recalibrate": "Vui lòng hiệu chỉnh lại tham số và quét lại",
+    "accessNeeded": "Yêu cầu Giao thức Truy cập",
+    "apiKeyRequired": "Yêu cầu khóa API YouTube. Vui lòng cấu hình trong Cài đặt.",
+    "openControl": "Mở Phòng Điều khiển",
+    "options": {
+      "relevance": "Liên quan nhất",
+      "date": "Ngày tải lên",
+      "viewCount": "Lượt xem",
+      "rating": "Đánh giá",
+      "title": "Tiêu đề A-Z",
+      "any": "Mọi lúc",
+      "short": "Dưới 4 phút",
+      "medium": "4-20 phút",
+      "long": "Trên 20 phút",
+      "hd": "HD (720p+)",
+      "sd": "Chuẩn (480p)"
+    }
+  },
+  "searchBar": {
+    "placeholder": "Quét tần số tìm kiếm..."
+  },
+  "main": {
+    "director": "Phòng Quay",
+    "trends": "Xu Hướng",
+    "productionReady": "Sẵn sàng Sản xuất",
+    "queueRecs": "Hàng đợi & Gợi ý",
+    "prodQueue": "Hàng đợi Sản xuất",
+    "curatedForYou": "Đề xuất cho bạn",
+    "spotlight": "Tâm điểm Cinema",
+    "initializing": "Đang khởi tạo Engine",
+    "motion": "Cinema Đang Chuyển Động",
+    "motionDesc": "Quá trình sản xuất của bạn tiếp tục trong trình phát thu nhỏ.",
+    "recall": "Quay lại Màn hình Chính"
   }
 }

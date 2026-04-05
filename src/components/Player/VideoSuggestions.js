@@ -80,11 +80,11 @@ const VideoSuggestions = ({ onVideoSelect }) => {
   };
 
   const categories = [
-    { id: 'trending', label: t('discover.categories.trending') || 'Trending', icon: TrendingUp },
-    { id: 'music', label: t('discover.categories.music') || 'Music', icon: Music },
-    { id: 'entertainment', label: t('discover.categories.entertainment') || 'Cinema', icon: Film },
-    { id: 'gaming', label: t('discover.categories.gaming') || 'Gaming', icon: Gamepad2 },
-    { id: 'education', label: t('discover.categories.education') || 'Library', icon: BookOpen }
+    { id: 'trending', label: t('discover.categories.trending'), icon: TrendingUp },
+    { id: 'music', label: t('discover.categories.music'), icon: Music },
+    { id: 'entertainment', label: t('discover.categories.entertainment'), icon: Film },
+    { id: 'gaming', label: t('discover.categories.gaming'), icon: Gamepad2 },
+    { id: 'education', label: t('discover.categories.education'), icon: BookOpen }
   ];
 
   const handleVideoClick = (video) => {
@@ -106,13 +106,13 @@ const VideoSuggestions = ({ onVideoSelect }) => {
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
              <div className="w-1 h-4 bg-cinema-red rounded-full" />
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-red">Discovery Engine</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-red">{t('discover.signal')}</span>
           </div>
           <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">
-            {t('discover.title') || 'Suggested Selection'}
+            {t('discover.title')}
           </h2>
           <p className="text-sm text-cinema-gray max-w-md font-medium leading-relaxed">
-            {t('discover.subtitle') || 'A curated feed of high-fidelity content for your production environment.'}
+            {t('discover.subtitle')}
           </p>
         </div>
 
@@ -121,7 +121,7 @@ const VideoSuggestions = ({ onVideoSelect }) => {
           className="btn-cinema bg-white/5 border-white/10 hover:bg-cinema-red group h-12 px-6"
         >
           <Shuffle className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-500" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t('discover.random') || 'Initialize Random'}</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t('discover.randomButton')}</span>
         </button>
       </div>
 
@@ -145,7 +145,7 @@ const VideoSuggestions = ({ onVideoSelect }) => {
         </div>
         
         <div className="hidden md:flex items-center space-x-2 text-[10px] font-black text-cinema-gray uppercase tracking-widest opacity-40">
-           <span>{currentVideos.length} Modules Available</span>
+           <span>{t('discover.available', { count: currentVideos.length })}</span>
         </div>
       </div>
 
@@ -219,14 +219,14 @@ const VideoSuggestions = ({ onVideoSelect }) => {
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-cinema-red rounded-full" />
           </div>
           <div className="text-center space-y-2">
-            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Category Offline</h3>
-            <p className="text-xs text-cinema-gray uppercase tracking-[0.2em]">No production modules detected in this sector.</p>
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter">{t('discover.categoryOffline')}</h3>
+            <p className="text-xs text-cinema-gray uppercase tracking-[0.2em]">{t('discover.noModules')}</p>
           </div>
           <button 
             onClick={() => setSelectedCategory('trending')}
             className="btn-cinema text-[10px]"
           >
-            Reset Signal
+            {t('discover.resetSignal')}
           </button>
         </div>
       )}
