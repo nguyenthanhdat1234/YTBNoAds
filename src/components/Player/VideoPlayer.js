@@ -28,23 +28,33 @@ import { addToWatchHistory, isInFavorites, toggleFavorite } from '../../services
 import { isSubscribedToChannel, toggleChannelSubscription } from '../../services/subscriptionService';
 import QualitySelector from './QualitySelector';
 import toast from 'react-hot-toast';
+import { useVideo } from '../../contexts/VideoContext';
 
 const VideoPlayer = ({ video }) => {
   const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
   const playerRef = useRef(null);
+  const playerContainerRef = useRef(null);
+  const controlsTimeoutRef = useRef(null);
 
-  const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.8);
-  const [muted, setMuted] = useState(false);
-  const [played, setPlayed] = useState(0);
-  const [duration, setDuration] = useState(0);
+  // States that are now global-synced
+  const { 
+    playing, 
+    setPlaying, 
+    played, 
+    setPlayed, 
+    duration, 
+    setDuration, 
+    volume, 
+    setVolume, 
+    muted, 
+    setMuted 
+  } = useVideo();
+
+  // Local-only states
   const [showControls, setShowControls] = useState(true);
   const [currentQuality, setCurrentQuality] = useState(settings.quality || 'auto');
-  const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [captionsEnabled, setCaptionsEnabled] = useState(false);
-  const [wasPlayingBeforeHidden, setWasPlayingBeforeHidden] = useState(false);
   const [theaterMode, setTheaterMode] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [loop, setLoop] = useState(false);
@@ -53,8 +63,17 @@ const VideoPlayer = ({ video }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [hasAddedToHistory, setHasAddedToHistory] = useState(false);
-  const playerContainerRef = useRef(null);
-  const controlsTimeoutRef = useRef(null);
+  const [captionsEnabled, setCaptionsEnabled] = useState(false);
+  const [wasPlayingBeforeHidden, setWasPlayingBeforeHidden] = useState(false);
+
+  // Sync logic: Resume from global progress if available
+  useEffect(() => {
+    if (playerRef.current && played > 0) {
+      setTimeout(() => {
+        playerRef.current?.seekTo(played);
+      }, 500);
+    }
+  }, [video.id]);
 
   // Auto-hide controls functions
   const showControlsTemporarily = () => {
@@ -577,8 +596,6 @@ const VideoPlayer = ({ video }) => {
               )}
             </button>
           </div>
-
-          {/* Lower Control Suite */}
           <div
             className="absolute bottom-0 left-0 right-0 px-8 py-6 space-y-6 pointer-events-auto"
             onClick={(e) => e.stopPropagation()}

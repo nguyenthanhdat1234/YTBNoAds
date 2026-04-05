@@ -14,7 +14,8 @@ import {
   Loader2,
   AlertCircle
 } from 'lucide-react';
-import { searchVideos, formatDuration, formatViewCount, formatPublishDate, isApiKeyConfigured } from '../../services/youtubeApi';
+import { searchVideos, getVideoDetails, formatDuration, formatViewCount, formatPublishDate, isApiKeyConfigured } from '../../services/youtubeApi';
+import { parseYouTubeURL } from '../../utils/youtubeHelpers';
 import toast from 'react-hot-toast';
 
 const VideoSearch = ({ onVideoSelect }) => {
@@ -92,10 +93,42 @@ const VideoSearch = ({ onVideoSelect }) => {
     }
   }, []);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) return;
     
+    // Check if it's a YouTube URL
+    const urlParsed = parseYouTubeURL(query);
+    if (urlParsed.isValid && urlParsed.type === 'video') {
+      setLoading(true);
+      try {
+        const response = await getVideoDetails(urlParsed.id);
+        if (response.items && response.items.length > 0) {
+          const video = response.items[0];
+          const videoData = {
+            id: video.id,
+            url: `https://www.youtube.com/watch?v=${video.id}`,
+            title: video.snippet.title,
+            description: video.snippet.description,
+            thumbnail: video.snippet.thumbnails.high?.url || video.snippet.thumbnails.default?.url,
+            channel: video.snippet.channelTitle,
+            channelId: video.snippet.channelId,
+            publishedAt: video.snippet.publishedAt,
+            duration: video.contentDetails?.duration,
+            viewCount: video.statistics?.viewCount,
+            likeCount: video.statistics?.likeCount
+          };
+          onVideoSelect(videoData);
+          setQuery(''); // Clear search after successful URL play
+          return;
+        }
+      } catch (err) {
+        toast.error(`Failed to load video: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     setResults([]);
     setNextPageToken(null);
     setHasMore(false);
@@ -250,7 +283,7 @@ const VideoSearch = ({ onVideoSelect }) => {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Scan for cinematic titles..."
+                placeholder="Paste YouTube link or scan for cinematic titles..."
                 className="w-full pl-14 pr-6 py-5 bg-white/[0.02] border border-white/5 rounded-sm text-white placeholder:text-cinema-gray/20 text-sm font-medium focus:ring-0 focus:border-white/10 focus:bg-white/[0.04] transition-all tracking-wide shadow-2xl"
               />
             </div>

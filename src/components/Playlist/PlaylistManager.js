@@ -61,13 +61,22 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
   const addToPlaylist = (video) => {
     if (!video) return;
 
-    const exists = playlist.find(v => v.id === video.id);
-    if (!exists) {
-      setPlaylist(prev => [...prev, video]);
-      toast.success('Video added to playlist');
-    } else {
-      toast.info('Video already in playlist');
-    }
+    setPlaylist(prev => {
+      const index = prev.findIndex(v => v.id === video.id);
+      if (index !== -1) {
+        // Update existing video with new metadata if available
+        const current = prev[index];
+        const hasBetterTitle = video.title && video.title !== 'Loading...' && video.title !== 'YouTube Video';
+        
+        if (hasBetterTitle || video.author?.name !== 'Loading...') {
+          const newPlaylist = [...prev];
+          newPlaylist[index] = { ...current, ...video };
+          return newPlaylist;
+        }
+        return prev;
+      }
+      return [...prev, video];
+    });
   };
 
   const handleSearchVideoSelect = (url) => {
@@ -175,10 +184,27 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
     }
   };
 
-  const formatDuration = (seconds) => {
-    if (!seconds) return '';
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
+  const formatDuration = (input) => {
+    if (!input) return '--:--';
+    
+    // Handle YouTube ISO8601 duration string (e.g., PT4M33S)
+    if (typeof input === 'string' && input.startsWith('PT')) {
+      // Very basic parse, ideally use a library or existing helper
+      const m = input.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      if (m) {
+        const h = parseInt(m[1] || 0);
+        const min = parseInt(m[2] || 0);
+        const s = parseInt(m[3] || 0);
+        if (h > 0) return `${h}:${min.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        return `${min}:${s.toString().padStart(2, '0')}`;
+      }
+      return '--:--';
+    }
+
+    if (typeof input !== 'number') return '--:--';
+    
+    const minutes = Math.floor(input / 60);
+    const secs = Math.floor(input % 60);
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 

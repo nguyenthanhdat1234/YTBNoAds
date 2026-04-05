@@ -13,6 +13,8 @@ import MobileResponsiveTest from './components/Debug/MobileResponsiveTest';
 import WatchHistory from './components/History/WatchHistory';
 import FavoritesList from './components/Favorites/FavoritesList';
 import SubscriptionsManager from './components/Subscriptions/SubscriptionsManager';
+import MiniPlayer from './components/Player/MiniPlayer';
+
 
 // Context
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -44,6 +46,9 @@ const AppContent = () => {
             <Route path="/subscriptions" element={<SubscriptionsManager onVideoSelect={handleVideoSelect} />} />
           </Routes>
         </main>
+        
+        {/* Global MiniPlayer for persistent playback across routes */}
+        <MiniPlayer />
       </div>
     </Router>
   );

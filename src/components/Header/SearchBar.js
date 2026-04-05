@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, X, Mic } from 'lucide-react';
+import { parseYouTubeURL } from '../../utils/youtubeHelpers';
 
 const SearchBar = ({ onSearch, onVideoSelect }) => {
   const { t } = useTranslation();
@@ -57,6 +58,18 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
 
     setIsSearching(true);
     setShowSuggestions(true); // Show dropdown during search
+
+    // Check if it's a YouTube URL
+    const urlParsed = parseYouTubeURL(query);
+    if (urlParsed.isValid && urlParsed.type === 'video') {
+      if (onVideoSelect) {
+        onVideoSelect(query);
+        setShowSuggestions(false);
+        setSearchQuery('');
+        setIsSearching(false);
+        return;
+      }
+    }
 
     try {
       // Simulate API call

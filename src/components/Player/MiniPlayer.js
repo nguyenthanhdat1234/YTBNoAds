@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactPlayer from 'react-player/youtube';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useVideo } from '../../contexts/VideoContext';
 import {
   Play,
   Pause,
@@ -11,28 +13,30 @@ import {
   SkipForward
 } from 'lucide-react';
 
-const MiniPlayer = ({ 
-  video, 
-  isVisible, 
-  onClose, 
-  onExpand, 
-  position = { bottom: 20, right: 20 } 
-}) => {
-  const [playing, setPlaying] = useState(true);
-  const [volume, setVolume] = useState(0.8);
-  const [muted, setMuted] = useState(false);
-  const [played, setPlayed] = useState(0);
-  const [duration, setDuration] = useState(0);
+const MiniPlayer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { 
+    currentVideo: video, 
+    playing, 
+    setPlaying, 
+    played, 
+    setPlayed, 
+    duration, 
+    setDuration, 
+    volume, 
+    muted, 
+    setMuted,
+    setIsMinimized,
+    selectVideo
+  } = useVideo();
+
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [currentPosition, setCurrentPosition] = useState(position);
+  const [currentPosition, setCurrentPosition] = useState({ bottom: 20, right: 20 });
   
   const playerRef = useRef(null);
   const containerRef = useRef(null);
-
-  useEffect(() => {
-    setCurrentPosition(position);
-  }, [position]);
 
   const handleProgress = (state) => {
     if (!isDragging) {
@@ -40,8 +44,8 @@ const MiniPlayer = ({
     }
   };
 
-  const handleDuration = (duration) => {
-    setDuration(duration);
+  const handleDuration = (dur) => {
+    setDuration(dur);
   };
 
   const handleSeekChange = (e) => {
@@ -57,6 +61,19 @@ const MiniPlayer = ({
     setPlayed(newTime);
     playerRef.current?.seekTo(newTime);
   };
+
+  const onExpand = () => {
+    setIsMinimized(false);
+    navigate('/');
+  };
+
+  const onClose = () => {
+    selectVideo(null); // Clear video
+    setIsMinimized(false);
+  };
+
+  // Auto-hide when on main player route
+  const isVisible = video && location.pathname !== '/';
 
   const handleSeekForward = () => {
     const newTime = Math.min(1, played + 10 / duration);
@@ -114,6 +131,15 @@ const MiniPlayer = ({
     }
   }, [isDragging, dragOffset]);
 
+  // Sync logic: Resume from global progress if available
+  useEffect(() => {
+    if (isVisible && playerRef.current && played > 0) {
+      setTimeout(() => {
+        playerRef.current?.seekTo(played);
+      }, 500);
+    }
+  }, [isVisible, video?.id]);
+
   if (!isVisible || !video) return null;
 
   return (
@@ -123,10 +149,10 @@ const MiniPlayer = ({
         isDragging ? 'cursor-grabbing scale-105' : 'cursor-grab hover:scale-[1.02]'
       }`}
       style={{
-        right: `${currentPosition.right}px`,
-        bottom: `${currentPosition.bottom}px`,
-        width: '360px',
-        height: '210px'
+        right: window.innerWidth < 400 ? '10px' : `${currentPosition.right}px`,
+        bottom: window.innerWidth < 400 ? '70px' : `${currentPosition.bottom}px`,
+        width: window.innerWidth < 400 ? '280px' : '360px',
+        height: window.innerWidth < 400 ? '160px' : '210px'
       }}
       onMouseDown={handleMouseDown}
     >

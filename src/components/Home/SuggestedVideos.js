@@ -62,8 +62,13 @@ const SuggestedVideos = () => {
     ],
   };
 
-  const handleVideoClick = (video) => {
-    selectVideo(video.url);
+  const handleVideoClick = (v) => {
+    // Ensure author field is present for consistency
+    const videoData = {
+      ...v,
+      author: { name: v.channel || 'Unknown Channel' }
+    };
+    selectVideo(videoData);
   };
 
   const currentVideos = suggestedVideos[selectedCategory] || suggestedVideos.trending;

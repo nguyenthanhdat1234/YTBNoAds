@@ -84,6 +84,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
         description: video.snippet.description,
         thumbnail: video.snippet.thumbnails.high?.url || video.snippet.thumbnails.default?.url,
         channel: video.snippet.channelTitle,
+        author: { name: video.snippet.channelTitle, channelId: video.snippet.channelId },
         channelId: video.snippet.channelId,
         publishedAt: video.snippet.publishedAt,
         duration: video.contentDetails?.duration,
@@ -136,8 +137,8 @@ const TrendingVideos = ({ onVideoSelect }) => {
         </div>
         
         {/* Cinematic Data Suite */}
-        <div className="p-5 space-y-4">
-          <h3 className="text-xs font-bold text-cinema-gray group-hover:text-white transition-colors line-clamp-2 leading-relaxed tracking-tight">
+        <div className="p-3 md:p-5 space-y-3 md:space-y-4">
+          <h3 className="text-[10px] md:text-xs font-bold text-cinema-gray group-hover:text-white transition-colors line-clamp-2 leading-relaxed tracking-tight">
             {video.snippet.title}
           </h3>
           
@@ -162,7 +163,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
               </div>
             </div>
             
-            <p className="text-[10px] font-medium text-cinema-gray/30 line-clamp-2 leading-relaxed border-t border-white/5 pt-3">
+            <p className="hidden md:block text-[10px] font-medium text-cinema-gray/30 line-clamp-2 leading-relaxed border-t border-white/5 pt-3">
               {video.snippet.description}
             </p>
           </div>
@@ -208,10 +209,10 @@ const TrendingVideos = ({ onVideoSelect }) => {
             </div>
           </div>
           <div>
-            <h1 className="text-3xl font-black uppercase tracking-[0.2em] text-white leading-none mb-3">
+            <h1 className="text-xl md:text-3xl font-black uppercase tracking-[0.2em] text-white leading-none mb-2 md:mb-3">
               Live <span className="text-cinema-red">Trends</span>
             </h1>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray">
+            <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-cinema-gray">
               Global Stream Velocity Data // Synchronized Every Minute
             </p>
           </div>
@@ -293,7 +294,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
              </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
             {videos.map((video, index) => (
               <VideoCard key={video.id} video={video} index={index} />
             ))}

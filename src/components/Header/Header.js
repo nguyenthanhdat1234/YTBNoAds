@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { useTheme } from '../../contexts/ThemeContext';
+import { useVideo } from '../../contexts/VideoContext';
 import LanguageSelector from './LanguageSelector';
 import QuickQualitySelector from './QuickQualitySelector';
 import SearchBar from './SearchBar';
@@ -24,6 +25,7 @@ import SearchBar from './SearchBar';
 const Header = ({ onVideoSelect }) => {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const { setActiveTab } = useVideo();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -68,7 +70,11 @@ const Header = ({ onVideoSelect }) => {
           <div className="flex items-center justify-between h-full gap-3">
 
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2.5 group flex-shrink-0">
+            <Link 
+              to="/" 
+              onClick={() => setActiveTab('search')}
+              className="flex items-center space-x-2.5 group flex-shrink-0"
+            >
               <div className="relative">
                 <div className="absolute inset-0 bg-cinema-red blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
                 <div className="relative p-1.5 md:p-2 bg-cinema-red rounded-sm transform group-hover:scale-110 transition-transform duration-500">
@@ -243,8 +249,8 @@ const Header = ({ onVideoSelect }) => {
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                <span className="text-[8px] font-black uppercase tracking-tight leading-none">
-                  {label.length > 6 ? label.slice(0, 6) : label}
+                <span className="text-[7px] md:text-[8px] font-black uppercase tracking-tight leading-none text-center px-1">
+                  {label}
                 </span>
                 {isActive && <div className="absolute top-0 w-8 h-0.5 bg-cinema-red" />}
               </Link>

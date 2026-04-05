@@ -20,14 +20,18 @@ import { extractVideoMetadata } from '../../utils/metadataExtractor';
 
 const MainPlayer = () => {
   const { t } = useTranslation();
-  const { currentVideo: contextVideo, selectVideo } = useVideo();
-  const [currentVideo, setCurrentVideo] = useState(null);
+  const { 
+    currentVideo, 
+    selectVideo, 
+    isMinimized, 
+    setIsMinimized,
+    activeTab,
+    setActiveTab,
+    setPlaying
+  } = useVideo();
   const [playlist, setPlaylist] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('url');
-  const [showMiniPlayer, setShowMiniPlayer] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
   const handleURLSubmit = useCallback(async (url) => {
@@ -51,7 +55,7 @@ const MainPlayer = () => {
 
     try {
       if (typeof url === 'object' && url.url) {
-        setCurrentVideo(url);
+        selectVideo(url);
         return;
       }
 
@@ -82,17 +86,8 @@ const MainPlayer = () => {
     }
   }, [t]);
 
-  useEffect(() => {
-    if (contextVideo && contextVideo !== currentVideo) {
-      if (typeof contextVideo === 'object' && contextVideo.url) {
-        setCurrentVideo(contextVideo);
-        setActiveTab('url');
-        setError(null);
-      } else if (typeof contextVideo === 'string') {
-        handleURLSubmit(contextVideo);
-      }
-    }
-  }, [contextVideo, currentVideo, handleURLSubmit]);
+  // We use currentVideo directly from context now. 
+  // But handleURLSubmit still needs to be able to set it.
 
   const handleSingleVideo = async (videoId) => {
     const videoData = {
@@ -105,7 +100,7 @@ const MainPlayer = () => {
     };
     const metadata = extractVideoMetadata(videoData.title);
     videoData.metadata = metadata;
-    setCurrentVideo(videoData);
+    selectVideo(videoData);
     setPlaylist(null);
   };
 
@@ -123,36 +118,33 @@ const MainPlayer = () => {
 
   const handleVideoRemove = (videoId) => {
     if (currentVideo && currentVideo.id === videoId) {
-      setCurrentVideo(null);
+      selectVideo(null);
     }
   };
 
   const handleVideoSelect = (video) => {
-    setCurrentVideo(video);
     selectVideo(video);
-    setActiveTab('url');
+    setActiveTab('search');
     setError(null);
     setIsMinimized(false);
   };
 
   const handleMinimize = () => {
     setIsMinimized(true);
-    setShowMiniPlayer(true);
   };
 
   const handleExpandFromMini = () => {
     setIsMinimized(false);
-    setShowMiniPlayer(false);
   };
 
   const handleCloseMini = () => {
-    setShowMiniPlayer(false);
     setIsMinimized(false);
+    selectVideo(null);
   };
 
+
   const tabs = [
-    { id: 'url', label: 'Director', shortLabel: 'Play', icon: Clapperboard },
-    { id: 'search', label: 'Library', shortLabel: 'Search', icon: Search },
+    { id: 'search', label: 'Director', shortLabel: 'Director', icon: Clapperboard },
     { id: 'trending', label: 'Trends', shortLabel: 'Trends', icon: TrendingUp },
   ];
 
@@ -194,36 +186,18 @@ const MainPlayer = () => {
         {/* Tab Content */}
         <div className="space-y-6 md:space-y-8 animate-fade-in">
 
-          {/* URL Input / Home */}
-          {activeTab === 'url' && !isMinimized && !currentVideo && (
-            <div className="max-w-2xl mx-auto py-8 md:py-12">
-              <div className="glass-card p-6 md:p-10 text-center space-y-4 md:space-y-6">
-                <h2 className="text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white">
-                  Begin Your <span className="text-cinema-red">Session</span>
-                </h2>
-                <p className="text-cinema-gray text-sm font-medium leading-relaxed max-w-md mx-auto">
-                  Paste a YouTube link below to start an immersive, ad-free viewing experience.
-                </p>
-                <URLInput onSubmit={handleURLSubmit} loading={loading} />
-              </div>
-            </div>
-          )}
-
+          {/* Search/Director Tab - Now at the Top when active */}
           {activeTab === 'search' && !isMinimized && (
-            <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
-              <VideoSearch onVideoSelect={handleVideoSelect} />
-            </div>
-          )}
-
-          {activeTab === 'trending' && !isMinimized && (
-            <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
-              <TrendingVideos onVideoSelect={handleVideoSelect} />
+            <div className="animate-fade-in">
+              <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+                <VideoSearch onVideoSelect={handleVideoSelect} />
+              </div>
             </div>
           )}
 
           {/* Player Grid */}
           {currentVideo && !loading && !isMinimized && (
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12">
               {/* Main Content */}
               <div className="xl:col-span-8 space-y-6 md:space-y-8">
                 {/* Video Wrapper */}
@@ -288,6 +262,25 @@ const MainPlayer = () => {
             </div>
           )}
 
+          {/* Spotlight Section (Suggested Videos) */}
+          {activeTab === 'search' && !isMinimized && !currentVideo && !loading && !error && (
+            <div className="pt-8 md:pt-12 border-t border-white/5">
+              <div className="flex items-center justify-between mb-6 md:mb-8">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">Cinema Spotlight</h3>
+              </div>
+              <div className="bg-cinema-surface rounded-sm border border-white/5 p-2">
+                <SuggestedVideos />
+              </div>
+            </div>
+          )}
+
+          {/* Trending Tab Content */}
+          {activeTab === 'trending' && !isMinimized && (
+            <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+              <TrendingVideos onVideoSelect={handleVideoSelect} />
+            </div>
+          )}
+
           {/* Error State */}
           {error && (
             <div className="max-w-xl mx-auto p-4 bg-cinema-red/10 border border-cinema-red/20 rounded-sm flex items-center space-x-3">
@@ -306,20 +299,6 @@ const MainPlayer = () => {
             </div>
           )}
 
-          {/* Spotlight / Discovery */}
-          {activeTab === 'url' && !currentVideo && !loading && !error && (
-            <div className="pt-8 md:pt-12 border-t border-white/5">
-              <div className="flex items-center justify-between mb-6 md:mb-8">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">Cinema Spotlight</h3>
-                <button className="text-xs font-bold text-cinema-red hover:text-white transition-colors tracking-widest uppercase">
-                  Explore All
-                </button>
-              </div>
-              <div className="bg-cinema-surface rounded-sm border border-white/5 p-2">
-                <SuggestedVideos />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Minimized State */}
@@ -346,13 +325,6 @@ const MainPlayer = () => {
           </div>
         )}
       </div>
-
-      <MiniPlayer
-        video={currentVideo}
-        isVisible={showMiniPlayer}
-        onClose={handleCloseMini}
-        onExpand={handleExpandFromMini}
-      />
     </>
   );
 };
