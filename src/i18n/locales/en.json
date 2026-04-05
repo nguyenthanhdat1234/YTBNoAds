@@ -219,6 +219,7 @@
     "authenticating": "Authenticating Unit",
     "authorizationTitle": "System Authorization",
     "protocolInfo": "Please initialize your session protocols to proceed.",
-    "footerInfo": "Authorized Personnel Only // AES-256 Vault Protocol"
+    "footerInfo": "Authorized Personnel Only // AES-256 Vault Protocol",
+    "rememberMe": "Remember Session"
   }
 }

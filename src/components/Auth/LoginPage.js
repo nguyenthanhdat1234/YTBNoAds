@@ -12,6 +12,7 @@ const LoginPage = () => {
   const { login } = useAuth();
   
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +24,7 @@ const LoginPage = () => {
     
     // Artificial delay for cinematic effect
     setTimeout(() => {
-      if (login(password)) {
+      if (login(password, rememberMe)) {
         toast.success(t('auth.loginSuccess', 'Authorized // Access Granted'));
         navigate(from, { replace: true });
       } else {
@@ -88,6 +89,29 @@ const LoginPage = () => {
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
+              </div>
+
+              {/* Remember Me Checkbox */}
+              <div className="flex items-center justify-between px-1">
+                <label className="flex items-center space-x-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-4 h-4 border border-white/10 rounded-sm bg-white/5 peer-checked:bg-cinema-red peer-checked:border-cinema-red transition-all" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 peer-checked:opacity-100 text-white transition-opacity">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-cinema-gray/40 group-hover:text-cinema-gray/80 transition-colors">
+                    {t('auth.rememberMe', 'Remember Session')}
+                  </span>
+                </label>
               </div>
             </div>
 

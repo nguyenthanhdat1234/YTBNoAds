@@ -15,20 +15,26 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in (using a simple session token in localStorage)
-    const session = localStorage.getItem('cinema_session');
-    if (session === 'authorized') {
+    const localSession = localStorage.getItem('cinema_session');
+    const sessionSession = sessionStorage.getItem('cinema_session');
+    if (localSession === 'authorized' || sessionSession === 'authorized') {
       setIsAuthenticated(true);
     }
     setLoading(false);
   }, []);
 
-  const login = (password) => {
-    // Simple password check for demonstration (user can change this)
-    // Default password: admin
-    if (password === 'admin' || password === 'cinemaflow') {
+  const login = (password, rememberMe = false) => {
+    // Simple password check
+    if (password === 'nguyenthanhdat12') {
       setIsAuthenticated(true);
-      localStorage.setItem('cinema_session', 'authorized');
+      if (rememberMe) {
+        localStorage.setItem('cinema_session', 'authorized');
+      } else {
+        // Use sessionStorage or a shorter-lived session indicator
+        // For simplicity in this app, we indicate short-term session in localStorage 
+        // but normally sessionStorage would be better. Let's use sessionStorage.
+        sessionStorage.setItem('cinema_session', 'authorized');
+      }
       return true;
     }
     return false;
@@ -37,6 +43,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('cinema_session');
+    sessionStorage.removeItem('cinema_session');
   };
 
   const value = {
