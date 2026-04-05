@@ -348,7 +348,7 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
                     <img
                       src={video.thumbnail || `https://img.youtube.com/vi/${video.id}/default.jpg`}
                       alt={video.title}
-                      className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-all duration-700 scale-105 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     {currentIndex === index && (

@@ -198,7 +198,7 @@ const ChannelBrowser = ({ channelId, onVideoSelect, onClose }) => {
           <img 
             src={thumbnail} 
             alt={video.snippet.title}
-            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
+            className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -308,7 +308,7 @@ const ChannelBrowser = ({ channelId, onVideoSelect, onClose }) => {
             <img 
               src={channel.brandingSettings.image.bannerExternalUrl}
               alt={channel.snippet.title}
-              className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 transition-all duration-1000 scale-105"
+              className="w-full h-full object-cover opacity-50 transition-all duration-1000 scale-105"
             />
           ) : (
             <div className="w-full h-full bg-cinema-surface/40" />
@@ -359,7 +359,7 @@ const ChannelBrowser = ({ channelId, onVideoSelect, onClose }) => {
               <img 
                 src={channel.snippet.thumbnails.high?.url || channel.snippet.thumbnails.medium?.url}
                 alt={channel.snippet.title}
-                className="w-32 h-32 md:w-48 md:h-48 rounded-sm relative z-10 border-2 border-white/10 shadow-2xl grayscale group-hover/avatar:grayscale-0 transition-all duration-1000"
+                className="w-32 h-32 md:w-48 md:h-48 rounded-sm relative z-10 border-2 border-white/10 shadow-2xl transition-all duration-1000"
               />
             </div>
             

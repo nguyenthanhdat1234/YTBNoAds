@@ -58,7 +58,7 @@ const URLInput = ({ onSubmit, loading }) => {
             disabled={!url.trim() || loading}
             className={`w-full sm:w-auto px-10 py-5 rounded-sm flex items-center justify-center space-x-3 transition-all duration-500 shadow-xl ${
               !url.trim() || loading 
-                ? 'bg-white/5 text-cinema-gray/40 grayscale pointer-events-none opacity-50' 
+                ? 'bg-white/5 text-cinema-gray/40 pointer-events-none opacity-50' 
                 : 'bg-cinema-red text-white hover:bg-red-700 hover:scale-[1.02] shadow-cinema-red/20 active:scale-95'
             }`}
           >

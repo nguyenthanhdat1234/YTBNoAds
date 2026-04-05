@@ -13,7 +13,8 @@ import {
   Users,
   Menu,
   X,
-  Search
+  Search,
+  LogOut
 } from 'lucide-react';
 
 import { useTheme } from '../../contexts/ThemeContext';
@@ -21,6 +22,7 @@ import { useVideo } from '../../contexts/VideoContext';
 import LanguageSelector from './LanguageSelector';
 import QuickQualitySelector from './QuickQualitySelector';
 import SearchBar from './SearchBar';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Header = ({ onVideoSelect }) => {
   const { t } = useTranslation();
@@ -29,6 +31,7 @@ const Header = ({ onVideoSelect }) => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const { logout } = useAuth();
   const menuRef = useRef(null);
 
   const navItems = [
@@ -135,6 +138,14 @@ const Header = ({ onVideoSelect }) => {
                   <Moon className="w-4 h-4 text-cinema-gray group-hover:text-blue-400 transition-colors" />
                 )}
               </button>
+
+              <button
+                onClick={logout}
+                className="p-2 text-cinema-gray hover:text-cinema-red transition-colors"
+                title="Terminate Session"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
 
             {/* Mobile Controls */}
@@ -188,7 +199,7 @@ const Header = ({ onVideoSelect }) => {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 xl:hidden"
+            className="fixed inset-0 bg-cinema-black/60 backdrop-blur-sm z-40 xl:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
           {/* Drawer */}
@@ -230,6 +241,14 @@ const Header = ({ onVideoSelect }) => {
                 <QuickQualitySelector />
                 <LanguageSelector />
               </div>
+              
+              <button
+                onClick={logout}
+                className="w-full flex items-center space-x-4 px-4 py-4 text-cinema-gray hover:text-cinema-red transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-xs font-black uppercase tracking-[0.2em]">Terminate Session</span>
+              </button>
             </div>
           </div>
         </>

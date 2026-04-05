@@ -120,7 +120,7 @@ const SuggestedVideos = () => {
               <img
                 src={video.thumbnail}
                 alt={video.title}
-                className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
+                className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
                 onError={(e) => {
                   e.target.src = `https://img.youtube.com/vi/${video.id}/default.jpg`;
                 }}

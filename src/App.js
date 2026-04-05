@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -14,16 +14,36 @@ import WatchHistory from './components/History/WatchHistory';
 import FavoritesList from './components/Favorites/FavoritesList';
 import SubscriptionsManager from './components/Subscriptions/SubscriptionsManager';
 import MiniPlayer from './components/Player/MiniPlayer';
+import LoginPage from './components/Auth/LoginPage';
 
 
 // Context
 import { ThemeProvider } from './contexts/ThemeContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { VideoProvider, useVideo } from './contexts/VideoContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) return (
+    <div className="min-h-screen bg-cinema-black flex items-center justify-center">
+      <div className="w-12 h-12 border-2 border-cinema-red border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
 
 // Inner App component that uses VideoContext
 const AppContent = () => {
   const { selectVideo } = useVideo();
+  const { isAuthenticated } = useAuth();
 
   const handleVideoSelect = (url) => {
     selectVideo(url);
@@ -32,23 +52,56 @@ const AppContent = () => {
   return (
     <Router>
       <div className="min-h-screen bg-cinema-black text-gray-100 selection:bg-cinema-red selection:text-white transition-colors duration-300">
-        <Header onVideoSelect={handleVideoSelect} />
+        {isAuthenticated && <Header onVideoSelect={handleVideoSelect} />}
 
-        <main className="pt-14 md:pt-16 min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-64px)]">
+        <main className={`${isAuthenticated ? 'pt-14 md:pt-16' : ''} min-h-screen`}>
           <Routes>
-            <Route path="/" element={<MainPlayer />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/test-mobile" element={<MobileControlsTest />} />
-            <Route path="/test-responsive" element={<MobileResponsiveTest />} />
-            <Route path="/history" element={<WatchHistory onVideoSelect={handleVideoSelect} />} />
-            <Route path="/favorites" element={<FavoritesList onVideoSelect={handleVideoSelect} />} />
-            <Route path="/subscriptions" element={<SubscriptionsManager onVideoSelect={handleVideoSelect} />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <MainPlayer />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/about" element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            } />
+            <Route path="/test-mobile" element={
+              <ProtectedRoute>
+                <MobileControlsTest />
+              </ProtectedRoute>
+            } />
+            <Route path="/test-responsive" element={
+              <ProtectedRoute>
+                <MobileResponsiveTest />
+              </ProtectedRoute>
+            } />
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <WatchHistory onVideoSelect={handleVideoSelect} />
+              </ProtectedRoute>
+            } />
+            <Route path="/favorites" element={
+              <ProtectedRoute>
+                <FavoritesList onVideoSelect={handleVideoSelect} />
+              </ProtectedRoute>
+            } />
+            <Route path="/subscriptions" element={
+              <ProtectedRoute>
+                <SubscriptionsManager onVideoSelect={handleVideoSelect} />
+              </ProtectedRoute>
+            } />
           </Routes>
         </main>
         
         {/* Global MiniPlayer for persistent playback across routes */}
-        <MiniPlayer />
+        {isAuthenticated && <MiniPlayer />}
       </div>
     </Router>
   );
@@ -69,22 +122,24 @@ function App() {
   return (
     <ThemeProvider>
       <SettingsProvider>
-        <VideoProvider>
-          <AppContent />
+        <AuthProvider>
+          <VideoProvider>
+            <AppContent />
 
-          {/* Toast notifications */}
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: 'var(--toast-bg)',
-                color: 'var(--toast-color)',
-              },
-              className: 'dark:bg-gray-800 dark:text-white',
-            }}
-          />
-        </VideoProvider>
+            {/* Toast notifications */}
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'var(--toast-bg)',
+                  color: 'var(--toast-color)',
+                },
+                className: 'dark:bg-gray-800 dark:text-white',
+              }}
+            />
+          </VideoProvider>
+        </AuthProvider>
       </SettingsProvider>
     </ThemeProvider>
   );

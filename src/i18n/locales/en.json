@@ -210,5 +210,15 @@
     "comments": "Comments",
     "showMore": "Show More",
     "showLess": "Show Less"
+  },
+  "auth": {
+    "loginSuccess": "Authorized // Access Granted",
+    "loginError": "Unauthorized // Access Denied",
+    "passcodePlaceholder": "SECURITY PASSCODE",
+    "initializeSession": "Initialize Session",
+    "authenticating": "Authenticating Unit",
+    "authorizationTitle": "System Authorization",
+    "protocolInfo": "Please initialize your session protocols to proceed.",
+    "footerInfo": "Authorized Personnel Only // AES-256 Vault Protocol"
   }
 }

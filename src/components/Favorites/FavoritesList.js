@@ -199,7 +199,7 @@ const FavoritesList = ({ onVideoSelect }) => {
             <img 
               src={video.thumbnail} 
               alt={video.title}
-              className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700"
             />
             {video.duration && (
               <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded-sm tabular-nums">
@@ -247,7 +247,7 @@ const FavoritesList = ({ onVideoSelect }) => {
           <img 
             src={video.thumbnail} 
             alt={video.title}
-            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
+            className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
           

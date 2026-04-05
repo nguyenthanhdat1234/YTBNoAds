@@ -236,7 +236,7 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
           <img 
             src={channel.thumbnail} 
             alt={channel.title}
-            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
+            className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
           
@@ -444,7 +444,7 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
                     <img 
                       src={channel.snippet.thumbnails.default?.url}
                       alt={channel.snippet.title}
-                      className="w-14 h-14 rounded-sm grayscale group-hover:grayscale-0 border border-white/5"
+                      className="w-14 h-14 rounded-sm border border-white/5"
                     />
                     <div className="space-y-1">
                       <h4 className="text-xs font-black uppercase tracking-tight text-white leading-none">

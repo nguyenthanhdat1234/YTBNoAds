@@ -112,7 +112,7 @@ const TrendingVideos = ({ onVideoSelect }) => {
           <img 
             src={thumbnail} 
             alt={video.snippet.title}
-            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
+            className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
           />
           
           {/* Enhanced Cinematic Rank */}
