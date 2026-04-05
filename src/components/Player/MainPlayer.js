@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
+import { Search, TrendingUp, Clapperboard } from 'lucide-react';
 
 import URLInput from './URLInput';
 import VideoPlayer from './VideoPlayer';
@@ -24,18 +25,16 @@ const MainPlayer = () => {
   const [playlist, setPlaylist] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('url'); // url, search, trending
+  const [activeTab, setActiveTab] = useState('url');
   const [showMiniPlayer, setShowMiniPlayer] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const handleURLSubmit = useCallback(async (url) => {
-    // Ensure url is a string and handle video objects
     let videoUrl = '';
-
     if (typeof url === 'string') {
       videoUrl = url.trim();
     } else if (url && typeof url === 'object' && url.url) {
-      // Handle video object from context
       videoUrl = url.url.trim();
     } else {
       toast.error(t('errors.emptyUrl'));
@@ -51,21 +50,16 @@ const MainPlayer = () => {
     setError(null);
 
     try {
-      // If we received a video object, use it directly
       if (typeof url === 'object' && url.url) {
         setCurrentVideo(url);
-        toast.success(t('success.videoLoaded'));
         return;
       }
 
-      // Parse YouTube URL string
       const parseResult = parseYouTubeURL(videoUrl);
-
       if (!parseResult.isValid) {
         throw new Error(t('errors.invalidUrl'));
       }
 
-      // Handle different types of URLs
       switch (parseResult.type) {
         case 'video':
           await handleSingleVideo(parseResult.id);
@@ -79,8 +73,6 @@ const MainPlayer = () => {
         default:
           throw new Error(t('errors.unsupportedUrlType'));
       }
-
-      toast.success(t('success.videoLoaded'));
     } catch (err) {
       console.error('Error loading video:', err);
       setError(err.message);
@@ -90,56 +82,42 @@ const MainPlayer = () => {
     }
   }, [t]);
 
-  // Listen for video selection from context
   useEffect(() => {
     if (contextVideo && contextVideo !== currentVideo) {
-      // If contextVideo is a video object, set it directly
       if (typeof contextVideo === 'object' && contextVideo.url) {
         setCurrentVideo(contextVideo);
-        setActiveTab('url'); // Switch to player view
+        setActiveTab('url');
         setError(null);
       } else if (typeof contextVideo === 'string') {
-        // If it's a URL string, process it
         handleURLSubmit(contextVideo);
       }
     }
   }, [contextVideo, currentVideo, handleURLSubmit]);
 
   const handleSingleVideo = async (videoId) => {
-    // For now, we'll create a simple video object
-    // In a real implementation, you'd fetch video details from YouTube API
     const videoData = {
       id: videoId,
       title: 'Loading video...',
       url: `https://www.youtube.com/watch?v=${videoId}`,
       thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
       duration: null,
-      author: {
-        name: 'Loading...',
-        channelId: null
-      }
+      author: { name: 'Loading...', channelId: null }
     };
-
-    // Extract metadata from title (this would be enhanced with actual API data)
     const metadata = extractVideoMetadata(videoData.title);
     videoData.metadata = metadata;
-
     setCurrentVideo(videoData);
     setPlaylist(null);
   };
 
   const handlePlaylist = async (playlistId) => {
-    // Placeholder for playlist handling
     toast.info(t('info.playlistSupport'));
   };
 
   const handleChannel = async (channelId) => {
-    // Placeholder for channel handling
     toast.info(t('info.channelSupport'));
   };
 
   const handleAddToPlaylist = (video) => {
-    // This will be handled by the PlaylistManager component
     console.log('Adding to playlist:', video);
   };
 
@@ -149,16 +127,14 @@ const MainPlayer = () => {
     }
   };
 
-  // Handle video selection from search or trending
   const handleVideoSelect = (video) => {
     setCurrentVideo(video);
-    selectVideo(video); // Update context as well
-    setActiveTab('url'); // Switch back to player view
+    selectVideo(video);
+    setActiveTab('url');
     setError(null);
-    setIsMinimized(false); // Expand if minimized
+    setIsMinimized(false);
   };
 
-  // Mini player controls
   const handleMinimize = () => {
     setIsMinimized(true);
     setShowMiniPlayer(true);
@@ -175,208 +151,202 @@ const MainPlayer = () => {
   };
 
   const tabs = [
-    { id: 'url', label: 'Player', icon: '▶️' },
-    { id: 'search', label: 'Search', icon: '🔍' },
-    { id: 'trending', label: 'Trending', icon: '🔥' }
+    { id: 'url', label: 'Director', shortLabel: 'Play', icon: Clapperboard },
+    { id: 'search', label: 'Library', shortLabel: 'Search', icon: Search },
+    { id: 'trending', label: 'Trends', shortLabel: 'Trends', icon: TrendingUp },
   ];
 
   return (
     <>
-      <div className={`max-w-8xl mx-auto transition-all duration-300 ${isMinimized ? 'space-y-4' : 'space-y-6'}`}>
-        {/* Simplified Tab Navigation */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-1">
-          <div className="flex space-x-1">
+      {/* Main wrapper — adds bottom padding on mobile for bottom nav bar */}
+      <div className="max-w-[1700px] mx-auto px-4 md:px-6 py-4 md:py-8 pb-20 xl:pb-8 transition-all duration-500">
+
+        {/* Cinematic Tab Nav */}
+        <div className="flex items-center justify-between mb-6 md:mb-8 pb-4 border-b border-white/5 overflow-x-auto no-scrollbar">
+          <div className="flex space-x-1 md:space-x-8 flex-shrink-0">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                className={`group relative py-2 px-3 md:px-0 transition-all duration-300 flex-shrink-0 ${
+                  activeTab === tab.id ? 'text-white' : 'text-cinema-gray hover:text-white'
                 }`}
               >
-                <span className="text-lg">{tab.icon}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
+                <div className="flex items-center space-x-2">
+                  <tab.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${activeTab === tab.id ? 'text-cinema-red' : ''}`} />
+                  <span className="hidden sm:block text-xs font-bold uppercase tracking-[0.2em] whitespace-nowrap">{tab.label}</span>
+                  <span className="sm:hidden text-[10px] font-bold uppercase tracking-widest">{tab.shortLabel}</span>
+                </div>
+                {activeTab === tab.id && (
+                  <div className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.4)]" />
+                )}
               </button>
             ))}
+          </div>
+
+          <div className="flex-shrink-0 pl-4">
+            <span className="text-[9px] font-black tracking-widest text-cinema-gray/30 uppercase hidden md:block">
+              Production Ready
+            </span>
           </div>
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'url' && !isMinimized && (
-          <>
-            {/* Simplified URL Input */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <URLInput onSubmit={handleURLSubmit} loading={loading} />
+        <div className="space-y-6 md:space-y-8 animate-fade-in">
+
+          {/* URL Input / Home */}
+          {activeTab === 'url' && !isMinimized && !currentVideo && (
+            <div className="max-w-2xl mx-auto py-8 md:py-12">
+              <div className="glass-card p-6 md:p-10 text-center space-y-4 md:space-y-6">
+                <h2 className="text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white">
+                  Begin Your <span className="text-cinema-red">Session</span>
+                </h2>
+                <p className="text-cinema-gray text-sm font-medium leading-relaxed max-w-md mx-auto">
+                  Paste a YouTube link below to start an immersive, ad-free viewing experience.
+                </p>
+                <URLInput onSubmit={handleURLSubmit} loading={loading} />
+              </div>
             </div>
-          </>
-        )}
+          )}
 
-        {activeTab === 'search' && !isMinimized && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <VideoSearch onVideoSelect={handleVideoSelect} />
-          </div>
-        )}
-
-        {activeTab === 'trending' && !isMinimized && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <TrendingVideos onVideoSelect={handleVideoSelect} />
-          </div>
-        )}
-
-        {/* Error Display - Only show for URL tab */}
-        {activeTab === 'url' && error && !isMinimized && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              <p className="text-red-700 dark:text-red-400 font-medium">
-                {error}
-              </p>
+          {activeTab === 'search' && !isMinimized && (
+            <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+              <VideoSearch onVideoSelect={handleVideoSelect} />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Loading State - Only show for URL tab */}
-        {activeTab === 'url' && loading && !isMinimized && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
-            <LoadingSpinner message={t('loading.video')} />
-          </div>
-        )}
+          {activeTab === 'trending' && !isMinimized && (
+            <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+              <TrendingVideos onVideoSelect={handleVideoSelect} />
+            </div>
+          )}
 
-        {/* Video Player and Info */}
-        {currentVideo && !loading && !isMinimized && (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            {/* Main Player */}
-            <div className="xl:col-span-2 space-y-4">
-              {/* Video Player with Minimize Button */}
-              <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                {/* Minimize Button */}
+          {/* Player Grid */}
+          {currentVideo && !loading && !isMinimized && (
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start">
+              {/* Main Content */}
+              <div className="xl:col-span-8 space-y-6 md:space-y-8">
+                {/* Video Wrapper */}
+                <div className="relative group rounded-sm overflow-hidden bg-black shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/5">
+                  <button
+                    onClick={handleMinimize}
+                    className="absolute top-4 right-4 z-20 bg-black/40 backdrop-blur-xl border border-white/10 text-white p-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    title="Minimize"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                  </button>
+                  <VideoPlayer video={currentVideo} />
+                </div>
+
+                {/* Video Info */}
+                <div className="bg-cinema-surface p-5 md:p-8 rounded-sm border border-white/5">
+                  <EnhancedVideoInfo
+                    video={currentVideo}
+                    onAddToPlaylist={handleAddToPlaylist}
+                  />
+                </div>
+              </div>
+
+              {/* Sidebar */}
+              <div className="xl:col-span-4 space-y-6 md:space-y-8">
+                {/* Mobile toggle for sidebar */}
                 <button
-                  onClick={handleMinimize}
-                  className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white p-2 rounded-lg transition-colors duration-200"
-                  title="Minimize to mini player"
+                  onClick={() => setShowSidebar(!showSidebar)}
+                  className="xl:hidden w-full flex items-center justify-between p-4 bg-cinema-surface border border-white/5 rounded-sm"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">Queue & Recommendations</span>
+                  <svg className={`w-4 h-4 text-cinema-gray transition-transform ${showSidebar ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
-                <VideoPlayer video={currentVideo} />
-              </div>
-
-              {/* Video Info */}
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <EnhancedVideoInfo
-                  video={currentVideo}
-                  onAddToPlaylist={handleAddToPlaylist}
-                />
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <PlaylistManager
-                  currentVideo={currentVideo}
-                  onVideoSelect={handleVideoSelect}
-                  onVideoRemove={handleVideoRemove}
-                />
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <VideoRecommendations
-                  currentVideo={currentVideo}
-                  onVideoSelect={handleVideoSelect}
-                />
-              </div>
-            </div>
-          </div>
-      )}
-
-        {/* Welcome Message & Suggested Videos - Only show for URL tab when no video */}
-        {activeTab === 'url' && !currentVideo && !loading && !error && !isMinimized && (
-          <>
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-6">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">🎬</span>
+                <div className={`space-y-6 md:space-y-8 ${showSidebar ? 'block' : 'hidden xl:block'}`}>
+                  <div className="bg-cinema-surface rounded-sm border border-white/5 overflow-hidden">
+                    <div className="px-5 py-3 border-b border-white/5 bg-white/[0.02]">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">Production Queue</h3>
+                    </div>
+                    <PlaylistManager
+                      currentVideo={currentVideo}
+                      onVideoSelect={handleVideoSelect}
+                      onVideoRemove={handleVideoRemove}
+                    />
                   </div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                    Welcome to YouTube No Ads!
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    Experience YouTube without interruptions. Search, watch, and enjoy unlimited content.
-                  </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-4">
-                    <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
-                      <span>✅</span>
-                      <span>No Ads</span>
+
+                  <div className="bg-cinema-surface rounded-sm border border-white/5 overflow-hidden">
+                    <div className="px-5 py-3 border-b border-white/5 bg-white/[0.02]">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray">Curated For You</h3>
                     </div>
-                    <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
-                      <span>🔍</span>
-                      <span>Smart Search</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-purple-600 dark:text-purple-400">
-                      <span>📱</span>
-                      <span>Mini Player</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-orange-600 dark:text-orange-400">
-                      <span>🔥</span>
-                      <span>Trending</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={() => setActiveTab('search')}
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
-                    >
-                      🔍 Start Searching
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('trending')}
-                      className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
-                    >
-                      🔥 Browse Trending
-                    </button>
+                    <VideoRecommendations
+                      currentVideo={currentVideo}
+                      onVideoSelect={handleVideoSelect}
+                    />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <SuggestedVideos />
-            </div>
-          </>
-        )}
+          )}
 
-        {/* Minimized State Message */}
+          {/* Error State */}
+          {error && (
+            <div className="max-w-xl mx-auto p-4 bg-cinema-red/10 border border-cinema-red/20 rounded-sm flex items-center space-x-3">
+              <div className="w-1.5 h-1.5 bg-cinema-red rounded-full animate-pulse flex-shrink-0" />
+              <p className="text-xs font-bold text-cinema-red uppercase tracking-widest">{error}</p>
+            </div>
+          )}
+
+          {/* Loading */}
+          {loading && (
+            <div className="py-20 flex flex-col items-center justify-center space-y-4">
+              <div className="w-8 h-8 border-2 border-cinema-red border-t-transparent rounded-full animate-spin" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray animate-pulse">
+                Initializing Cinema Engine
+              </span>
+            </div>
+          )}
+
+          {/* Spotlight / Discovery */}
+          {activeTab === 'url' && !currentVideo && !loading && !error && (
+            <div className="pt-8 md:pt-12 border-t border-white/5">
+              <div className="flex items-center justify-between mb-6 md:mb-8">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">Cinema Spotlight</h3>
+                <button className="text-xs font-bold text-cinema-red hover:text-white transition-colors tracking-widest uppercase">
+                  Explore All
+                </button>
+              </div>
+              <div className="bg-cinema-surface rounded-sm border border-white/5 p-2">
+                <SuggestedVideos />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Minimized State */}
         {isMinimized && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-6 text-center">
-            <div className="flex items-center justify-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                <span className="text-xl">📱</span>
+          <div className="max-w-2xl mx-auto py-16 md:py-20 text-center space-y-6 md:space-y-8 animate-in slide-in-from-bottom-5 duration-700">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-cinema-red blur-3xl opacity-10" />
+              <div className="relative p-5 bg-cinema-surface border border-white/5 rounded-full inline-flex items-center justify-center">
+                <span className="text-2xl md:text-3xl">📱</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Video is playing in mini player
-              </h3>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Your video continues playing in the floating mini player. You can drag it around or expand it back.
-            </p>
+            <div className="space-y-3">
+              <h3 className="text-xl md:text-2xl font-display font-black uppercase text-white tracking-widest">Cinema in Motion</h3>
+              <p className="text-cinema-gray text-sm max-w-sm mx-auto font-medium leading-relaxed">
+                Your production continues in the floating mini-player.
+              </p>
+            </div>
             <button
               onClick={handleExpandFromMini}
-              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
+              className="btn-cinema py-3 px-8 text-[10px] font-black tracking-[0.3em] uppercase hover:scale-105 transition-transform"
             >
-              ↗️ Expand Player
+              Recall to Main Screen
             </button>
           </div>
         )}
       </div>
 
-      {/* Mini Player */}
       <MiniPlayer
         video={currentVideo}
         isVisible={showMiniPlayer}

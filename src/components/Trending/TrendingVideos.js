@@ -9,7 +9,8 @@ import {
   Loader2,
   AlertCircle,
   Filter,
-  Globe
+  Globe,
+  ChevronDown
 } from 'lucide-react';
 import { getTrendingVideos, getVideoCategories, formatDuration, formatViewCount, formatPublishDate, isApiKeyConfigured } from '../../services/youtubeApi';
 import toast from 'react-hot-toast';
@@ -102,61 +103,69 @@ const TrendingVideos = ({ onVideoSelect }) => {
 
     return (
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer overflow-hidden"
+        className="group relative bg-cinema-surface/20 border border-white/5 rounded-sm overflow-hidden transition-all duration-700 hover:scale-[1.02] hover:bg-cinema-surface/40 hover:border-white/20 cursor-pointer"
         onClick={() => handleVideoClick(video)}
       >
-        <div className="relative">
+        {/* Cinematic Thumbnail */}
+        <div className="relative aspect-video overflow-hidden">
           <img 
             src={thumbnail} 
             alt={video.snippet.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
           />
           
-          {/* Trending Rank */}
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-            #{index + 1}
+          {/* Enhanced Cinematic Rank */}
+          <div className="absolute top-0 left-0 bg-cinema-red px-3 py-1.5 flex items-center space-x-2 shadow-2xl">
+            <span className="text-[9px] font-black tracking-tighter text-white/50 uppercase">Top</span>
+            <span className="text-xs font-black text-white tabular-nums">{(index + 1).toString().padStart(2, '0')}</span>
           </div>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
           
           {duration && (
-            <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
               {formatDuration(duration)}
             </div>
           )}
           
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-            <Play className="w-12 h-12 text-white opacity-0 hover:opacity-100 transition-opacity duration-200" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
+            <div className="w-12 h-12 bg-cinema-red rounded-full flex items-center justify-center shadow-2xl shadow-cinema-red/50 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+            </div>
           </div>
         </div>
         
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">
+        {/* Cinematic Data Suite */}
+        <div className="p-5 space-y-4">
+          <h3 className="text-xs font-bold text-cinema-gray group-hover:text-white transition-colors line-clamp-2 leading-relaxed tracking-tight">
             {video.snippet.title}
           </h3>
           
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            {video.snippet.channelTitle}
-          </p>
-          
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-            <div className="flex items-center space-x-3">
-              {viewCount && (
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-3 h-3" />
-                  <span>{formatViewCount(viewCount)}</span>
-                </div>
-              )}
-              {publishedAt && (
-                <div className="flex items-center space-x-1">
-                  <Clock className="w-3 h-3" />
-                  <span>{formatPublishDate(publishedAt)}</span>
-                </div>
-              )}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 truncate max-w-[140px]">
+                {video.snippet.channelTitle}
+              </span>
+              
+              <div className="flex items-center space-x-3 text-[9px] font-black text-cinema-gray/30 tabular-nums">
+                {viewCount && (
+                  <div className="flex items-center space-x-1">
+                    <span>{formatViewCount(viewCount)}</span>
+                  </div>
+                )}
+                {publishedAt && (
+                   <div className="flex items-center space-x-1">
+                     <span className="w-1 h-1 bg-white/10 rounded-full" />
+                     <span>{formatPublishDate(publishedAt)}</span>
+                   </div>
+                )}
+              </div>
             </div>
+            
+            <p className="text-[10px] font-medium text-cinema-gray/30 line-clamp-2 leading-relaxed border-t border-white/5 pt-3">
+              {video.snippet.description}
+            </p>
           </div>
-          
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-2">
-            {video.snippet.description}
-          </p>
         </div>
       </div>
     );
@@ -164,129 +173,146 @@ const TrendingVideos = ({ onVideoSelect }) => {
 
   if (!isApiKeyConfigured()) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          YouTube API Key Required
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          To view trending videos, please configure your YouTube API key in Settings.
-        </p>
+      <div className="py-24 text-center space-y-8 animate-fade-in">
+        <div className="relative inline-block">
+           <div className="absolute inset-0 bg-cinema-red blur-3xl opacity-10" />
+           <AlertCircle className="w-16 h-16 text-cinema-red relative" />
+        </div>
+        <div className="space-y-4">
+          <h3 className="text-xl font-black uppercase tracking-[0.3em] text-white">
+            Access Protocol Needed
+          </h3>
+          <p className="text-sm font-medium text-cinema-gray max-w-sm mx-auto leading-relaxed">
+            Global Trends requires an authorized YouTube API Key. Update your credentials in the System Control Room.
+          </p>
+        </div>
         <a 
           href="/settings" 
-          className="btn-primary inline-flex items-center space-x-2"
+          className="inline-flex items-center space-x-4 px-8 py-4 bg-cinema-red text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-sm hover:bg-red-700 transition-all shadow-xl shadow-cinema-red/20 active:scale-95"
         >
-          <span>Go to Settings</span>
+          <span>Open Control Room</span>
         </a>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-red-600 dark:text-red-400" />
+    <div className="space-y-12 p-8 animate-fade-in relative">
+      {/* Editorial Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-12">
+        <div className="flex items-center space-x-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-20 animate-pulse" />
+            <div className="p-4 bg-white/[0.02] border border-white/10 rounded-sm relative">
+              <TrendingUp className="w-6 h-6 text-cinema-red" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Trending Videos
+            <h1 className="text-3xl font-black uppercase tracking-[0.2em] text-white leading-none mb-3">
+              Live <span className="text-cinema-red">Trends</span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Most popular videos right now
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray">
+              Global Stream Velocity Data // Synchronized Every Minute
             </p>
           </div>
         </div>
+
+        {/* Precision Controllers */}
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="space-y-3">
+            <label className="text-[8px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2 ml-1">
+              <Globe className="w-3 h-3 text-cinema-red" />
+              <span>Region Hub</span>
+            </label>
+            <div className="relative group">
+              <select
+                value={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+                className="w-full sm:w-48 bg-white/[0.02] border border-white/5 hover:border-white/20 rounded-sm py-3 px-5 text-[10px] font-bold text-white focus:ring-0 focus:bg-white/[0.05] transition-all appearance-none tracking-widest cursor-pointer"
+              >
+                {regions.map(region => (
+                  <option key={region.code} value={region.code} className="bg-[#141414]">
+                    {region.flag} {region.name.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-20">
+                <ChevronDown className="w-3 h-3" />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-[8px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2 ml-1">
+              <Filter className="w-3 h-3 text-cinema-red" />
+              <span>Genre Sector</span>
+            </label>
+            <div className="relative group">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full sm:w-48 bg-white/[0.02] border border-white/5 hover:border-white/20 rounded-sm py-3 px-5 text-[10px] font-bold text-white focus:ring-0 focus:bg-white/[0.05] transition-all appearance-none tracking-widest cursor-pointer"
+              >
+                <option value="" className="bg-[#141414]">ALL SECTORS</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id} className="bg-[#141414]">
+                    {category.snippet.title.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-20">
+                <ChevronDown className="w-3 h-3" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="card p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              <Globe className="w-4 h-4 inline mr-1" />
-              Region
-            </label>
-            <select
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              {regions.map(region => (
-                <option key={region.code} value={region.code}>
-                  {region.flag} {region.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              <Filter className="w-4 h-4 inline mr-1" />
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.snippet.title}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Synchronized Result Grid */}
+      {loading ? (
+        <div className="py-32 flex flex-col items-center justify-center space-y-8">
+           <div className="w-12 h-12 border-2 border-cinema-red border-t-transparent rounded-full animate-spin shadow-2xl shadow-cinema-red/20" />
+           <p className="text-[9px] font-black uppercase tracking-[0.5em] text-cinema-gray animate-pulse">Processing Stream Data</p>
         </div>
-      </div>
-
-      {/* Loading */}
-      {loading && (
-        <div className="text-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading trending videos...</p>
+      ) : error ? (
+        <div className="py-32 text-center space-y-6">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-red">Synchronization Refused</p>
+          <button
+            onClick={loadTrendingVideos}
+            className="px-10 py-4 bg-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest text-white transition-all rounded-sm border border-white/5"
+          >
+            Reconnect System
+          </button>
         </div>
-      )}
-
-      {/* Error */}
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <span className="text-red-800 dark:text-red-200">{error}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Videos Grid */}
-      {!loading && videos.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Top {videos.length} Trending Videos
-            </h2>
+      ) : videos.length > 0 ? (
+        <div className="space-y-12">
+          <div className="flex items-center space-x-6">
+             <div className="h-[2px] w-12 bg-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.6)]" />
+             <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray">
+                Units Captured: {videos.length}
+             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {videos.map((video, index) => (
               <VideoCard key={video.id} video={video} index={index} />
             ))}
           </div>
+          
+          {/* Dynamic Scroll Indicator */}
+          <div className="flex justify-center pt-8">
+             <div className="flex items-center space-x-4 opacity-20">
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: '200ms' }} />
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: '400ms' }} />
+             </div>
+          </div>
         </div>
-      )}
-
-      {/* No Results */}
-      {!loading && videos.length === 0 && !error && (
-        <div className="text-center py-12">
-          <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No trending videos found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Try selecting a different region or category.
+      ) : (
+        <div className="py-32 text-center border border-dashed border-white/5 rounded-sm">
+          <TrendingUp className="w-16 h-16 text-cinema-gray/10 mx-auto mb-8" />
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray/40">
+            Sector Empty // No High-Velocity Data Found
           </p>
         </div>
       )}

@@ -27,6 +27,15 @@ module.exports = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
+        cinema: {
+          black: '#141414',
+          surface: '#1c1b1b',
+          'surface-high': '#2a2a2a',
+          depth: '#0e0e0e',
+          red: '#E50914',
+          'red-muted': '#930007',
+          gray: '#B3B3B3',
+        },
         youtube: {
           red: '#ff0000',
           dark: '#0f0f0f',
@@ -37,6 +46,7 @@ module.exports = {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'hover-scale': 'hoverScale 0.2s ease-out forwards',
       },
       keyframes: {
         fadeIn: {
@@ -47,9 +57,14 @@ module.exports = {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+        hoverScale: {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.05)' },
+        }
       },
       fontFamily: {
         'sans': ['Inter', 'system-ui', 'sans-serif'],
+        'display': ['Manrope', 'Inter', 'sans-serif'],
       },
       spacing: {
         '18': '4.5rem',

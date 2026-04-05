@@ -194,44 +194,44 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
   }, [currentVideo, autoplay]);
 
   return (
-    <div className="card p-4 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg">
-            <List className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+    <div className="bg-cinema-surface/40 backdrop-blur-2xl rounded-sm border border-white/10 p-6 space-y-8 animate-fade-in relative overflow-hidden">
+      {/* Editorial Header */}
+      <div className="flex items-center justify-between border-b border-white/5 pb-6">
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-white/5 border border-white/10 rounded-full">
+            <List className="w-4 h-4 text-cinema-red" />
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+          <div className="space-y-1">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">
               {t('playlist.title')}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {playlist.length} {t('playlist.videos')}
+            <p className="text-[10px] font-bold text-cinema-gray uppercase tracking-widest">
+              {playlist.length} {t('playlist.videos')} // Production Log
             </p>
           </div>
         </div>
         
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors duration-200"
+          className="p-2 hover:bg-white/5 rounded-full transition-all text-cinema-gray hover:text-white"
         >
           {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-gray-500" />
+            <ChevronUp className="w-4 h-4" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-gray-500" />
+            <ChevronDown className="w-4 h-4" />
           )}
         </button>
       </div>
 
       {isExpanded && (
-        <>
-          {/* Controls */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+        <div className="space-y-8 animate-slide-up">
+          {/* Master Controls */}
+          <div className="flex items-center justify-between bg-black/40 p-1.5 rounded-full border border-white/5">
+            <div className="flex items-center space-x-1">
               <button
                 onClick={playPrevious}
                 disabled={!getPreviousVideo()}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2.5 text-cinema-gray hover:text-white hover:bg-white/5 rounded-full transition-all disabled:opacity-20"
               >
                 <SkipBack className="w-4 h-4" />
               </button>
@@ -239,48 +239,48 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
               <button
                 onClick={playNext}
                 disabled={!getNextVideo()}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2.5 text-cinema-gray hover:text-white hover:bg-white/5 rounded-full transition-all disabled:opacity-20"
               >
                 <SkipForward className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 pr-1">
               <button
                 onClick={() => setShowSearch(true)}
-                className="p-2 hover:bg-green-100 dark:hover:bg-green-900 text-green-600 dark:text-green-400 rounded-lg transition-colors duration-200"
-                title="Search YouTube Videos"
+                className="p-2.5 text-cinema-gray hover:text-white hover:bg-white/5 rounded-full transition-all"
+                title="Search Library"
               >
                 <Search className="w-4 h-4" />
               </button>
 
               <button
                 onClick={() => setShuffle(!shuffle)}
-                className={`p-2 rounded-lg transition-colors duration-200 ${
+                className={`p-2.5 rounded-full transition-all ${
                   shuffle
-                    ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'bg-cinema-red text-white shadow-[0_0_15px_rgba(229,9,20,0.4)]'
+                    : 'text-cinema-gray hover:text-white hover:bg-white/5'
                 }`}
                 title={t('playlist.shuffle')}
               >
-                <Shuffle className="w-4 h-4" />
+                <Shuffle className="w-3.5 h-3.5" />
               </button>
 
               <button
                 onClick={() => setRepeat(!repeat)}
-                className={`p-2 rounded-lg transition-colors duration-200 ${
+                className={`p-2.5 rounded-full transition-all ${
                   repeat
-                    ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'bg-cinema-red text-white shadow-[0_0_15px_rgba(229,9,20,0.4)]'
+                    : 'text-cinema-gray hover:text-white hover:bg-white/5'
                 }`}
                 title={t('playlist.repeat')}
               >
-                <Repeat className="w-4 h-4" />
+                <Repeat className="w-3.5 h-3.5" />
               </button>
 
               <button
                 onClick={clearPlaylist}
-                className="p-2 hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400 rounded-lg transition-colors duration-200"
+                className="p-2.5 text-cinema-gray hover:text-cinema-red hover:bg-cinema-red/5 rounded-full transition-all"
                 title={t('playlist.clear')}
               >
                 <Trash2 className="w-4 h-4" />
@@ -288,123 +288,127 @@ const PlaylistManager = ({ currentVideo, onVideoSelect, onVideoRemove }) => {
             </div>
           </div>
 
-
-
-          {/* Add Current Video Button */}
+          {/* Rapid Add Trigger */}
           {currentVideo && !playlist.find(v => v.id === currentVideo.id) && (
             <button
               onClick={() => addToPlaylist(currentVideo)}
-              className="w-full flex items-center justify-center space-x-2 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-400 dark:hover:border-primary-500 transition-colors duration-200"
+              className="w-full group flex items-center justify-center space-x-3 py-4 border border-dashed border-white/10 rounded-sm hover:border-cinema-red transition-all hover:bg-cinema-red/5"
             >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">{t('playlist.addCurrent')}</span>
+              <Plus className="w-4 h-4 text-cinema-gray group-hover:text-cinema-red transition-colors" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray group-hover:text-white transition-colors">
+                {t('playlist.addCurrent')}
+              </span>
             </button>
           )}
 
-          {/* Playlist Items */}
+          {/* Sequential Assets Stack */}
           {playlist.length > 0 ? (
-            <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-hide">
+            <div className="space-y-3 max-h-[480px] pr-2 overflow-y-auto custom-scrollbar">
               {playlist.map((video, index) => (
                 <div
                   key={video.id}
-                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+                  className={`group relative flex items-center space-x-4 p-3 rounded-sm transition-all duration-300 border ${
                     currentIndex === index
-                      ? 'bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'bg-cinema-red/10 border-cinema-red/30'
+                      : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10'
                   }`}
                 >
-                  {/* Thumbnail */}
-                  <div className="relative flex-shrink-0">
+                  {/* Cinematic Index Indicator */}
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] transition-all bg-cinema-red opacity-0 group-hover:opacity-40" />
+                  {currentIndex === index && <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-cinema-red shadow-[0_0_10px_rgba(229,9,20,1)]" />}
+
+                  {/* High-Contrast Thumbnail Overlay */}
+                  <div className="relative flex-shrink-0 w-24 aspect-video rounded-sm overflow-hidden border border-white/10">
                     <img
                       src={video.thumbnail || `https://img.youtube.com/vi/${video.id}/default.jpg`}
                       alt={video.title}
-                      className="w-16 h-12 object-cover rounded"
+                      className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     {currentIndex === index && (
-                      <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center">
-                        <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+                      <div className="absolute inset-0 bg-cinema-red/20 backdrop-blur-[1px] flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></div>
                       </div>
                     )}
                   </div>
 
-                  {/* Video Info */}
+                  {/* Asset Descriptive Suite */}
                   <div 
                     className="flex-1 min-w-0"
                     onClick={() => onVideoSelect && onVideoSelect(video)}
                   >
-                    <h4 className={`text-sm font-medium truncate ${
-                      currentIndex === index
-                        ? 'text-primary-700 dark:text-primary-300'
-                        : 'text-gray-900 dark:text-white'
+                    <h4 className={`text-[11px] font-bold tracking-tight truncate mb-1 transition-colors ${
+                      currentIndex === index ? 'text-white' : 'text-cinema-gray group-hover:text-white'
                     }`}>
                       {video.title}
                     </h4>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {video.author?.name || 'Unknown'}
-                      </span>
+                    <div className="flex items-center space-x-3 text-[9px] font-black uppercase tracking-widest text-cinema-gray/60 group-hover:text-cinema-gray transition-colors">
+                      <span className="truncate max-w-[100px]">{video.author?.name || 'Unknown Source'}</span>
                       {video.duration && (
-                        <>
-                          <span className="text-xs text-gray-400">•</span>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {formatDuration(video.duration)}
-                            </span>
-                          </div>
-                        </>
+                        <div className="flex items-center space-x-1.5">
+                          <span className="w-1 h-1 bg-white/10 rounded-full" />
+                          <span className="tabular-nums">{formatDuration(video.duration)} // TC</span>
+                        </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Controls */}
-                  <div className="flex items-center space-x-1">
+                  {/* Sequence Re-Ordering Cluster */}
+                  <div className="flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
-                      onClick={() => moveVideo(index, Math.max(0, index - 1))}
+                      onClick={(e) => { e.stopPropagation(); moveVideo(index, Math.max(0, index - 1)); }}
                       disabled={index === 0}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="p-1 hover:text-cinema-red disabled:opacity-0"
                     >
                       <ChevronUp className="w-3 h-3" />
                     </button>
                     
                     <button
-                      onClick={() => moveVideo(index, Math.min(playlist.length - 1, index + 1))}
-                      disabled={index === playlist.length - 1}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronDown className="w-3 h-3" />
-                    </button>
-                    
-                    <button
-                      onClick={() => removeFromPlaylist(video.id)}
-                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400 rounded transition-colors duration-200"
+                      onClick={(e) => { e.stopPropagation(); removeFromPlaylist(video.id); }}
+                      className="p-1 hover:text-cinema-red"
                     >
                       <X className="w-3 h-3" />
+                    </button>
+
+                    <button
+                      onClick={(e) => { e.stopPropagation(); moveVideo(index, Math.min(playlist.length - 1, index + 1)); }}
+                      disabled={index === playlist.length - 1}
+                      className="p-1 hover:text-cinema-red disabled:opacity-0"
+                    >
+                      <ChevronDown className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <List className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">{t('playlist.empty')}</p>
+            <div className="py-20 text-center space-y-6 border border-dashed border-white/5 rounded-sm">
+              <div className="relative inline-block">
+                <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-10" />
+                <List className="w-10 h-10 text-cinema-gray/20 relative" />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray/40">
+                {t('playlist.empty')}
+              </p>
             </div>
           )}
 
-          {/* Stats */}
+          {/* Production Totals */}
           {playlist.length > 0 && (
-            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <span>{playlist.length} {t('playlist.videos')}</span>
-                <span>{formatDuration(getTotalDuration())}</span>
+            <div className="pt-6 border-t border-white/5">
+              <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray">
+                <span className="flex items-center space-x-2">
+                   <div className="w-1 h-1 bg-cinema-red rounded-full" />
+                   <span>Total Load: {playlist.length} Assets</span>
+                </span>
+                <span className="tabular-nums text-white/40">{formatDuration(getTotalDuration())} Remaining</span>
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* YouTube Search Modal */}
+      {/* Advanced Asset Search Overlay */}
       <YouTubeSearch
         isOpen={showSearch}
         onClose={() => setShowSearch(false)}

@@ -119,114 +119,125 @@ const MiniPlayer = ({
   return (
     <div
       ref={containerRef}
-      className={`fixed z-50 bg-black rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      className={`fixed z-50 bg-cinema-surface/80 backdrop-blur-3xl rounded-sm shadow-[0_30px_100px_rgba(0,0,0,0.8)] border border-white/10 overflow-hidden transition-all duration-500 hover:border-white/20 ${
+        isDragging ? 'cursor-grabbing scale-105' : 'cursor-grab hover:scale-[1.02]'
       }`}
       style={{
         right: `${currentPosition.right}px`,
         bottom: `${currentPosition.bottom}px`,
-        width: '320px',
-        height: '200px'
+        width: '360px',
+        height: '210px'
       }}
       onMouseDown={handleMouseDown}
     >
-      {/* Video Player */}
-      <div className="relative w-full h-full">
-        <ReactPlayer
-          ref={playerRef}
-          url={video.url}
-          width="100%"
-          height="100%"
-          playing={playing}
-          volume={muted ? 0 : volume}
-          onProgress={handleProgress}
-          onDuration={handleDuration}
-          config={{
-            youtube: {
-              playerVars: {
-                modestbranding: 1,
-                rel: 0,
-                showinfo: 0,
-                controls: 0
+      {/* Video Player Engine */}
+      <div className="relative w-full h-full group">
+        <div className="absolute inset-0 bg-black">
+          <ReactPlayer
+            ref={playerRef}
+            url={video.url}
+            width="100%"
+            height="100%"
+            playing={playing}
+            volume={muted ? 0 : volume}
+            onProgress={handleProgress}
+            onDuration={handleDuration}
+            config={{
+              youtube: {
+                playerVars: {
+                  modestbranding: 1,
+                  rel: 0,
+                  showinfo: 0,
+                  controls: 0,
+                  iv_load_policy: 3
+                }
               }
-            }
-          }}
-          className="absolute inset-0"
-        />
+            }}
+            className="absolute inset-0"
+          />
+        </div>
 
-        {/* Overlay Controls */}
-        <div className="mini-player-controls absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 opacity-0 hover:opacity-100 transition-opacity duration-200">
-          {/* Top Bar */}
-          <div className="absolute top-0 left-0 right-0 p-2 flex items-center justify-between">
-            <div className="text-white text-xs font-medium truncate flex-1 mr-2">
-              {video.title}
+        {/* Cinematic Interface Overlay */}
+        <div className="mini-player-controls absolute inset-0 bg-gradient-to-t from-cinema-black via-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500">
+          {/* Header Action Row */}
+          <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent">
+            <div className="flex flex-col -space-y-0.5 min-w-0 mr-4">
+              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-cinema-red animate-pulse">Live Mini</span>
+              <h4 className="text-[10px] font-bold text-white truncate uppercase tracking-wider">
+                {video.title}
+              </h4>
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-2">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onExpand();
                 }}
-                className="p-1 text-white hover:bg-white/20 rounded transition-colors duration-200"
-                title="Expand to full player"
+                className="p-1.5 bg-white/10 hover:bg-cinema-red text-white rounded-sm transition-all duration-300"
+                title="Expand to Production"
               >
-                <Maximize2 className="w-4 h-4" />
+                <Maximize2 className="w-3 h-3" />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
                 }}
-                className="p-1 text-white hover:bg-white/20 rounded transition-colors duration-200"
-                title="Close mini player"
+                className="p-1.5 bg-white/10 hover:bg-cinema-red text-white rounded-sm transition-all duration-300"
+                title="Terminate Session"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3 h-3" />
               </button>
             </div>
           </div>
 
-          {/* Center Play/Pause */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          {/* Central Command */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setPlaying(!playing);
               }}
-              className="p-3 bg-black/50 hover:bg-black/70 rounded-full transition-colors duration-200"
+              className="pointer-events-auto w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-2xl transition-all duration-300 hover:scale-110 active:scale-95"
             >
               {playing ? (
-                <Pause className="w-6 h-6 text-white" />
+                <Pause className="w-5 h-5 text-white fill-white" />
               ) : (
-                <Play className="w-6 h-6 text-white ml-1" />
+                <Play className="w-5 h-5 text-white fill-white ml-0.5" />
               )}
             </button>
           </div>
 
-          {/* Bottom Controls */}
-          <div className="absolute bottom-0 left-0 right-0 p-2 space-y-1">
-            {/* Progress Bar */}
-            <div 
-              className="w-full h-1 bg-white/30 rounded-full cursor-pointer"
-              onClick={handleSeekChange}
-            >
-              <div 
-                className="h-full bg-red-600 rounded-full transition-all duration-100"
-                style={{ width: `${played * 100}%` }}
-              />
+          {/* Control Platform */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 space-y-3">
+            {/* Precision Progress */}
+            <div className="relative group/progress">
+               <div className="flex justify-between items-center mb-1 opacity-0 group-hover/progress:opacity-100 transition-opacity">
+                  <span className="text-[8px] font-black text-white tabular-nums">{formatTime(duration * played)}</span>
+                  <span className="text-[8px] font-black text-cinema-gray tabular-nums">{formatTime(duration)}</span>
+               </div>
+               <div 
+                className="w-full h-0.5 bg-white/20 rounded-full cursor-pointer relative overflow-hidden group-hover/progress:h-1 transition-all"
+                onClick={handleSeekChange}
+              >
+                <div 
+                  className="h-full bg-cinema-red shadow-[0_0_10px_rgba(229,9,20,0.8)] transition-all duration-100"
+                  style={{ width: `${played * 100}%` }}
+                />
+              </div>
             </div>
 
-            {/* Control Buttons */}
+            {/* Bottom Tools */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-3">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleSeekBack();
                   }}
-                  className="p-1 text-white hover:bg-white/20 rounded transition-colors duration-200"
-                  title="Rewind 10s"
+                  className="p-1 text-cinema-gray hover:text-white transition-colors"
                 >
-                  <SkipBack className="w-3 h-3" />
+                  <SkipBack className="w-4 h-4" />
                 </button>
                 
                 <button
@@ -234,30 +245,25 @@ const MiniPlayer = ({
                     e.stopPropagation();
                     handleSeekForward();
                   }}
-                  className="p-1 text-white hover:bg-white/20 rounded transition-colors duration-200"
-                  title="Forward 10s"
+                  className="p-1 text-cinema-gray hover:text-white transition-colors"
                 >
-                  <SkipForward className="w-3 h-3" />
+                  <SkipForward className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-3">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setMuted(!muted);
                   }}
-                  className="p-1 text-white hover:bg-white/20 rounded transition-colors duration-200"
+                  className={`p-1 transition-colors ${muted ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}
                 >
-                  {muted ? (
-                    <VolumeX className="w-3 h-3" />
-                  ) : (
-                    <Volume2 className="w-3 h-3" />
-                  )}
+                  {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                 </button>
 
-                <div className="text-white text-xs">
-                  {formatTime(duration * played)} / {formatTime(duration)}
+                <div className="text-[10px] font-black text-cinema-gray bg-white/5 px-2 py-0.5 rounded-sm border border-white/5 tabular-nums">
+                  {Math.round(played * 100)}%
                 </div>
               </div>
             </div>

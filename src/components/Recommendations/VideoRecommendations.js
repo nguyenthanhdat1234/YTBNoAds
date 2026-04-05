@@ -207,83 +207,60 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
 
     return (
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer overflow-hidden group h-full"
+        className="group relative bg-cinema-surface/20 border border-white/5 rounded-sm overflow-hidden transition-all duration-700 hover:scale-[1.02] hover:bg-cinema-surface/40 hover:border-white/20 cursor-pointer"
         onClick={() => handleVideoClick(video)}
       >
-        <div className="relative">
+        {/* Cinematic Thumbnail */}
+        <div className="relative aspect-video overflow-hidden">
           <img
             src={thumbnail}
             alt={video.snippet.title}
-            className="w-full h-36 object-cover"
+            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+          
           {duration && (
-            <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 py-0.5 rounded">
+            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
               {formatDuration(duration)}
             </div>
           )}
 
-          {video.isFromHistory && (
-            <div className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1 py-0.5 rounded flex items-center space-x-1">
-              <History className="w-3 h-3" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
+            <div className="w-12 h-12 bg-cinema-red rounded-full flex items-center justify-center shadow-2xl shadow-cinema-red/50 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <Play className="w-5 h-5 text-white fill-white ml-0.5" />
             </div>
-          )}
-
-          {video.isFromFavorites && (
-            <div className="absolute top-1 left-1 bg-red-600 text-white text-xs px-1 py-0.5 rounded flex items-center space-x-1">
-              <Heart className="w-3 h-3" />
-            </div>
-          )}
-
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-            <Play className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           </div>
         </div>
 
-        <div className="p-3 flex-1">
-          <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 text-sm mb-2 leading-tight">
+        {/* Cinematic Data Suite */}
+        <div className="p-4 space-y-3">
+          <h3 className="text-xs font-bold text-cinema-gray group-hover:text-white transition-colors line-clamp-2 leading-relaxed tracking-tight">
             {video.snippet.title}
           </h3>
 
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 truncate">
-            {video.snippet.channelTitle}
-          </p>
-
-          <div className="space-y-1">
-            {viewCount && (
-              <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500">
-                <Eye className="w-3 h-3" />
-                <span>{formatViewCount(viewCount)}</span>
-              </div>
-            )}
-
-            {publishedAt && (
-              <div className="text-xs text-gray-500 dark:text-gray-500">
-                {formatPublishDate(publishedAt)}
-              </div>
-            )}
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 truncate max-w-[140px]">
+              {video.snippet.channelTitle}
+            </span>
+            
+            <div className="flex items-center space-x-2 text-[9px] font-black text-cinema-gray/30 tabular-nums">
+              {viewCount && (
+                <div className="flex items-center space-x-1">
+                  <span>{formatViewCount(viewCount)}</span>
+                </div>
+              )}
+            </div>
           </div>
-
-          {video.watchedAt && (
-            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-              Watched {formatPublishDate(video.watchedAt)}
-            </div>
-          )}
-
-          {video.addedAt && (
-            <div className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Favorited {formatPublishDate(video.addedAt)}
-            </div>
-          )}
         </div>
       </div>
     );
   };
 
   const tabs = [
-    { id: 'related', label: 'Related', icon: Sparkles, requiresVideo: true },
-    { id: 'trending', label: 'Trending', icon: TrendingUp, requiresApi: true },
-    { id: 'history', label: 'History', icon: History },
-    { id: 'favorites', label: 'Favorites', icon: Heart }
+    { id: 'related', label: 'Related Footage', icon: Sparkles, requiresVideo: true },
+    { id: 'trending', label: 'Global Trends', icon: TrendingUp, requiresApi: true },
+    { id: 'history', label: 'Recent Archive', icon: History },
+    { id: 'favorites', label: 'Curated Picks', icon: Heart }
   ];
 
   const availableTabs = tabs.filter(tab => {
@@ -297,92 +274,87 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Sparkles className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Recommendations
-          </h2>
+    <div className="space-y-8 animate-fade-in">
+      {/* Editorial Navigation */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-white/5 pb-2">
+        <div className="flex items-center space-x-8">
+          {availableTabs.map(tab => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`group relative pb-4 transition-all duration-300 ${
+                  activeTab === tab.id ? 'text-white' : 'text-cinema-gray hover:text-white'
+                }`}
+              >
+                <div className="flex items-center space-x-2.5">
+                  <Icon className={`w-3.5 h-3.5 transition-colors ${activeTab === tab.id ? 'text-cinema-red' : 'text-cinema-gray group-hover:text-white'}`} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">{tab.label}</span>
+                </div>
+                {activeTab === tab.id && (
+                  <div className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.4)]" />
+                )}
+              </button>
+            );
+          })}
         </div>
         
         <button
           onClick={loadRecommendations}
           disabled={loading}
-          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
-          title="Refresh recommendations"
+          className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-cinema-gray hover:text-white transition-colors disabled:opacity-30"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <span>Sync Feed</span>
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-        {availableTabs.map(tab => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Content */}
+      {/* Cinematic Asset Feed */}
       {loading ? (
-        <div className="text-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-primary-600 mx-auto mb-2" />
-          <p className="text-sm text-gray-600 dark:text-gray-400">Loading recommendations...</p>
+        <div className="py-20 flex flex-col items-center justify-center space-y-6">
+          <div className="w-10 h-10 border-2 border-cinema-red border-t-transparent rounded-full animate-spin" />
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-cinema-gray animate-pulse">Scanning Recommendations</p>
         </div>
       ) : error ? (
-        <div className="text-center py-8">
-          <div className="text-red-600 dark:text-red-400 mb-2">
-            Failed to load recommendations
-          </div>
+        <div className="py-20 text-center space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-red">Synchronization Error</p>
           <button
             onClick={loadRecommendations}
-            className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            className="text-[9px] font-black uppercase tracking-widest text-white border-b border-white/20 hover:border-white transition-all pb-1"
           >
-            Try again
+            Reconnect System
           </button>
         </div>
       ) : recommendations.length > 0 ? (
-        <div className="space-y-4">
-          {/* Single row with horizontal scroll */}
-          <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        <div className="space-y-12">
+          {/* Liquid Glass Horizontal Feed */}
+          <div className="flex space-x-6 overflow-x-auto pb-6 custom-scrollbar group/feed">
             {(showAll ? recommendations : recommendations.slice(0, 10)).map((video, index) => (
-              <div key={`${video.id.videoId}-${index}`} className="flex-shrink-0 w-64">
+              <div key={`${video.id.videoId}-${index}`} className="flex-shrink-0 w-80">
                 <VideoCard video={video} />
               </div>
             ))}
           </div>
 
-          {/* View More/Less Button */}
+          {/* Toggle Suite */}
           {recommendations.length > 10 && (
-            <div className="text-center">
+            <div className="flex items-center justify-center">
               <button
                 onClick={() => setShowAll(!showAll)}
-                className="btn-secondary flex items-center space-x-2 mx-auto"
+                className="group flex items-center space-x-4 px-8 py-3 border border-white/10 hover:border-cinema-red/50 hover:bg-cinema-red/5 transition-all rounded-sm"
               >
-                <span>{showAll ? 'Show Less' : `View More (${recommendations.length - 10} more)`}</span>
-                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${showAll ? 'rotate-90' : ''}`} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray group-hover:text-white transition-colors">
+                  {showAll ? 'Collapse Reel' : `Expand Library (${recommendations.length - 10} More)`}
+                </span>
+                <ChevronRight className={`w-3.5 h-3.5 text-cinema-gray group-hover:text-cinema-red transition-all duration-500 ${showAll ? 'rotate-90' : ''}`} />
               </button>
             </div>
           )}
 
-          {/* Grid view when showing all */}
+          {/* Expanded Grid Architecture */}
           {showAll && recommendations.length > 10 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-up">
               {recommendations.slice(10).map((video, index) => (
                 <VideoCard key={`${video.id.videoId}-${index + 10}`} video={video} />
               ))}
@@ -390,15 +362,13 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
           )}
         </div>
       ) : (
-        <div className="text-center py-8">
-          <div className="text-gray-500 dark:text-gray-400 mb-2">
-            No recommendations available
+        <div className="py-20 text-center border border-dashed border-white/5 rounded-sm">
+          <div className="mb-6 opacity-20">
+            <Sparkles className="w-12 h-12 text-cinema-gray mx-auto" />
           </div>
-          {activeTab === 'related' && !currentVideo && (
-            <p className="text-sm text-gray-400">
-              Play a video to see related recommendations
-            </p>
-          )}
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray/40">
+            System Idle // No Recommendations Located
+          </p>
         </div>
       )}
     </div>

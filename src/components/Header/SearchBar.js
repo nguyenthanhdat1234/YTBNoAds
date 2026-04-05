@@ -122,57 +122,46 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
   };
 
   return (
-    <div className="relative flex-1 max-w-2xl mx-4">
-      {/* Search Input */}
-      <div className="relative">
-        <div className="flex">
-          <div className="relative flex-1">
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-              onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-              placeholder="Search YouTube videos..."
-              className="w-full px-4 py-2 pl-4 pr-10 border border-gray-300 dark:border-gray-600 rounded-l-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-            />
-            
-            {/* Clear button */}
-            {searchQuery && (
-              <button
-                onClick={clearSearch}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            )}
-          </div>
-          
-          {/* Search Button */}
+    <div className="relative flex-1 max-w-2xl mx-4 group">
+      {/* Search Input - Cinematic Glass */}
+      <div className="relative flex items-center h-10 px-4 bg-white/5 backdrop-blur-md border border-white/5 rounded-sm transition-all duration-300 focus-within:bg-white/10 focus-within:border-white/20 focus-within:shadow-[0_0_20px_rgba(229,9,20,0.1)]">
+        <Search className="w-4 h-4 text-cinema-gray mr-3 group-focus-within:text-cinema-red transition-colors" />
+        
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={searchQuery}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
+          onFocus={() => setShowSuggestions(searchQuery.length > 0)}
+          placeholder="Search cinematic content..."
+          className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-cinema-gray/50"
+        />
+
+        {searchQuery && (
           <button
-            onClick={() => handleSearch()}
-            disabled={isSearching}
-            className="px-6 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-full transition-colors duration-200 disabled:opacity-50"
+            onClick={clearSearch}
+            className="p-1 hover:bg-white/10 rounded-full transition-colors"
           >
-            <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            <X className="w-3.5 h-3.5 text-cinema-gray" />
           </button>
-          
-          {/* Mic Button */}
-          <button className="ml-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors duration-200">
-            <Mic className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+        )}
+        
+        <div className="flex items-center space-x-2 ml-2 pl-2 border-l border-white/10">
+          <button className="p-1.5 text-cinema-gray hover:text-white transition-colors">
+            <Mic className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Search Suggestions/Results Dropdown */}
       {showSuggestions && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-cinema-surface/95 backdrop-blur-2xl border border-white/10 rounded-sm shadow-2xl z-50 max-h-[70vh] overflow-y-auto hide-scrollbar animate-slide-up">
           {/* Show suggestions when typing but no search performed yet */}
           {searchQuery && searchResults.length === 0 && !isSearching && (
-            <div className="p-2">
-              <div className="text-xs text-gray-500 dark:text-gray-400 px-3 py-2 font-medium">
-                Search suggestions
+            <div className="p-3">
+              <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-cinema-gray px-3 py-2 mb-1">
+                Suggestions
               </div>
               {mockSuggestions
                 .filter(suggestion => suggestion.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -181,76 +170,62 @@ const SearchBar = ({ onSearch, onVideoSelect }) => {
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center space-x-3 transition-colors duration-200"
+                    className="w-full text-left px-3 py-2.5 hover:bg-white/5 rounded-sm flex items-center space-x-3 transition-colors group"
                   >
-                    <Search className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-900 dark:text-white">{suggestion}</span>
+                    <Search className="w-3.5 h-3.5 text-cinema-gray group-hover:text-cinema-red transition-colors" />
+                    <span className="text-sm font-medium text-gray-300 group-hover:text-white">{suggestion}</span>
                   </button>
                 ))
               }
-              {/* Show all suggestions if no match */}
-              {mockSuggestions.filter(suggestion => suggestion.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                mockSuggestions.slice(0, 5).map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center space-x-3 transition-colors duration-200"
-                  >
-                    <Search className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-900 dark:text-white">{suggestion}</span>
-                  </button>
-                ))
-              )}
             </div>
           )}
 
           {/* Show search results when available */}
           {searchResults.length > 0 && !isSearching && (
-            <div className="p-2">
-              <div className="text-xs text-gray-500 dark:text-gray-400 px-3 py-2 font-medium">
-                Search results ({searchResults.length} found)
+            <div className="p-3">
+              <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-cinema-gray px-3 py-2 mb-2">
+                Results ({searchResults.length})
               </div>
-              {searchResults.slice(0, 5).map((video) => (
-                <button
-                  key={video.id}
-                  onClick={() => handleResultClick(video)}
-                  className="w-full text-left p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center space-x-3 transition-colors duration-200"
-                >
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-16 h-12 object-cover rounded"
-                    onError={(e) => {
-                      e.target.src = `https://img.youtube.com/vi/${video.id}/default.jpg`;
-                    }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {video.title}
-                    </h4>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {video.channel}
-                      </span>
-                      <span className="text-xs text-gray-400">•</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {video.views} views
-                      </span>
+              <div className="grid gap-2">
+                {searchResults.slice(0, 6).map((video) => (
+                  <button
+                    key={video.id}
+                    onClick={() => handleResultClick(video)}
+                    className="w-full text-left p-2 hover:bg-white/5 rounded-sm flex items-center space-x-4 transition-all group"
+                  >
+                    <div className="relative w-24 h-14 flex-shrink-0 overflow-hidden rounded-sm">
+                      <img
+                        src={video.thumbnail}
+                        alt={video.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                          e.target.src = `https://img.youtube.com/vi/${video.id}/default.jpg`;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
                     </div>
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {video.duration}
-                  </div>
-                </button>
-              ))}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-gray-200 group-hover:text-white truncate">
+                        {video.title}
+                      </h4>
+                      <p className="text-[10px] text-cinema-gray uppercase tracking-widest mt-0.5">
+                        {video.channel} • {video.views} Views
+                      </p>
+                    </div>
+                    <div className="text-[10px] font-bold text-cinema-gray tabular-nums">
+                      {video.duration}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {isSearching && (
-            <div className="p-4 text-center">
-              <div className="inline-flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-sm text-gray-600 dark:text-gray-400">Searching...</span>
+            <div className="p-8 text-center">
+              <div className="flex flex-col items-center justify-center space-y-3">
+                <div className="w-6 h-6 border-2 border-cinema-red border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cinema-gray">Indexing Cinema...</span>
               </div>
             </div>
           )}

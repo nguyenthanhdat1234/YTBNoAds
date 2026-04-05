@@ -518,10 +518,10 @@ const VideoPlayer = ({ video }) => {
   const videoUrlWithQuality = getVideoUrlWithQuality(video.url, settings.quality);
 
   return (
-    <div className={`card overflow-hidden ${theaterMode ? 'fixed inset-x-0 top-0 z-40 rounded-none' : ''}`}>
+    <div className={`relative overflow-hidden group shadow-2xl ${theaterMode ? 'fixed inset-x-0 top-0 z-40 rounded-none' : 'rounded-sm'}`}>
       <div
         ref={playerContainerRef}
-        className={`relative bg-black group focus:outline-none ${
+        className={`relative bg-black group focus:outline-none transition-all duration-500 ${
           isFullscreen
             ? 'fixed inset-0 z-50'
             : theaterMode
@@ -534,410 +534,149 @@ const VideoPlayer = ({ video }) => {
         onClick={toggleControls}
         tabIndex={0}
       >
-        {/* React Player */}
-        <ReactPlayer
-          key={`${video.url}-${settings.quality}`} // Force re-render when quality changes
-          ref={playerRef}
-          url={videoUrlWithQuality}
-          width="100%"
-          height="100%"
-          playing={playing}
-          volume={muted ? 0 : volume}
-          playbackRate={playbackRate}
-          loop={loop}
-          onProgress={handleProgress}
-          onDuration={handleDuration}
-          onEnded={() => {
-            if (!loop) {
-              setPlaying(false);
-            }
-          }}
-          config={playerConfig}
-          className="absolute inset-0"
-        />
+        {/* React Player Engine */}
+        <div className="absolute inset-0 z-0">
+          <ReactPlayer
+            key={`${video.url}-${settings.quality}`}
+            ref={playerRef}
+            url={videoUrlWithQuality}
+            width="100%"
+            height="100%"
+            playing={playing}
+            volume={muted ? 0 : volume}
+            playbackRate={playbackRate}
+            loop={loop}
+            onProgress={handleProgress}
+            onDuration={handleDuration}
+            onEnded={() => !loop && setPlaying(false)}
+            config={playerConfig}
+            className="absolute inset-0"
+          />
+        </div>
 
-        {/* Custom Controls Overlay */}
+        {/* Cinematic Interface Overlay */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${
+          className={`absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-700 ease-out pointer-events-none ${
             showControls ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          {/* Center Play Button */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          {/* Central Play/Pause State Indicator */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handlePlayPause();
               }}
-              className="w-16 h-16 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 hover:scale-110"
+              className="w-20 h-20 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl transition-all duration-500 hover:scale-110 active:scale-95 group/play"
             >
+              <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-0 group-hover/play:opacity-20 transition-opacity" />
               {playing ? (
-                <Pause className="w-8 h-8 text-white" />
+                <Pause className="w-8 h-8 text-white fill-white" />
               ) : (
-                <Play className="w-8 h-8 text-white ml-1" />
+                <Play className="w-8 h-8 text-white fill-white ml-1" />
               )}
             </button>
           </div>
 
-          {/* Bottom Controls */}
+          {/* Lower Control Suite */}
           <div
-            className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 space-y-2"
+            className="absolute bottom-0 left-0 right-0 px-8 py-6 space-y-6 pointer-events-auto"
             onClick={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
           >
-            {/* Progress Bar */}
-            <div className="flex items-center space-x-2">
-              <span className="text-white text-sm font-mono">
-                {formatTime(duration * played)}
-              </span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.01}
-                value={played}
-                onChange={(e) => {
-                  handleSeekChange(e);
-                  showControlsTemporarily();
-                }}
-                onTouchStart={showControlsTemporarily}
-                className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
-              />
-              <span className="text-white text-sm font-mono">
-                {formatTime(duration)}
-              </span>
+            {/* Precision Scrub Bar */}
+            <div className="flex flex-col space-y-2 group/scrub">
+              <div className="flex justify-between items-center opacity-0 group-hover/scrub:opacity-100 transition-opacity duration-300">
+                <span className="text-[10px] font-black tracking-widest text-white uppercase tabular-nums">
+                  {formatTime(duration * played)}
+                </span>
+                <span className="text-[10px] font-black tracking-widest text-cinema-gray uppercase tabular-nums">
+                  {formatTime(duration)}
+                </span>
+              </div>
+              
+              <div className="relative h-1 w-full bg-white/10 overflow-hidden cursor-pointer rounded-full group-hover/scrub:h-1.5 transition-all">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-cinema-red shadow-[0_0_10px_rgba(229,9,20,0.8)] z-20" 
+                  style={{ width: `${played * 100}%` }}
+                />
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.001}
+                  value={played}
+                  onChange={handleSeekChange}
+                  className="absolute inset-0 w-full opacity-0 z-30 cursor-pointer"
+                />
+              </div>
             </div>
 
-            {/* Control Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-              {/* Mobile: First row - Main controls */}
-              <div className="flex items-center justify-center space-x-1 sm:space-x-2 w-full sm:w-auto">
-                {/* Seek Backward 30s - Hidden on very small screens */}
-                <button
-                  onClick={() => {
-                    handleSeekBackward30();
-                    showControlsTemporarily();
-                  }}
-                  className="hidden xs:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title="Tua lùi 30 giây"
-                >
-                  <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                </button>
+            {/* Navigation & Preferences Row */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-6">
+                {/* Playback Cluster */}
+                <div className="flex items-center space-x-2">
+                   <button onClick={handleSeekBackward} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                     <SkipBack className="w-5 h-5" />
+                   </button>
+                   <button onClick={handlePlayPause} className="p-2 text-white hover:scale-110 transition-all">
+                     {playing ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
+                   </button>
+                   <button onClick={handleSeekForward} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                     <SkipForward className="w-5 h-5" />
+                   </button>
+                </div>
 
-                {/* Seek Backward 10s */}
-                <button
-                  onClick={() => {
-                    handleSeekBackward();
-                    showControlsTemporarily();
-                  }}
-                  className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title="Tua lùi 10 giây"
-                >
-                  <SkipBack className="w-4 h-4 sm:w-4 sm:h-4 text-white" />
-                </button>
-
-                {/* Play/Pause */}
-                <button
-                  onClick={handlePlayPause}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                >
-                  {playing ? (
-                    <Pause className="w-5 h-5 text-white" />
-                  ) : (
-                    <Play className="w-5 h-5 text-white" />
-                  )}
-                </button>
-
-                {/* Seek Forward 10s */}
-                <button
-                  onClick={() => {
-                    handleSeekForward();
-                    showControlsTemporarily();
-                  }}
-                  className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title="Tua tới 10 giây"
-                >
-                  <SkipForward className="w-4 h-4 sm:w-4 sm:h-4 text-white" />
-                </button>
-
-                {/* Seek Forward 30s - Hidden on very small screens */}
-                <button
-                  onClick={() => {
-                    handleSeekForward30();
-                    showControlsTemporarily();
-                  }}
-                  className="hidden xs:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title="Tua tới 30 giây"
-                >
-                  <RotateCw className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                </button>
-
-                {/* Volume - Hidden on mobile, shown on tablet+ */}
-                <div className="hidden md:flex items-center space-x-2">
-                  <button
-                    onClick={() => {
-                      handleToggleMute();
-                      showControlsTemporarily();
-                    }}
-                    className="p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  >
-                    {muted || volume === 0 ? (
-                      <VolumeX className="w-5 h-5 text-white" />
-                    ) : (
-                      <Volume2 className="w-5 h-5 text-white" />
-                    )}
+                {/* Audio Cluster */}
+                <div className="flex items-center space-x-4 group/vol">
+                  <button onClick={handleToggleMute} className="text-cinema-gray hover:text-white transition-colors">
+                    {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                   </button>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={muted ? 0 : volume}
-                    onChange={(e) => {
-                      handleVolumeChange(e);
-                      showControlsTemporarily();
-                    }}
-                    onTouchStart={showControlsTemporarily}
-                    className="w-16 lg:w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
-                  />
+                  <div className="w-0 group-hover/vol:w-24 overflow-hidden transition-all duration-500">
+                    <input
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      value={muted ? 0 : volume}
+                      onChange={handleVolumeChange}
+                      className="w-20 h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Metadata Sneak Peak */}
+                <div className="hidden lg:block border-l border-white/10 pl-6">
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray mb-1 block">Live Playback</span>
+                   <span className="text-xs font-bold text-white max-w-xs truncate block">{video.title}</span>
                 </div>
               </div>
 
-              {/* Mobile: Second row / Desktop: Right side - Secondary controls */}
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                {/* Volume button only on mobile */}
-                <button
-                  onClick={() => {
-                    handleToggleMute();
-                    showControlsTemporarily();
-                  }}
-                  className="md:hidden p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                >
-                  {muted || volume === 0 ? (
-                    <VolumeX className="w-4 h-4 text-white" />
-                  ) : (
-                    <Volume2 className="w-4 h-4 text-white" />
-                  )}
-                </button>
-
-                {/* Quality Selector - Hidden on very small screens */}
-                <div className="hidden sm:block">
-                  <QualitySelector
-                    currentQuality={currentQuality}
-                    onQualityChange={handleQualityChange}
-                  />
+              {/* Advanced Utility Cluster */}
+              <div className="flex items-center space-x-2">
+                <QualitySelector
+                   currentQuality={currentQuality}
+                   onQualityChange={handleQualityChange}
+                />
+                
+                <div className="flex items-center bg-white/5 p-1 rounded-sm border border-white/5">
+                  <button onClick={handleToggleSubscription} className={`p-2 transition-colors ${isSubscribed ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                    <Bell className="w-4 h-4" />
+                  </button>
+                  <button onClick={handleToggleFavorite} className={`p-2 transition-colors ${isFavorite ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                    <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+                  </button>
+                  <button onClick={handleTheaterMode} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                    <Monitor className="w-4 h-4" />
+                  </button>
+                  <button onClick={handleFullscreen} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                    <Maximize className="w-4 h-4" />
+                  </button>
                 </div>
-
-                {/* Subscribe - Hidden on very small screens */}
-                {video.channelId && (
-                  <button
-                    onClick={() => {
-                      handleToggleSubscription();
-                      showControlsTemporarily();
-                    }}
-                    className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                    title={isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-                  >
-                    {isSubscribed ? (
-                      <BellOff className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
-                    ) : (
-                      <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    )}
-                  </button>
-                )}
-
-                {/* Favorite - Hidden on very small screens */}
-                <button
-                  onClick={() => {
-                    handleToggleFavorite();
-                    showControlsTemporarily();
-                  }}
-                  className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                >
-                  <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-white'}`} />
-                </button>
-
-                {/* Settings - Hidden on very small screens */}
-                <button
-                  onClick={() => {
-                    setShowSettings(!showSettings);
-                    showControlsTemporarily();
-                  }}
-                  className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                >
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </button>
-
-                {/* Picture-in-Picture - Hidden on mobile */}
-                {isPiPSupported && (
-                  <button
-                    onClick={() => {
-                      handlePictureInPicture();
-                      showControlsTemporarily();
-                    }}
-                    className="hidden sm:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                    title={isPiPActive ? 'Exit Picture-in-Picture' : 'Picture-in-Picture'}
-                  >
-                    <PictureInPicture className={`w-4 h-4 sm:w-5 sm:h-5 text-white ${isPiPActive ? 'text-primary-400' : ''}`} />
-                  </button>
-                )}
-
-                {/* Theater Mode - Hidden on mobile */}
-                <button
-                  onClick={() => {
-                    handleTheaterMode();
-                    showControlsTemporarily();
-                  }}
-                  className="hidden md:block p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title={theaterMode ? 'Exit Theater Mode' : 'Theater Mode'}
-                >
-                  <Monitor className={`w-4 h-4 sm:w-5 sm:h-5 text-white ${theaterMode ? 'text-primary-400' : ''}`} />
-                </button>
-
-                {/* Fullscreen - Always visible but smaller on mobile */}
-                <button
-                  onClick={() => {
-                    handleFullscreen();
-                    showControlsTemporarily();
-                  }}
-                  className="p-1 sm:p-2 hover:bg-white/20 rounded-lg transition-colors duration-200"
-                  title={isFullscreen ? t('player.controls.exitFullscreen') : t('player.controls.fullscreen')}
-                >
-                  {isFullscreen ? (
-                    <Minimize className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  ) : (
-                    <Maximize className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  )}
-                </button>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Settings Panel */}
-        {showSettings && (
-          <div className="absolute bottom-16 right-4 w-72 bg-gray-900/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-700 p-4 space-y-3">
-            <h3 className="text-white font-medium text-sm mb-3">{t('player.settings.title')}</h3>
-
-            {/* Quality Setting */}
-            <div className="space-y-2">
-              <label className="text-gray-300 text-xs">{t('player.settings.quality')}</label>
-              <QualitySelector
-                currentQuality={currentQuality}
-                onQualityChange={handleQualityChange}
-              />
-            </div>
-
-            {/* Autoplay Setting */}
-            <div className="flex items-center justify-between">
-              <label className="text-gray-300 text-xs">{t('player.settings.autoplay')}</label>
-              <button
-                onClick={() => {/* Handle autoplay toggle */}}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 ${
-                  settings.autoplay ? 'bg-primary-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200 ${
-                    settings.autoplay ? 'translate-x-5' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Captions Setting */}
-            <div className="flex items-center justify-between">
-              <label className="text-gray-300 text-xs">{t('player.settings.captions')}</label>
-              <button
-                onClick={() => setCaptionsEnabled(!captionsEnabled)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 ${
-                  captionsEnabled ? 'bg-primary-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200 ${
-                    captionsEnabled ? 'translate-x-5' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Playback Speed */}
-            <div className="space-y-2">
-              <label className="text-gray-300 text-xs flex items-center space-x-1">
-                <Gauge className="w-3 h-3" />
-                <span>Playback Speed</span>
-              </label>
-              <div className="grid grid-cols-4 gap-1">
-                {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(rate => (
-                  <button
-                    key={rate}
-                    onClick={() => handlePlaybackRateChange(rate)}
-                    className={`px-2 py-1 text-xs rounded transition-colors duration-200 ${
-                      playbackRate === rate
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    {rate}x
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Loop Setting */}
-            <div className="flex items-center justify-between">
-              <label className="text-gray-300 text-xs flex items-center space-x-1">
-                <Repeat className="w-3 h-3" />
-                <span>Loop Video</span>
-              </label>
-              <button
-                onClick={handleLoop}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 ${
-                  loop ? 'bg-primary-600' : 'bg-gray-600'
-                }`}
-              >
-                <span
-                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200 ${
-                    loop ? 'translate-x-5' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Keyboard Shortcuts */}
-            <div className="pt-3 border-t border-gray-700">
-              <h4 className="text-gray-300 text-xs font-medium mb-2">Keyboard Shortcuts</h4>
-              <div className="space-y-1 text-xs text-gray-400">
-                <div className="flex justify-between">
-                  <span>Play/Pause</span>
-                  <span className="font-mono">Space, K</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Seek ±10s</span>
-                  <span className="font-mono">← → J L</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Fullscreen</span>
-                  <span className="font-mono">F</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Mute</span>
-                  <span className="font-mono">M</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Close button */}
-            <button
-              onClick={() => setShowSettings(false)}
-              className="w-full mt-3 px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors duration-200"
-            >
-              {t('player.settings.close')}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

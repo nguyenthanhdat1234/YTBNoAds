@@ -53,7 +53,7 @@ const FavoritesList = ({ onVideoSelect }) => {
       setFavorites(favoritesData);
     } catch (error) {
       console.error('Error loading favorites:', error);
-      toast.error('Failed to load favorites');
+      toast.error('Failed to access regional vaults');
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,6 @@ const FavoritesList = ({ onVideoSelect }) => {
   const handleVideoClick = (video) => {
     if (onVideoSelect) {
       onVideoSelect(video);
-      // Navigate to home page to play the video
       navigate('/');
     }
   };
@@ -128,9 +127,9 @@ const FavoritesList = ({ onVideoSelect }) => {
     event.stopPropagation();
     if (removeFromFavorites(videoId)) {
       setFavorites(prev => prev.filter(video => video.id !== videoId));
-      toast.success('Video removed from favorites');
+      toast.success('Asset removed from vault');
     } else {
-      toast.error('Failed to remove video');
+      toast.error('Failed to update archival logic');
     }
   };
 
@@ -138,9 +137,9 @@ const FavoritesList = ({ onVideoSelect }) => {
     if (window.confirm('Are you sure you want to clear all favorites? This action cannot be undone.')) {
       if (clearFavorites()) {
         setFavorites([]);
-        toast.success('Favorites cleared');
+        toast.success('Vault cleared successfully');
       } else {
-        toast.error('Failed to clear favorites');
+        toast.error('Failed to clear vault');
       }
     }
   };
@@ -151,18 +150,17 @@ const FavoritesList = ({ onVideoSelect }) => {
       
       if (navigator.share) {
         await navigator.share({
-          title: 'My Favorite Videos',
-          text: `Check out my ${favorites.length} favorite videos:`,
+          title: 'Collector\'s Vault | YTBNoAds',
+          text: `Reviewing my ${favorites.length} elite assets:`,
           url: window.location.origin
         });
       } else {
-        // Fallback: copy to clipboard
         await navigator.clipboard.writeText(favoritesUrls);
-        toast.success('Favorite video URLs copied to clipboard');
+        toast.success('Asset registry copied to clipboard');
       }
     } catch (error) {
       console.error('Share error:', error);
-      toast.error('Failed to share favorites');
+      toast.error('Failed to coordinate sharing protocol');
     }
   };
 
@@ -178,15 +176,15 @@ const FavoritesList = ({ onVideoSelect }) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `favorites-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `cinema-vault-backup-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Favorites exported successfully');
+      toast.success('Vault backup archived');
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export favorites');
+      toast.error('Backup protocol failed');
     }
   };
 
@@ -194,51 +192,43 @@ const FavoritesList = ({ onVideoSelect }) => {
     if (viewMode === 'list') {
       return (
         <div 
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer overflow-hidden group flex"
+          className="group relative bg-cinema-surface/10 border border-white/5 rounded-sm overflow-hidden transition-all duration-500 hover:bg-white/[0.03] hover:border-white/20 cursor-pointer flex items-center p-3"
           onClick={() => handleVideoClick(video)}
         >
-          <div className="relative w-48 flex-shrink-0">
+          <div className="relative w-48 h-28 flex-shrink-0 overflow-hidden rounded-sm">
             <img 
               src={video.thumbnail} 
               alt={video.title}
-              className="w-full h-28 object-cover"
+              className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
             />
             {video.duration && (
-              <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 py-0.5 rounded">
+              <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-md text-white text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded-sm tabular-nums">
                 {formatDuration(video.duration)}
               </div>
             )}
           </div>
           
-          <div className="flex-1 p-4 flex justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1">
+          <div className="flex-1 px-5 py-2 flex justify-between items-center group/info">
+            <div className="flex-1 min-w-0">
+              <h4 className="text-[14px] font-black uppercase tracking-tight text-white mb-2 line-clamp-1 group-hover:text-cinema-red transition-colors">
                 {video.title}
-              </h3>
+              </h4>
               
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                {video.channel}
-              </p>
-              
-              <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500">
-                {video.viewCount && (
-                  <div className="flex items-center space-x-1">
-                    <Eye className="w-3 h-3" />
-                    <span>{formatViewCount(video.viewCount)}</span>
-                  </div>
-                )}
-                <div className="flex items-center space-x-1">
-                  <Heart className="w-3 h-3" />
-                  <span>Added {formatPublishDate(video.addedAt)}</span>
-                </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-cinema-gray/40">
+                  {video.channel}
+                </span>
+                <span className="text-[9px] font-black text-cinema-gray/20 tabular-nums">
+                  ADDED {formatPublishDate(video.addedAt)}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-start space-x-2">
-              <button
+            <div className="flex items-center space-x-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+               <button
                 onClick={(e) => handleRemoveVideo(video.id, e)}
-                className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200"
-                title="Remove from favorites"
+                className="p-2.5 text-cinema-red/40 hover:text-cinema-red transition-colors"
+                title="Eject Asset"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -250,63 +240,53 @@ const FavoritesList = ({ onVideoSelect }) => {
 
     return (
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer overflow-hidden group"
+        className="group relative bg-cinema-surface/20 border border-white/5 rounded-sm overflow-hidden transition-all duration-700 hover:scale-[1.02] hover:bg-cinema-surface/40 hover:border-white/20 cursor-pointer"
         onClick={() => handleVideoClick(video)}
       >
-        <div className="relative">
+        <div className="relative aspect-video overflow-hidden">
           <img 
             src={video.thumbnail} 
             alt={video.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+          
           {video.duration && (
-            <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
               {formatDuration(video.duration)}
             </div>
           )}
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
             <button
               onClick={(e) => handleRemoveVideo(video.id, e)}
-              className="p-1 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors duration-200"
-              title="Remove from favorites"
+              className="p-2 bg-cinema-red/80 backdrop-blur-md border border-cinema-red/20 hover:bg-cinema-red text-white rounded-sm transition-all shadow-2xl"
+              title="Purge Entry"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-            <Play className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
+            <div className="w-12 h-12 bg-cinema-red rounded-full flex items-center justify-center shadow-2xl shadow-cinema-red/50 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+            </div>
           </div>
         </div>
         
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">
+        <div className="p-5 space-y-4">
+          <h3 className="text-xs font-bold text-cinema-gray group-hover:text-white transition-colors line-clamp-2 leading-relaxed tracking-tight">
             {video.title}
           </h3>
           
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            {video.channel}
-          </p>
-          
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-            <div className="flex items-center space-x-3">
-              {video.viewCount && (
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-3 h-3" />
-                  <span>{formatViewCount(video.viewCount)}</span>
-                </div>
-              )}
-              {video.publishedAt && (
-                <div className="flex items-center space-x-1">
-                  <Calendar className="w-3 h-3" />
-                  <span>{formatPublishDate(video.publishedAt)}</span>
-                </div>
-              )}
+          <div className="flex items-center justify-between border-t border-white/5 pt-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 truncate max-w-[140px]">
+              {video.channel}
+            </span>
+            <div className="flex items-center space-x-1 text-[9px] font-black text-cinema-gray/30 uppercase tracking-widest tabular-nums">
+               <Heart className="w-2.5 h-2.5 text-cinema-red/60" />
+               <span>{formatPublishDate(video.addedAt)}</span>
             </div>
-          </div>
-
-          <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-500 mt-2">
-            <Heart className="w-3 h-3 text-red-500" />
-            <span>Added {formatPublishDate(video.addedAt)}</span>
           </div>
         </div>
       </div>
@@ -315,141 +295,142 @@ const FavoritesList = ({ onVideoSelect }) => {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-        <p className="text-gray-600 dark:text-gray-400">Loading favorites...</p>
+      <div className="py-48 flex flex-col items-center justify-center space-y-8 animate-fade-in">
+        <div className="w-12 h-12 border-2 border-cinema-red border-t-transparent rounded-full animate-spin shadow-2xl shadow-cinema-red/20" />
+        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-cinema-gray animate-pulse">Decrypting Collectors Vault</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
-            <Heart className="w-6 h-6 text-red-600 dark:text-red-400" />
+    <div className="space-y-12 p-8 animate-fade-in relative">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-12 border-b border-white/5 pb-10">
+        <div className="flex items-center space-x-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-10" />
+            <div className="p-4 bg-white/[0.02] border border-white/10 rounded-sm">
+              <Heart className="w-6 h-6 text-cinema-red" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Favorites
+            <h1 className="text-3xl font-black uppercase tracking-[0.3em] text-white leading-none mb-3">
+              Collector's <span className="text-cinema-red">Vault</span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {favorites.length} favorite videos
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray">
+              Curated Production Grid // Registry Size: {favorites.length} Units
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className="btn-secondary flex items-center space-x-2"
-            title={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
+            className="p-3 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
+            title="Toggle Protocol"
           >
-            {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
+            {viewMode === 'grid' ? <List className="w-3.5 h-3.5" /> : <Grid3X3 className="w-3.5 h-3.5" />}
           </button>
 
           {favorites.length > 0 && (
             <>
               <button
                 onClick={handleShareFavorites}
-                className="btn-secondary flex items-center space-x-2"
-                title="Share favorites"
+                className="p-3 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
+                title="Broadcast Registry"
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="w-3.5 h-3.5" />
               </button>
 
               <button
                 onClick={handleExportFavorites}
-                className="btn-secondary flex items-center space-x-2"
-                title="Export favorites"
+                className="p-3 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
+                title="Archive Backup"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5" />
               </button>
+
+              <div className="w-[1px] h-8 bg-white/5 mx-2" />
 
               <button
                 onClick={handleClearFavorites}
-                className="btn-secondary text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
+                className="px-6 py-3 bg-white/[0.02] border border-white/5 text-cinema-red/40 hover:text-cinema-red hover:bg-cinema-red/5 rounded-sm transition-all flex items-center space-x-3 group"
               >
-                <Trash2 className="w-4 h-4" />
-                <span>Clear All</span>
+                <Trash2 className="w-3.5 h-3.5" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Purge Vault</span>
               </button>
             </>
           )}
         </div>
       </div>
 
-      {/* Controls */}
       {favorites.length > 0 && (
-        <div className="card p-4 space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search your favorites..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
+        <div className="flex flex-col lg:flex-row gap-6 animate-slide-up">
+          <div className="relative flex-1">
+             <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-cinema-gray/20 w-4 h-4" />
+             <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="SCAN VAULT REGISTRY..."
+                className="w-full pl-14 pr-6 py-5 bg-white/[0.01] border border-white/5 rounded-sm text-[11px] font-black uppercase tracking-[0.4em] text-white focus:ring-0 focus:border-white/20 focus:bg-white/[0.02] transition-all placeholder:text-cinema-gray/10"
+              />
           </div>
 
-          {/* Sort Controls */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
-              <select
+          <div className="flex items-center space-x-3 px-6 py-2 bg-white/[0.02] border border-white/5 rounded-sm">
+             <Filter className="w-3.5 h-3.5 text-cinema-red opacity-30" />
+             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 mr-4">Sequence:</span>
+             <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-[0.2em] text-white cursor-pointer hover:text-cinema-red transition-colors p-0 focus:ring-0"
               >
-                <option value="addedAt">Date Added</option>
-                <option value="title">Title</option>
-                <option value="channel">Channel</option>
-                <option value="duration">Duration</option>
+                <option value="addedAt" className="bg-[#141414]">Registry Date</option>
+                <option value="title" className="bg-[#141414]">Production Title</option>
+                <option value="channel" className="bg-[#141414]">Director Sector</option>
+                <option value="duration" className="bg-[#141414]">Air Time</option>
               </select>
-            </div>
-
-            <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            >
-              {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
-              <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
-            </button>
+              <button
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="p-1 text-cinema-gray hover:text-white transition-colors"
+                title={sortOrder === 'asc' ? 'Ascending Sequence' : 'Descending Sequence'}
+              >
+                 {sortOrder === 'asc' ? <SortAsc className="w-3.5 h-3.5" /> : <SortDesc className="w-3.5 h-3.5" />}
+              </button>
           </div>
         </div>
       )}
 
-      {/* Favorites Grid/List */}
       {filteredFavorites.length > 0 ? (
         <div className={viewMode === 'grid' 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          : "space-y-4"
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 animate-slide-up"
+          : "space-y-4 animate-slide-up"
         }>
           {filteredFavorites.map((video) => (
             <VideoCard key={video.id} video={video} />
           ))}
         </div>
-      ) : favorites.length > 0 ? (
-        <div className="text-center py-12">
-          <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No videos found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Try adjusting your search terms.
-          </p>
-        </div>
       ) : (
-        <div className="text-center py-12">
-          <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No favorites yet
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Videos you favorite will appear here.
-          </p>
+        <div className="py-48 text-center space-y-12">
+          <div className="space-y-6">
+            <Heart className="w-16 h-16 text-cinema-gray/10 mx-auto" />
+            <div className="space-y-3">
+              <h3 className="text-xl font-black uppercase tracking-[0.4em] text-white">Vault Static</h3>
+              <p className="text-[10px] font-medium text-cinema-gray uppercase tracking-widest max-w-sm mx-auto">
+                {favorites.length > 0 
+                  ? 'Current query parameters returned null results in vault registry.' 
+                  : 'Registry awaiting first asset collection session to initialize vault protocols.'
+                }
+              </p>
+            </div>
+          </div>
+          {!favorites.length && (
+            <button
+               onClick={() => navigate('/')}
+               className="px-12 py-5 bg-cinema-red text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-red-700 transition-all shadow-2xl shadow-cinema-red/20"
+            >
+               Browse Production Feed
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -19,63 +19,71 @@ const About = () => {
   const features = [
     {
       icon: Shield,
-      title: t('about.features.noAds'),
-      description: 'Stream YouTube videos without any advertisements or interruptions'
+      title: t('about.features.noAds') || 'Zero Frequency Interruption',
+      description: 'Experience a pure signal without commercials, sponsors, or transmission breaks.'
     },
     {
       icon: Music,
-      title: t('about.features.metadata'),
-      description: 'Automatically extract artist, album, and title information from video titles'
+      title: t('about.features.metadata') || 'Neural Asset Extraction',
+      description: 'Automated identification of sonic properties and high-fidelity archival data.'
     },
     {
       icon: Globe,
-      title: t('about.features.multiLanguage'),
-      description: 'Support for 14 languages including English, Arabic, Chinese, and more'
+      title: t('about.features.multiLanguage') || 'Global Protocol Support',
+      description: 'Multi-lingual interfaces synchronized across 14 international frequency sectors.'
     },
     {
       icon: Palette,
-      title: t('about.features.themes'),
-      description: 'Beautiful dark and light themes with customizable accent colors'
+      title: t('about.features.themes') || 'Aesthetic Calibration',
+      description: 'Bespoke chromatic profiles including Cinema Noir and Production Glassmorphism.'
     },
     {
       icon: Zap,
-      title: t('about.features.formats'),
-      description: 'Support for multiple video and audio formats with quality selection'
+      title: t('about.features.formats') || 'Format Versatility',
+      description: 'Support for a broad spectrum of visual and sonic output resolutions up to 8K.'
     },
     {
       icon: Code,
-      title: t('about.features.openSource'),
-      description: 'Open source and free to use, built with modern web technologies'
+      title: t('about.features.openSource') || 'Open Access Genesis',
+      description: 'Open source architecture designed for transparency and community innovation.'
     }
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto">
-          <Info className="w-10 h-10 text-white" />
+    <div className="max-w-5xl mx-auto space-y-16 py-12 px-6 animate-fade-in relative">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cinema-red/5 blur-[150px] -z-10 rounded-full" />
+      
+      {/* Editorial Production Header */}
+      <div className="text-center space-y-6">
+        <div className="inline-flex items-center space-x-3 px-4 py-1.5 bg-cinema-red/10 border border-cinema-red/20 rounded-full animate-bounce-subtle">
+           <Info className="w-3.5 h-3.5 text-cinema-red" />
+           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-red">Project Manifest</span>
         </div>
-        <h1 className="text-4xl font-bold text-gradient">
-          {t('about.title')}
+        <h1 className="text-6xl font-black uppercase tracking-tighter italic text-white flex flex-col sm:flex-row items-center justify-center sm:space-x-4">
+          <span className="text-cinema-red">Cinema</span>
+          <span className="opacity-20">//</span>
+          <span>Flow</span>
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          {t('about.description')}
+        <p className="text-sm font-medium text-cinema-gray max-w-2xl mx-auto uppercase tracking-widest leading-relaxed opacity-60">
+          {t('about.description') || 'A precision-engineered audiovisual environment for uninhibited transmission and discovery.'}
         </p>
       </div>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Production Values Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map((feature, index) => (
-          <div key={index} className="card p-6 space-y-4 hover:shadow-lg transition-shadow duration-300">
-            <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
-              <feature.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+          <div 
+            key={index} 
+            className="group glass-card bg-cinema-surface/30 p-8 border border-white/5 rounded-sm hover:border-cinema-red/40 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500"
+          >
+            <div className="w-14 h-14 bg-white/5 border border-white/5 rounded-sm flex items-center justify-center mb-6 group-hover:bg-cinema-red/10 group-hover:border-cinema-red/20 transition-colors">
+              <feature.icon className="w-6 h-6 text-cinema-gray group-hover:text-cinema-red transition-colors duration-500" />
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="space-y-3">
+              <h3 className="text-xs font-black text-white uppercase tracking-[0.2em] group-hover:text-cinema-red transition-colors">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-[11px] font-medium text-cinema-gray/60 uppercase tracking-widest leading-loose">
                 {feature.description}
               </p>
             </div>
@@ -83,83 +91,71 @@ const About = () => {
         ))}
       </div>
 
-      {/* Technical Details */}
-      <div className="card p-8 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center space-x-3">
-          <Code className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-          <span>Technical Details</span>
-        </h2>
+      {/* Technical Blueprint Integration */}
+      <div className="glass-card bg-cinema-surface/50 p-10 border border-white/5 rounded-sm space-y-10">
+        <div className="flex items-center space-x-6 pb-6 border-b border-white/5">
+          <div className="p-3 bg-cinema-red/10 border border-cinema-red/20 rounded-sm">
+            <Code className="w-6 h-6 text-cinema-red" />
+          </div>
+          <h2 className="text-xl font-black uppercase tracking-[0.3em] text-white">System Architecture</h2>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Built With
-            </h3>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>React.js 18 - Modern UI framework</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
-                <span>Tailwind CSS - Utility-first styling</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>React Player - Video streaming</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>i18next - Internationalization</span>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-red">Tech Stack Protocol</h3>
+            <div className="space-y-4">
+              {[
+                { label: 'React.js 18', detail: 'High-Frequency Composition', color: 'bg-blue-500' },
+                { label: 'Tailwind CSS', detail: 'Utility-Scale Visual Engine', color: 'bg-cyan-500' },
+                { label: 'React Player', detail: 'Transmission Multi-Link', color: 'bg-green-500' },
+                { label: 'i18next', detail: 'Universal Signal Translator', color: 'bg-purple-500' }
+              ].map((tech, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-sm group hover:bg-white/5 transition-colors">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-1 h-4 ${tech.color} rounded-full`} />
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{tech.label}</span>
+                  </div>
+                  <span className="text-[8px] font-bold text-cinema-gray/40 uppercase tracking-[0.2em]">{tech.detail}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Supported Languages
-            </h3>
-            <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <div>🇺🇸 English</div>
-              <div>🇸🇦 العربية</div>
-              <div>🇨🇳 中文</div>
-              <div>🇳🇱 Nederlands</div>
-              <div>🇫🇷 Français</div>
-              <div>🇩🇪 Deutsch</div>
-              <div>🇮🇱 עברית</div>
-              <div>🇮🇹 Italiano</div>
-              <div>🇵🇱 Polski</div>
-              <div>🇧🇷 Português</div>
-              <div>🇷🇴 Română</div>
-              <div>🇷🇺 Русский</div>
-              <div>🇪🇸 Español</div>
-              <div>🇹🇷 Türkçe</div>
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-red">Broadcast Regions</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {[
+                'English', 'العربية', '中文', 'Nederlands', 'Français', 
+                'Deutsch', 'עברית', 'Italiano', 'Polski', 'Português', 
+                'Română', 'Русский', 'Español', 'Türkçe'
+              ].map((lang, i) => (
+                <div key={i} className="px-3 py-2 bg-white/2 border border-white/5 rounded-sm text-[9px] font-black text-cinema-gray/60 uppercase tracking-tighter hover:text-white hover:border-white/20 transition-all cursor-default">
+                  {lang}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Credits */}
-      <div className="card p-6 text-center space-y-4">
-        <div className="flex items-center justify-center space-x-2">
-          <Heart className="w-5 h-5 text-red-500" />
-          <span className="text-gray-600 dark:text-gray-400">
-            {t('about.credits')}
-          </span>
+      {/* Production Signature */}
+      <div className="glass-card bg-cinema-surface/20 p-10 border border-white/5 rounded-sm text-center space-y-8">
+        <div className="flex items-center justify-center space-x-4 text-[10px] font-black text-cinema-gray uppercase tracking-[0.5em]">
+          <Heart className="w-4 h-4 text-cinema-red animate-pulse-fast fill-cinema-red" />
+          <span>ENGINEERED WITH PASSION FOR PRODUCTION</span>
         </div>
         
-        <div className="flex items-center justify-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
-          <span>{t('about.version')}</span>
-          <span>•</span>
-          <span>MIT License</span>
-          <span>•</span>
-          <span>Open Source</span>
+        <div className="flex flex-wrap items-center justify-center gap-6 text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
+          <span className="hover:text-cinema-red cursor-default transition-colors">{t('about.version') || 'FINAL BUILD 1.0.4'}</span>
+          <span className="text-white/5">•</span>
+          <span className="hover:text-cinema-red cursor-default transition-colors">MIT LICENSE</span>
+          <span className="text-white/5">•</span>
+          <span className="hover:text-cinema-red cursor-default transition-colors">OPEN SOURCE ASSET</span>
         </div>
 
-        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            This application is not affiliated with YouTube or Google. 
-            YouTube is a trademark of Google Inc.
+        <div className="pt-8 border-t border-white/5 max-w-2xl mx-auto">
+          <p className="text-[9px] font-medium text-cinema-gray/30 uppercase tracking-widest leading-loose">
+            Cinematic Transmission Engine is an independent production. No affiliation with frequency providers Google Inc. or YouTube. All identifiers registered trademarks of their respective sectors.
           </p>
         </div>
       </div>

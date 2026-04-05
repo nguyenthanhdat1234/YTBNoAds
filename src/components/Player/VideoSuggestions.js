@@ -80,11 +80,11 @@ const VideoSuggestions = ({ onVideoSelect }) => {
   };
 
   const categories = [
-    { id: 'trending', label: 'Trending', icon: TrendingUp },
-    { id: 'music', label: 'Music', icon: Music },
-    { id: 'entertainment', label: 'Entertainment', icon: Film },
-    { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
-    { id: 'education', label: 'Education', icon: BookOpen }
+    { id: 'trending', label: t('discover.categories.trending') || 'Trending', icon: TrendingUp },
+    { id: 'music', label: t('discover.categories.music') || 'Music', icon: Music },
+    { id: 'entertainment', label: t('discover.categories.entertainment') || 'Cinema', icon: Film },
+    { id: 'gaming', label: t('discover.categories.gaming') || 'Gaming', icon: Gamepad2 },
+    { id: 'education', label: t('discover.categories.education') || 'Library', icon: BookOpen }
   ];
 
   const handleVideoClick = (video) => {
@@ -100,121 +100,147 @@ const VideoSuggestions = ({ onVideoSelect }) => {
   const currentVideos = videoSuggestions[selectedCategory] || videoSuggestions.trending;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Suggested Videos
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Discover popular content or try something random
-        </p>
-      </div>
+    <div className="space-y-10 py-6 animate-fade-in">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+             <div className="w-1 h-4 bg-cinema-red rounded-full" />
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-red">Discovery Engine</span>
+          </div>
+          <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">
+            {t('discover.title') || 'Suggested Selection'}
+          </h2>
+          <p className="text-sm text-cinema-gray max-w-md font-medium leading-relaxed">
+            {t('discover.subtitle') || 'A curated feed of high-fidelity content for your production environment.'}
+          </p>
+        </div>
 
-      {/* Category Tabs */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
-              selectedCategory === category.id
-                ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
-          >
-            <category.icon className="w-4 h-4" />
-            <span className="text-sm font-medium">{category.label}</span>
-          </button>
-        ))}
-        
         <button
           onClick={handleRandomVideo}
-          className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-colors duration-200"
+          className="btn-cinema bg-white/5 border-white/10 hover:bg-cinema-red group h-12 px-6"
         >
-          <Shuffle className="w-4 h-4" />
-          <span className="text-sm font-medium">Random</span>
+          <Shuffle className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-500" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t('discover.random') || 'Initialize Random'}</span>
         </button>
       </div>
 
-      {/* Video Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {currentVideos.map((video) => (
+      {/* Category Navigation */}
+      <div className="flex items-center justify-between">
+        <div className="flex space-x-1 p-1 bg-white/5 border border-white/5 rounded-sm">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`flex items-center space-x-2 px-5 py-2 rounded-sm transition-all duration-300 ${
+                selectedCategory === category.id
+                  ? 'bg-cinema-red text-white shadow-[0_0_20px_rgba(229,9,20,0.4)]'
+                  : 'text-cinema-gray hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <category.icon className="w-3.5 h-3.5" />
+              <span className="text-[10px] font-black uppercase tracking-widest">{category.label}</span>
+            </button>
+          ))}
+        </div>
+        
+        <div className="hidden md:flex items-center space-x-2 text-[10px] font-black text-cinema-gray uppercase tracking-widest opacity-40">
+           <span>{currentVideos.length} Modules Available</span>
+        </div>
+      </div>
+
+      {/* High-Fidelity Video Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {currentVideos.map((video, index) => (
           <div
-            key={video.id}
+            key={video.id + index}
             onClick={() => handleVideoClick(video)}
-            className="card p-0 overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105"
+            className="group relative bg-cinema-surface/50 border border-white/5 rounded-sm overflow-hidden cursor-pointer transition-all duration-500 hover:border-cinema-red/50 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
           >
-            {/* Thumbnail */}
-            <div className="relative aspect-video bg-gray-200 dark:bg-gray-700">
+            {/* Thumbnail Composite */}
+            <div className="relative aspect-video overflow-hidden">
               <img
                 src={video.thumbnail}
                 alt={video.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 onError={(e) => {
                   e.target.src = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
                 }}
               />
               
-              {/* Play Overlay */}
-              <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
-                  <Play className="w-6 h-6 text-gray-900 ml-1" />
+              {/* Cinematic Grade Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-cinema-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {/* Focus Action */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-90 group-hover:scale-100">
+                <div className="w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center shadow-2xl">
+                  <Play className="w-6 h-6 text-white fill-white ml-1" />
                 </div>
               </div>
               
-              {/* Duration */}
-              <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+              {/* Meta Indicators */}
+              <div className="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md border border-white/10 text-[9px] font-black text-white px-2 py-1 rounded-sm tracking-widest">
                 {video.duration}
+              </div>
+              
+              <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                 <div className="bg-cinema-red text-white text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-tighter">
+                   Ready to Stream
+                 </div>
               </div>
             </div>
 
-            {/* Video Info */}
-            <div className="p-3 space-y-2">
-              <h3 className="font-medium text-gray-900 dark:text-white text-sm line-clamp-2 leading-tight">
-                {video.title}
-              </h3>
+            {/* Content Metallurgy */}
+            <div className="p-5 space-y-3">
+              <div className="space-y-1.5">
+                <h3 className="font-bold text-white text-sm line-clamp-2 leading-tight uppercase tracking-tight group-hover:text-cinema-red transition-colors duration-300">
+                  {video.title}
+                </h3>
+              </div>
               
-              <div className="space-y-1">
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {video.channel}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
-                  {video.views} views
-                </p>
+              <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                <div className="flex flex-col">
+                   <span className="text-[10px] font-black text-cinema-gray uppercase tracking-widest">{video.channel}</span>
+                   <span className="text-[9px] font-medium text-cinema-gray/60">{video.views} Interactions</span>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-white/10 group-hover:bg-cinema-red group-hover:animate-pulse transition-colors" />
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Empty State */}
+      {/* Status Reports / Empty State */}
       {currentVideos.length === 0 && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Film className="w-8 h-8 text-gray-400" />
+        <div className="flex flex-col items-center justify-center py-24 space-y-6 border border-dashed border-white/10 rounded-sm bg-white/2">
+          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center relative">
+            <Film className="w-10 h-10 text-cinema-gray/30" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-cinema-red rounded-full" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            No videos in this category
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Try selecting a different category or use the random button
-          </p>
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Category Offline</h3>
+            <p className="text-xs text-cinema-gray uppercase tracking-[0.2em]">No production modules detected in this sector.</p>
+          </div>
+          <button 
+            onClick={() => setSelectedCategory('trending')}
+            className="btn-cinema text-[10px]"
+          >
+            Reset Signal
+          </button>
         </div>
       )}
 
-      {/* Quick Tip */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mt-0.5">
-            <span className="text-white text-xs">💡</span>
+      {/* Knowledge Proclamation (Footer Tip) */}
+      <div className="glass-card bg-cinema-surface/30 p-6 border-l-4 border-l-cinema-red rounded-sm">
+        <div className="flex items-start space-x-5">
+          <div className="w-10 h-10 bg-cinema-red/20 border border-cinema-red/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+             <BookOpen className="w-5 h-5 text-cinema-red" />
           </div>
-          <div>
-            <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-              Quick Tip
-            </h4>
-            <p className="text-xs text-blue-700 dark:text-blue-300">
-              You can also paste any YouTube URL in the search box above to play any video you want.
+          <div className="space-y-1">
+            <h4 className="text-xs font-black text-white uppercase tracking-[0.3em]">Operational Protocol</h4>
+            <p className="text-xs text-cinema-gray font-medium leading-relaxed">
+              Inject specific YouTube identifiers into the central command console (Search Bar) to override discovery and initialize direct transmission of any global asset.
             </p>
           </div>
         </div>

@@ -222,119 +222,66 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
   };
 
   const ChannelCard = ({ channel }) => {
-    if (viewMode === 'list') {
-      return (
-        <div 
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer overflow-hidden group flex"
-          onClick={() => setSelectedChannel(channel.id)}
-        >
-          <div className="relative w-20 h-20 flex-shrink-0">
-            <img 
-              src={channel.thumbnail} 
-              alt={channel.title}
-              className="w-full h-full object-cover rounded-l-lg"
-            />
-          </div>
-          
-          <div className="flex-1 p-4 flex justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1 mb-1">
-                {channel.title}
-              </h3>
-              
-              <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500 mb-1">
-                <div className="flex items-center space-x-1">
-                  <Users className="w-3 h-3" />
-                  <span>{formatSubscriberCount(channel.subscriberCount)}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Video className="w-3 h-3" />
-                  <span>{formatVideoCount(channel.videoCount)}</span>
-                </div>
-              </div>
-              
-              <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                {channel.description}
-              </p>
-            </div>
-
-            <div className="flex items-start space-x-2">
-              <a
-                href={`https://youtube.com/channel/${channel.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
-                title="Open on YouTube"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              
-              <button
-                onClick={(e) => handleUnsubscribe(channel.id, e)}
-                className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200"
-                title="Unsubscribe"
-              >
-                <BellOff className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
+    const isListView = viewMode === 'list';
 
     return (
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer overflow-hidden group"
+        className={`group relative bg-cinema-surface/20 border border-white/5 rounded-sm overflow-hidden transition-all duration-700 hover:scale-[1.01] hover:bg-cinema-surface/40 hover:border-white/20 cursor-pointer ${
+          isListView ? 'flex h-32' : 'flex flex-col'
+        }`}
         onClick={() => setSelectedChannel(channel.id)}
       >
-        <div className="relative">
+        {/* Cinematic Avatar/Banner */}
+        <div className={`relative overflow-hidden ${isListView ? 'w-48 h-full' : 'aspect-video w-full'}`}>
           <img 
             src={channel.thumbnail} 
             alt={channel.title}
-            className="w-full h-32 object-cover"
+            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
           />
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+          
+          <div className="absolute top-3 right-3 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
             <a
               href={`https://youtube.com/channel/${channel.id}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="p-1 bg-black/50 hover:bg-black/70 text-white rounded transition-colors duration-200"
-              title="Open on YouTube"
+              className="p-2 bg-black/60 backdrop-blur-md border border-white/10 hover:border-white/30 text-white rounded-sm transition-all"
+              title="Global Protocol"
             >
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <button
               onClick={(e) => handleUnsubscribe(channel.id, e)}
-              className="p-1 bg-red-600 hover:bg-red-700 text-white rounded transition-colors duration-200"
-              title="Unsubscribe"
+              className="p-2 bg-cinema-red/80 backdrop-blur-md border border-cinema-red/20 hover:bg-cinema-red text-white rounded-sm transition-all"
+              title="Terminate Protocol"
             >
-              <BellOff className="w-4 h-4" />
+              <BellOff className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
         
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">
-            {channel.title}
-          </h3>
-          
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500 mb-2">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-1">
-                <Users className="w-3 h-3" />
-                <span>{formatSubscriberCount(channel.subscriberCount)}</span>
+        {/* Cinematic Channel Data */}
+        <div className="p-5 flex-1 flex flex-col justify-between">
+          <div className="space-y-4">
+            <h3 className="text-sm font-black uppercase tracking-tight text-cinema-gray group-hover:text-white transition-colors line-clamp-1 leading-none">
+              {channel.title}
+            </h3>
+            
+            <div className="flex items-center space-x-6">
+              <div className="flex flex-col">
+                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-cinema-gray/40">Affiliates</span>
+                <span className="text-[10px] font-bold text-white tabular-nums">{formatSubscriberCount(channel.subscriberCount)}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <Video className="w-3 h-3" />
-                <span>{formatVideoCount(channel.videoCount)}</span>
+              <div className="flex flex-col">
+                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-cinema-gray/40">Unit Count</span>
+                <span className="text-[10px] font-bold text-white tabular-nums">{formatVideoCount(channel.videoCount)}</span>
               </div>
             </div>
           </div>
           
-          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-            {channel.description}
+          <p className="text-[10px] font-medium text-cinema-gray/30 line-clamp-2 leading-relaxed border-t border-white/5 pt-4 mt-4 uppercase tracking-wider">
+            {channel.description || 'No description available in the production log.'}
           </p>
         </div>
       </div>
@@ -344,66 +291,27 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
   const StatsPanel = () => {
     if (!stats) return null;
 
+    const statTiles = [
+      { label: 'Active Channels', value: stats.totalSubscriptions, icon: Users, color: 'text-blue-400' },
+      { label: 'Total Audience', value: formatSubscriberCount(stats.totalSubscribers), icon: Bell, color: 'text-cinema-red' },
+      { label: 'Asset Library', value: formatVideoCount(stats.totalVideos), icon: Video, color: 'text-purple-400' },
+      { label: 'Top Production', value: stats.topChannels[0]?.title || 'N/A', icon: BarChart3, color: 'text-orange-400' }
+    ];
+
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-slide-up">
+        {statTiles.map((tile, i) => (
+          <div key={i} className="relative group overflow-hidden bg-white/[0.02] border border-white/5 p-6 rounded-sm">
+            <div className={`absolute top-0 left-0 w-1 h-full bg-current ${tile.color} opacity-20`} />
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray/50">{tile.label}</span>
+              <tile.icon className={`w-4 h-4 ${tile.color} opacity-40`} />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Subscriptions</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalSubscriptions}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-              <Bell className="w-5 h-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Subscribers</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatSubscriberCount(stats.totalSubscribers)}
-              </p>
+            <div className="text-xl font-black text-white uppercase tracking-tight truncate">
+              {tile.value}
             </div>
           </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-              <Video className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Videos</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatVideoCount(stats.totalVideos)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-              <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Top Channel</p>
-              <p className="text-sm font-bold text-gray-900 dark:text-white line-clamp-1">
-                {stats.topChannels[0]?.title || 'N/A'}
-              </p>
-              {stats.topChannels[0] && (
-                <p className="text-xs text-gray-500">
-                  {formatSubscriberCount(stats.topChannels[0].subscriberCount)}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     );
   };
@@ -419,127 +327,131 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-            <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+    <div className="space-y-12 p-8 animate-fade-in relative">
+      {/* Master Protocol Header */}
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-12 border-b border-white/5 pb-12">
+        <div className="flex items-center space-x-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-10" />
+            <div className="p-4 bg-white/[0.02] border border-white/10 rounded-sm">
+              <Users className="w-6 h-6 text-cinema-red" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Subscriptions
+            <h1 className="text-3xl font-black uppercase tracking-[0.3em] text-white leading-none mb-3">
+              Director's <span className="text-cinema-red">Portfolio</span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {subscriptions.length} subscribed channels
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray">
+              Synchronized Channel Network // Registry Status: {subscriptions.length} Units
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setShowStats(!showStats)}
-            className="btn-secondary flex items-center space-x-2"
+            className={`px-6 py-3 rounded-sm flex items-center space-x-3 transition-all ${
+              showStats ? 'bg-white/10 text-white' : 'bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white'
+            }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>Stats</span>
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Analytics</span>
           </button>
 
           <button
             onClick={() => setShowChannelSearch(!showChannelSearch)}
-            className="btn-primary flex items-center space-x-2"
+            className="px-6 py-3 bg-cinema-red text-white rounded-sm flex items-center space-x-3 hover:bg-red-700 transition-all shadow-xl shadow-cinema-red/10"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Channel</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Expand Network</span>
           </button>
+
+          <div className="w-[1px] h-8 bg-white/5 mx-2" />
 
           <button
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className="btn-secondary flex items-center space-x-2"
+            className="p-3 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
           >
-            {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
+            {viewMode === 'grid' ? <List className="w-3.5 h-3.5" /> : <Grid3X3 className="w-3.5 h-3.5" />}
           </button>
 
           {subscriptions.length > 0 && (
-            <>
+            <div className="flex items-center space-x-2">
               <button
                 onClick={handleExport}
-                className="btn-secondary flex items-center space-x-2"
-                title="Export subscriptions"
+                className="p-3 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
+                title="Backup Local Database"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5" />
               </button>
 
-              <label className="btn-secondary flex items-center space-x-2 cursor-pointer">
-                <Upload className="w-4 h-4" />
-                <span>Import</span>
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleImport}
-                  className="hidden"
-                />
+              <label className="p-3 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all cursor-pointer">
+                <Upload className="w-3.5 h-3.5" />
+                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
               </label>
 
               <button
                 onClick={handleClearAll}
-                className="btn-secondary text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
+                className="p-3 bg-white/[0.02] border border-white/5 text-cinema-red/40 hover:text-cinema-red hover:bg-cinema-red/5 rounded-sm transition-all"
+                title="Wipe Local Registry"
               >
-                <Trash2 className="w-4 h-4" />
-                <span>Clear All</span>
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Stats Panel */}
+      {/* Global Analytics Panel */}
       {showStats && <StatsPanel />}
 
-      {/* Channel Search */}
+      {/* Recruitment Hub (Channel Search) */}
       {showChannelSearch && (
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Search Channels to Subscribe
+        <div className="p-8 bg-white/[0.01] border border-white/5 rounded-sm animate-slide-up space-y-8">
+          <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white flex items-center space-x-3">
+             <div className="w-2 h-2 bg-cinema-red rounded-full animate-pulse" />
+             <span>Subsidized Unit Recruitment</span>
           </h3>
           
-          <div className="flex space-x-2 mb-4">
+          <div className="flex gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-cinema-gray/30 w-4 h-4" />
               <input
                 type="text"
                 value={channelSearchQuery}
                 onChange={(e) => setChannelSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleChannelSearch()}
-                placeholder="Search for channels..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="Scan global frequency for production channels..."
+                className="w-full pl-14 pr-6 py-5 bg-black/40 border border-white/5 rounded-sm text-sm font-medium text-white placeholder:text-cinema-gray/20 focus:ring-0 focus:border-white/20 transition-all"
               />
             </div>
             <button
               onClick={handleChannelSearch}
               disabled={channelSearchLoading || !channelSearchQuery.trim()}
-              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-12 bg-white/5 hover:bg-white/10 text-white rounded-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
-              {channelSearchLoading ? 'Searching...' : 'Search'}
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">
+                {channelSearchLoading ? 'Scanning...' : 'Engage'}
+              </span>
             </button>
           </div>
 
           {channelSearchResults.length > 0 && (
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
               {channelSearchResults.map((channel) => (
-                <div key={channel.id.channelId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div className="flex items-center space-x-3">
+                <div key={channel.id.channelId} className="flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-sm hover:border-white/10 transition-all">
+                  <div className="flex items-center space-x-6">
                     <img 
                       src={channel.snippet.thumbnails.default?.url}
                       alt={channel.snippet.title}
-                      className="w-10 h-10 rounded-full"
+                      className="w-14 h-14 rounded-sm grayscale group-hover:grayscale-0 border border-white/5"
                     />
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white">
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black uppercase tracking-tight text-white leading-none">
                         {channel.snippet.title}
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
-                        {channel.snippet.description}
+                      <p className="text-[9px] font-medium text-cinema-gray/40 line-clamp-1 uppercase tracking-widest leading-none">
+                         Synchronizing...
                       </p>
                     </div>
                   </div>
@@ -548,9 +460,9 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
                       id: channel.id.channelId,
                       snippet: channel.snippet
                     })}
-                    className="btn-primary"
+                    className="px-6 py-3 bg-cinema-red/10 border border-cinema-red/20 text-cinema-red text-[9px] font-black uppercase tracking-[0.2em] hover:bg-cinema-red hover:text-white transition-all rounded-sm"
                   >
-                    Subscribe
+                    Integrate
                   </button>
                 </div>
               ))}
@@ -559,100 +471,97 @@ const SubscriptionsManager = ({ onVideoSelect }) => {
         </div>
       )}
 
-      {/* Controls */}
+      {/* Grid Controls: Logistics & Synchronization */}
       {subscriptions.length > 0 && (
-        <div className="card p-4 space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="flex flex-col lg:flex-row gap-6 p-6 bg-white/[0.01] border border-white/5 rounded-sm">
+          <div className="flex-1 relative">
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-cinema-gray/20 w-3.5 h-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search subscriptions..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              placeholder="FILTER LOCAL NETWORK..."
+              className="w-full pl-14 pr-6 py-4 bg-transparent border border-white/5 rounded-sm text-[10px] font-black uppercase tracking-[0.3em] text-white focus:ring-0 focus:border-white/20 placeholder:text-cinema-gray/20"
             />
           </div>
 
-          {/* Filters and Sort */}
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Category:</label>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center space-x-3">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-cinema-gray/40">Sector:</span>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="bg-black/60 border border-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 focus:border-cinema-red rounded-sm appearance-none min-w-[140px]"
               >
-                <option value="all">All Categories</option>
+                <option value="all">ALL SECTORS</option>
                 {Object.entries(categories).map(([category, channels]) => (
                   channels.length > 0 && (
                     <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)} ({channels.length})
+                      {category.toUpperCase()} ({channels.length})
                     </option>
                   )
                 ))}
               </select>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
+            <div className="flex items-center space-x-3">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-cinema-gray/40">Logic:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="bg-black/60 border border-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 focus:border-cinema-red rounded-sm appearance-none min-w-[140px]"
               >
-                <option value="subscribedAt">Date Subscribed</option>
-                <option value="title">Channel Name</option>
-                <option value="subscribers">Subscriber Count</option>
-                <option value="videos">Video Count</option>
+                <option value="subscribedAt">DEPLOYMENT DATE</option>
+                <option value="title">UNIT IDENTIFIER</option>
+                <option value="subscribers">AUDIENCE SIZE</option>
+                <option value="videos">ASSET VOLUME</option>
               </select>
             </div>
 
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="flex items-center space-x-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              className="flex items-center space-x-3 px-4 py-2 hover:bg-white/5 transition-all text-cinema-gray hover:text-white rounded-sm"
             >
-              {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
-              <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
+              {sortOrder === 'asc' ? <SortAsc className="w-3.5 h-3.5" /> : <SortDesc className="w-3.5 h-3.5" />}
+              <span className="text-[9px] font-black uppercase tracking-[0.2em]">{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Subscriptions Grid/List */}
+      {/* Master Portfolio Display */}
       {filteredSubscriptions.length > 0 ? (
         <div className={viewMode === 'grid' 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          : "space-y-4"
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 animate-slide-up"
+          : "space-y-6 animate-slide-up"
         }>
           {filteredSubscriptions.map((channel) => (
             <ChannelCard key={channel.id} channel={channel} />
           ))}
         </div>
       ) : subscriptions.length > 0 ? (
-        <div className="text-center py-12">
-          <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No channels found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Try adjusting your search terms or filters.
+        <div className="py-32 text-center space-y-6 border border-dashed border-white/5 rounded-sm">
+          <Search className="w-12 h-12 text-cinema-gray/10 mx-auto" />
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray/40">
+            No matching units found in localized portfolio
           </p>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No subscriptions yet
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Start by searching and subscribing to channels you like.
-          </p>
+        <div className="py-48 text-center space-y-12">
+          <div className="space-y-6">
+            <Users className="w-16 h-16 text-cinema-gray/10 mx-auto" />
+            <div className="space-y-3">
+              <h3 className="text-xl font-black uppercase tracking-[0.4em] text-white">Registry Empty</h3>
+              <p className="text-[10px] font-medium text-cinema-gray uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
+                Connect and synchronize production channels to initialize your creative director dashboard.
+              </p>
+            </div>
+          </div>
           <button
             onClick={() => setShowChannelSearch(true)}
-            className="btn-primary"
+            className="px-12 py-5 bg-cinema-red text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-red-700 transition-all shadow-2xl shadow-cinema-red/20"
           >
-            Search Channels
+            Engage Network Recruitment
           </button>
         </div>
       )}

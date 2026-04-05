@@ -7,7 +7,6 @@ const LanguageSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Supported languages based on the original app
   const languages = [
     { code: 'en', name: 'English', nativeName: 'English' },
     { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
@@ -48,35 +47,52 @@ const LanguageSelector = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+        className={`flex items-center space-x-3 px-4 py-2.5 rounded-sm transition-all duration-500 border ${
+          isOpen 
+            ? 'bg-white/10 border-white/20 text-white shadow-2xl' 
+            : 'bg-white/[0.02] border-white/5 text-cinema-gray/60 hover:text-white hover:bg-white/5'
+        }`}
         title={t('header.changeLanguage')}
       >
-        <Languages className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-        <span className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <Languages className={`w-4 h-4 transition-colors ${isOpen ? 'text-cinema-red' : 'text-current'}`} />
+        <span className="hidden sm:block text-[10px] font-black uppercase tracking-[0.3em]">
           {currentLanguage.code.toUpperCase()}
         </span>
-        <ChevronDown className={`w-4 h-4 text-gray-600 dark:text-gray-300 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3 h-3 transition-transform duration-500 ${isOpen ? 'rotate-180 text-cinema-red' : 'text-current opacity-40'}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
-          <div className="py-2">
+        <div className="absolute right-0 mt-3 w-72 bg-cinema-surface/95 backdrop-blur-3xl border border-white/10 rounded-sm shadow-[0_30px_100px_rgba(0,0,0,0.8)] z-50 max-h-[70vh] overflow-y-auto no-scrollbar animate-slide-up">
+          <div className="p-2 space-y-1">
+            <div className="px-4 py-3 border-b border-white/5 mb-2">
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-red">Protocol Translation</span>
+            </div>
             {languages.map((language) => (
               <button
                 key={language.code}
                 onClick={() => handleLanguageChange(language.code)}
-                className={`w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+                className={`w-full text-left px-5 py-4 rounded-sm transition-all duration-300 relative group overflow-hidden ${
                   currentLanguage.code === language.code
-                    ? 'bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
-                    : 'text-gray-700 dark:text-gray-300'
+                    ? 'bg-cinema-red/10 border border-cinema-red/20'
+                    : 'hover:bg-white/5 border border-transparent'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{language.nativeName}</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {language.name}
-                  </span>
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="flex flex-col space-y-0.5">
+                    <span className={`text-[12px] font-black uppercase tracking-widest ${currentLanguage.code === language.code ? 'text-white' : 'text-cinema-gray/80 group-hover:text-white'}`}>
+                      {language.nativeName}
+                    </span>
+                    <span className="text-[9px] font-bold text-cinema-gray/40 uppercase tracking-[0.2em]">
+                      {language.name} Region
+                    </span>
+                  </div>
+                  {currentLanguage.code === language.code && (
+                    <div className="w-1.5 h-1.5 bg-cinema-red rounded-full shadow-[0_0_10px_rgba(229,9,20,1)]" />
+                  )}
                 </div>
+                {currentLanguage.code === language.code && (
+                    <div className="absolute left-0 top-0 w-1 h-full bg-cinema-red" />
+                )}
               </button>
             ))}
           </div>

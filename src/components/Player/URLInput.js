@@ -23,65 +23,71 @@ const URLInput = ({ onSubmit, loading }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {t('urlInput.title')}
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('urlInput.description')}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <LinkIcon className="h-5 w-5 text-gray-400" />
-          </div>
-          
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder={t('urlInput.placeholder')}
-            className="input-field pl-10 pr-20 text-lg"
-            disabled={loading}
-          />
-          
-          <div className="absolute inset-y-0 right-0 flex items-center space-x-1 pr-2">
+    <div className="w-full max-w-2xl mx-auto animate-slide-up">
+      <form onSubmit={handleSubmit} className="relative group">
+        {/* Cinematic Backdrop Glow */}
+        <div className="absolute inset-0 bg-cinema-red opacity-[0.03] blur-[100px] group-focus-within:opacity-[0.08] transition-opacity duration-1000" />
+        
+        <div className="relative flex flex-col sm:flex-row items-center gap-4 p-2 bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-sm group-focus-within:border-white/10 group-focus-within:bg-white/[0.04] transition-all duration-500 shadow-2xl">
+          <div className="relative flex-1 w-full">
+            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+              <LinkIcon className={`h-4 w-4 transition-colors duration-500 ${url ? 'text-cinema-red' : 'text-cinema-gray/30'}`} />
+            </div>
+            
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder={t('urlInput.placeholder')}
+              className="w-full bg-transparent border-none text-white placeholder:text-cinema-gray/20 pl-14 pr-32 py-5 text-sm font-medium focus:ring-0 transition-all tracking-wide"
+              disabled={loading}
+            />
+            
             <button
               type="button"
               onClick={handlePaste}
-              className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
+              className="absolute inset-y-0 right-4 flex items-center px-4 text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray hover:text-white transition-all border-l border-white/5 h-1/2 my-auto"
               disabled={loading}
             >
-              {t('urlInput.paste')}
+              Sync Clip
             </button>
           </div>
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
           <button
             type="submit"
             disabled={!url.trim() || loading}
-            className="btn-primary flex-1 flex items-center justify-center space-x-2 text-lg py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full sm:w-auto px-10 py-5 rounded-sm flex items-center justify-center space-x-3 transition-all duration-500 shadow-xl ${
+              !url.trim() || loading 
+                ? 'bg-white/5 text-cinema-gray/40 grayscale pointer-events-none opacity-50' 
+                : 'bg-cinema-red text-white hover:bg-red-700 hover:scale-[1.02] shadow-cinema-red/20 active:scale-95'
+            }`}
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>{t('urlInput.loading')}</span>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Processing Assets</span>
               </>
             ) : (
               <>
-                <Play className="w-5 h-5" />
-                <span>{t('urlInput.play')}</span>
+                <Play className="w-4 h-4 fill-white" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Initialize Session</span>
               </>
             )}
           </button>
         </div>
+        
+        {/* Tracking Metadata */}
+        <div className="mt-6 flex items-center justify-center space-x-8 opacity-40">
+           <div className="flex items-center space-x-2 text-[8px] font-black uppercase tracking-widest text-cinema-gray">
+              <div className="w-1 h-1 bg-cinema-red rounded-full animate-pulse" />
+              <span>Immersive Engine Active</span>
+           </div>
+           <div className="flex items-center space-x-2 text-[8px] font-black uppercase tracking-widest text-cinema-gray">
+              <div className="w-1 h-1 bg-white/20 rounded-full" />
+              <span>Director's Cut Mode</span>
+           </div>
+        </div>
       </form>
-
-
     </div>
   );
 };

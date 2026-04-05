@@ -29,10 +29,10 @@ const AppContent = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="min-h-screen bg-cinema-black text-gray-100 selection:bg-cinema-red selection:text-white transition-colors duration-300">
         <Header onVideoSelect={handleVideoSelect} />
 
-        <main className="container mx-auto px-4 py-8">
+        <main className="pt-14 md:pt-16 min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-64px)]">
           <Routes>
             <Route path="/" element={<MainPlayer />} />
             <Route path="/settings" element={<Settings />} />

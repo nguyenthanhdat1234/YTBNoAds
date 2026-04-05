@@ -9,107 +9,116 @@ const PlaylistView = ({ playlist, currentVideo, onVideoSelect }) => {
     return null;
   }
 
-  const formatDuration = (seconds) => {
-    if (!seconds) return '';
+  const formatTime = (seconds) => {
+    if (!seconds) return '0:00';
     const minutes = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
-    <div className="card p-4 space-y-4">
-      {/* Playlist Header */}
-      <div className="flex items-center space-x-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-        <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg">
-          <List className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+    <div className="glass-card bg-cinema-surface/40 p-6 space-y-6 border border-white/5 rounded-sm">
+      {/* Playlist Sector Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-white/5">
+        <div className="flex items-center space-x-4">
+          <div className="p-2.5 bg-cinema-red/10 border border-cinema-red/20 rounded-sm">
+            <List className="w-5 h-5 text-cinema-red" />
+          </div>
+          <div className="flex flex-col">
+            <h3 className="text-xs font-black text-white uppercase tracking-[0.3em] truncate max-w-[200px]">
+              {playlist.title}
+            </h3>
+            <span className="text-[10px] font-bold text-cinema-gray uppercase tracking-widest mt-0.5">
+              Sequence: {playlist.videos.length} Modules
+            </span>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-            {playlist.title}
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {playlist.videos.length} videos
-          </p>
+        
+        <div className="flex items-center space-x-2">
+           <div className="w-1.5 h-1.5 bg-cinema-red rounded-full animate-pulse" />
+           <span className="text-[9px] font-black text-cinema-gray uppercase tracking-widest">Active Queue</span>
         </div>
       </div>
 
-      {/* Video List */}
-      <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-hide">
+      {/* Production Sequence List */}
+      <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
         {playlist.videos.map((video, index) => (
           <div
             key={video.id}
             onClick={() => onVideoSelect(video)}
-            className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+            className={`group flex items-center space-x-4 p-3 rounded-sm cursor-pointer transition-all duration-300 border ${
               currentVideo?.id === video.id
-                ? 'bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800'
-                : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'bg-cinema-red/10 border-cinema-red/30 shadow-[inset_0_0_20px_rgba(229,9,20,0.1)]'
+                : 'bg-white/2 border-white/5 hover:bg-white/5 hover:border-white/10'
             }`}
           >
-            {/* Thumbnail */}
-            <div className="relative flex-shrink-0">
+            {/* Visual Identifier */}
+            <div className="relative flex-shrink-0 w-24 aspect-video overflow-hidden rounded-sm border border-white/5">
               <img
                 src={video.thumbnail || `https://img.youtube.com/vi/${video.id}/default.jpg`}
                 alt={video.title}
-                className="w-16 h-12 object-cover rounded"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               {currentVideo?.id === video.id ? (
-                <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center">
-                  <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+                <div className="absolute inset-0 bg-cinema-red/40 backdrop-blur-[2px] flex items-center justify-center">
+                   <div className="flex space-x-0.5 items-end h-3">
+                      <div className="w-1 bg-white animate-music-bar-1" />
+                      <div className="w-1 bg-white animate-music-bar-2" />
+                      <div className="w-1 bg-white animate-music-bar-3" />
+                   </div>
                 </div>
               ) : (
-                <div className="absolute inset-0 bg-black/30 rounded flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
-                  <Play className="w-4 h-4 text-white" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <Play className="w-5 h-5 text-white fill-white scale-75 group-hover:scale-100 transition-transform" />
                 </div>
               )}
             </div>
 
-            {/* Video Info */}
-            <div className="flex-1 min-w-0">
-              <h4 className={`text-sm font-medium truncate ${
+            {/* Asset Metadata */}
+            <div className="flex-1 min-w-0 space-y-1">
+              <h4 className={`text-[11px] font-black uppercase tracking-wider truncate transition-colors duration-300 ${
                 currentVideo?.id === video.id
-                  ? 'text-primary-700 dark:text-primary-300'
-                  : 'text-gray-900 dark:text-white'
+                  ? 'text-white'
+                  : 'text-cinema-gray group-hover:text-white'
               }`}>
                 {video.title}
               </h4>
-              <div className="flex items-center space-x-2 mt-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {video.author?.name || 'Unknown'}
+              <div className="flex items-center space-x-3">
+                <span className="text-[9px] font-bold text-cinema-gray/60 uppercase tracking-widest whitespace-nowrap">
+                  {video.author?.name || 'Asset Origin Unknown'}
                 </span>
                 {video.duration && (
-                  <>
-                    <span className="text-xs text-gray-400">•</span>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {formatDuration(video.duration)}
-                      </span>
-                    </div>
-                  </>
+                  <div className="flex items-center space-x-1.5 text-cinema-gray/40">
+                    <span className="text-[10px]">•</span>
+                    <Clock className="w-2.5 h-2.5" />
+                    <span className="text-[9px] tabular-nums font-medium">
+                      {formatTime(video.duration)}
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Index */}
-            <div className="flex-shrink-0">
-              <span className={`text-xs font-mono ${
+            {/* Temporal Index */}
+            <div className="flex-shrink-0 pr-2">
+              <span className={`text-[10px] font-black italic tracking-tighter ${
                 currentVideo?.id === video.id
-                  ? 'text-primary-600 dark:text-primary-400'
-                  : 'text-gray-400'
+                  ? 'text-cinema-red'
+                  : 'text-white/10 group-hover:text-white/30'
               }`}>
-                {(index + 1).toString().padStart(2, '0')}
+                #{(index + 1).toString().padStart(2, '0')}
               </span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Playlist Stats */}
-      <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-          <span>Total videos: {playlist.videos.length}</span>
+      {/* Queue Diagnostics */}
+      <div className="pt-4 border-t border-white/5">
+        <div className="flex items-center justify-between text-[8px] font-black text-cinema-gray/40 uppercase tracking-[0.3em]">
+          <span>Total Payload: {playlist.videos.length} Units</span>
           {playlist.totalDuration && (
-            <span>Duration: {formatDuration(playlist.totalDuration)}</span>
+            <span>Temporal Density: {formatTime(playlist.totalDuration)}</span>
           )}
         </div>
       </div>

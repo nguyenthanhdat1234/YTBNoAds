@@ -54,18 +54,15 @@ const Settings = () => {
     }
 
     try {
-      // Temporarily set the key to test it
       const originalKey = localStorage.getItem('youtube_api_key');
       setApiKey(apiKey);
 
-      // Test the API with a simple request
       const { searchVideos } = await import('../../services/youtubeApi');
       await searchVideos('test', { maxResults: 1 });
 
       toast.success('API key is valid!');
     } catch (error) {
       toast.error(`API key test failed: ${error.message}`);
-      // Restore original key if test failed
       const originalKey = localStorage.getItem('youtube_api_key');
       if (originalKey) {
         setApiKey(originalKey);
@@ -76,34 +73,34 @@ const Settings = () => {
   };
 
   const SettingSection = ({ icon: Icon, title, children }) => (
-    <div className="card p-6 space-y-4">
-      <div className="flex items-center space-x-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-        <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg">
-          <Icon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+    <div className="space-y-6 md:space-y-8 animate-slide-up">
+      <div className="flex items-center space-x-4 border-b border-white/5 pb-5">
+        <div className="p-2.5 bg-white/[0.02] border border-white/10 rounded-sm flex-shrink-0">
+          <Icon className="w-4 h-4 md:w-5 md:h-5 text-cinema-red" />
         </div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-base md:text-xl font-black uppercase tracking-[0.15em] md:tracking-[0.2em] text-white">
           {title}
         </h2>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-6 md:space-y-8 pl-0 md:pl-4">
         {children}
       </div>
     </div>
   );
 
   const SettingItem = ({ label, description, children }) => (
-    <div className="flex items-center justify-between">
-      <div className="flex-1">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+    <div className="flex flex-col gap-3 md:gap-4 group">
+      <div className="space-y-1">
+        <label className="text-[10px] font-black uppercase tracking-[0.25em] text-cinema-gray group-hover:text-white transition-colors">
           {label}
         </label>
         {description && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-[10px] font-medium text-cinema-gray/40 uppercase tracking-widest leading-relaxed">
             {description}
           </p>
         )}
       </div>
-      <div className="ml-4">
+      <div className="flex-shrink-0">
         {children}
       </div>
     </div>
@@ -112,83 +109,81 @@ const Settings = () => {
   const Toggle = ({ checked, onChange }) => (
     <button
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 ${
-        checked ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
+      className={`relative inline-flex h-6 w-12 items-center rounded-sm transition-all duration-500 focus:outline-none ${
+        checked ? 'bg-cinema-red shadow-[0_0_20px_rgba(229,9,20,0.3)]' : 'bg-white/10'
       }`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-          checked ? 'translate-x-6' : 'translate-x-1'
+        className={`inline-block h-4 w-4 transform rounded-sm bg-white transition-all duration-500 ${
+          checked ? 'translate-x-7' : 'translate-x-1'
         }`}
       />
     </button>
   );
 
-  const Select = ({ value, onChange, options }) => (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="input-field w-32 text-sm"
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  );
-
   const tabs = [
-    { id: 'video', label: 'Video Quality', icon: Monitor },
-    { id: 'audio', label: 'Audio', icon: Volume2 },
-    { id: 'api', label: 'YouTube API', icon: Key },
-    { id: 'interface', label: 'Interface', icon: Palette },
-    { id: 'advanced', label: 'Advanced', icon: Sliders }
+    { id: 'video', label: 'Visual', fullLabel: 'Visual Quality', icon: Monitor },
+    { id: 'audio', label: 'Sonic', fullLabel: 'Sonic Profile', icon: Volume2 },
+    { id: 'api', label: 'API', fullLabel: 'Protocol Config', icon: Key },
+    { id: 'interface', label: 'Theme', fullLabel: 'Aesthetic', icon: Palette },
+    { id: 'advanced', label: 'System', fullLabel: 'System Logic', icon: Sliders },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-8 md:space-y-16 px-4 md:px-8 py-6 md:py-8 pb-24 xl:pb-8 animate-fade-in">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {t('settings.title')}
+      <div className="text-center space-y-3 md:space-y-4">
+        <div className="inline-flex items-center space-x-3 px-4 py-1 bg-cinema-red/10 border border-cinema-red/20 rounded-full mb-3">
+          <SettingsIcon className="w-3 h-3 text-cinema-red animate-spin-slow" />
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-cinema-red">System Core</span>
+        </div>
+        <h1 className="text-2xl md:text-4xl font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-white leading-none">
+          Production <span className="text-cinema-red">Console</span>
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Customize your YouTube Web Player experience
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-cinema-gray/40 max-w-lg mx-auto">
+          Synchronizing personalized parameters.
         </p>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="card p-1">
-        <nav className="flex space-x-1">
+      {/* Tab Navigation — scrollable on mobile */}
+      <div className="bg-white/[0.01] border border-white/5 p-1.5 md:p-2 rounded-sm backdrop-blur-3xl">
+        <nav className="flex items-center overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-colors duration-200 flex-1 justify-center ${
+              className={`flex items-center space-x-2 md:space-x-4 px-4 md:px-8 py-3 md:py-5 rounded-sm transition-all duration-500 flex-shrink-0 relative group ${
                 activeTab === tab.id
-                  ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'text-white'
+                  : 'text-cinema-gray/40 hover:text-white'
               }`}
             >
-              <tab.icon className="w-4 h-4" />
-              <span className="font-medium text-sm">{tab.label}</span>
+              <tab.icon className={`w-3.5 h-3.5 md:w-4 md:h-4 transition-all duration-500 ${activeTab === tab.id ? 'text-cinema-red' : 'text-current'}`} />
+              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] whitespace-nowrap">
+                <span className="md:hidden">{tab.label}</span>
+                <span className="hidden md:inline">{tab.fullLabel}</span>
+              </span>
+              {activeTab === tab.id && (
+                <div className="absolute inset-0 bg-white/5 rounded-sm -z-10 animate-fade-in" />
+              )}
             </button>
           ))}
         </nav>
       </div>
 
-      {/* Tab Content */}
-      <div className="card p-6">
+      {/* Content */}
+      <div className="bg-white/[0.01] border border-white/5 p-5 md:p-12 rounded-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-cinema-red/5 blur-[120px] rounded-full -mr-16 -mt-16 md:-mr-32 md:-mt-32" />
+
         {activeTab === 'video' && (
           <QualitySettings settings={settings} updateSetting={updateSetting} />
         )}
 
         {activeTab === 'audio' && (
-          <SettingSection icon={Volume2} title={t('settings.audio.title')}>
+          <SettingSection icon={Volume2} title="Sonic Parameters">
             <SettingItem
-              label={t('settings.audio.audioOnly')}
-              description="Enable audio-only mode for music playback"
+              label="Pure Audio Protocol"
+              description="Isolate sonic channel and suspend visual rendering."
             >
               <Toggle
                 checked={settings.audioOnly}
@@ -197,155 +192,144 @@ const Settings = () => {
             </SettingItem>
 
             <SettingItem
-              label={t('settings.audio.bitrate')}
-              description="Audio quality bitrate (kbps)"
+              label="Bitrate Fidelity"
+              description="Maximum frequency output (kbps)."
             >
-              <Select
+              <select
                 value={settings.bitrate}
-                onChange={(value) => updateSetting('bitrate', value)}
-                options={bitrateOptions.map(b => ({ value: b, label: `${b} kbps` }))}
-              />
+                onChange={(e) => updateSetting('bitrate', e.target.value)}
+                className="bg-black/60 border border-white/10 px-4 py-2.5 md:px-6 md:py-3 text-[10px] font-black uppercase tracking-widest text-white focus:ring-0 focus:border-cinema-red rounded-sm appearance-none w-full md:w-auto md:min-w-[160px]"
+              >
+                {bitrateOptions.map(b => (
+                  <option key={b} value={b}>{b} KBPS</option>
+                ))}
+              </select>
             </SettingItem>
           </SettingSection>
         )}
 
         {activeTab === 'api' && (
-          <SettingSection icon={Key} title="YouTube API Configuration">
-            <div className="space-y-4">
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <Search className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
+          <SettingSection icon={Key} title="Neural Network Link">
+            <div className="space-y-8 md:space-y-12">
+              <div className="relative group overflow-hidden bg-cinema-red/[0.02] border border-cinema-red/10 rounded-sm p-5 md:p-8">
+                <div className="absolute top-0 left-0 w-1 h-full bg-cinema-red opacity-20" />
+                <div className="flex items-start space-x-4 md:space-x-6">
+                  <div className="p-2.5 bg-cinema-red/10 rounded-sm flex-shrink-0">
+                    <Search className="w-5 h-5 text-cinema-red" />
+                  </div>
                   <div>
-                    <h4 className="font-medium text-green-900 dark:text-green-100">
-                      ✅ YouTube API Ready to Use
+                    <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white mb-2">
+                      Global Link Synchronized
                     </h4>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                      YouTube Data API v3 is pre-configured and ready to use. You can now search videos, browse trending content, and access all advanced features.
+                    <p className="text-[10px] font-medium text-cinema-gray/60 uppercase tracking-widest leading-relaxed">
+                      YouTube Data Protocol v3. Search, trending & recommendations active.
                     </p>
-                    <p className="text-sm text-green-600 dark:text-green-400 mt-2">
-                      🎉 No setup required - start using the app immediately!
-                    </p>
+                    <div className="mt-4 flex items-center space-x-2">
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-green-500">Protocol Ready</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <SettingItem
-                label="YouTube API Key Status"
-                description="YouTube Data API v3 is pre-configured for immediate use"
+                label="Neural Override"
+                description="Manually synchronize with custom API credentials."
               >
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 text-sm">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="text-green-600 dark:text-green-400 font-medium">
-                      ✅ API key is active and ready
-                    </span>
+                <div className="space-y-4 w-full">
+                  <div className="relative">
+                    <input
+                      type={showApiKey ? 'text' : 'password'}
+                      value={apiKey}
+                      onChange={(e) => setApiKeyState(e.target.value)}
+                      placeholder="ENTER NEURAL ACCESS KEY..."
+                      className="w-full pl-4 pr-12 py-3.5 bg-black/40 border border-white/5 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-white placeholder:text-cinema-gray/20 focus:ring-0 focus:border-white/20 transition-all font-mono"
+                    />
+                    <button
+                      onClick={() => setShowApiKey(!showApiKey)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cinema-gray/30 hover:text-white transition-colors"
+                    >
+                      {showApiKey ? '🙈' : '👁️'}
+                    </button>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      <strong>Current Status:</strong> YouTube Data API v3 is pre-configured
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      You can optionally override this by setting your own API key in localStorage or environment variables.
-                    </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={handleApiKeySave}
+                      disabled={!apiKey.trim()}
+                      className="px-4 py-3.5 bg-white/5 hover:bg-white/10 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20"
+                    >
+                      Sync Key
+                    </button>
+                    <button
+                      onClick={handleApiKeyTest}
+                      disabled={!apiKey.trim()}
+                      className="px-4 py-3.5 bg-cinema-red text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20 shadow-lg shadow-cinema-red/10"
+                    >
+                      Verify Link
+                    </button>
                   </div>
-
-                  <details className="text-sm">
-                    <summary className="cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                      Advanced: Override API Key
-                    </summary>
-                    <div className="mt-2 space-y-2">
-                      <div className="flex space-x-2">
-                        <input
-                          type={showApiKey ? 'text' : 'password'}
-                          value={apiKey}
-                          onChange={(e) => setApiKeyState(e.target.value)}
-                          placeholder="Enter your custom YouTube API key..."
-                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
-                        />
-                        <button
-                          onClick={() => setShowApiKey(!showApiKey)}
-                          className="px-3 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                          title={showApiKey ? 'Hide API key' : 'Show API key'}
-                        >
-                          {showApiKey ? '🙈' : '👁️'}
-                        </button>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={handleApiKeySave}
-                          disabled={!apiKey.trim()}
-                          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                        >
-                          Override API Key
-                        </button>
-                        <button
-                          onClick={handleApiKeyTest}
-                          disabled={!apiKey.trim()}
-                          className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                        >
-                          Test Custom Key
-                        </button>
-                      </div>
-                    </div>
-                  </details>
                 </div>
               </SettingItem>
 
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
-                  🚀 Available Features (Ready to Use):
-                </h4>
-                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-                  <li>✅ Search YouTube videos by keyword</li>
-                  <li>✅ Browse trending videos by region</li>
-                  <li>✅ Get smart video recommendations</li>
-                  <li>✅ View channel information & subscribe</li>
-                  <li>✅ Access video statistics and details</li>
-                  <li>✅ Browse channel videos</li>
-                  <li>✅ Watch history & favorites management</li>
-                  <li>✅ Advanced player features (PiP, Theater mode)</li>
-                </ul>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  'Scan global frequency records',
+                  'Calibrate trending sectors',
+                  'Retrieve neural recommendations',
+                  'Archive production metadata',
+                  'Analyze production metrics',
+                  'Manage session archives'
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center space-x-3 p-3.5 bg-white/[0.01] border border-white/5 rounded-sm">
+                    <div className="w-1.5 h-1.5 bg-cinema-red opacity-40 rounded-full flex-shrink-0" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-cinema-gray/60">{feature}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </SettingSection>
         )}
 
         {activeTab === 'interface' && (
-          <SettingSection icon={Palette} title={t('settings.interface.title')}>
+          <SettingSection icon={Palette} title="Aesthetic Calibration">
             <SettingItem
-              label={t('settings.interface.theme')}
-              description="Choose your preferred theme"
+              label="Vision Core Profile"
+              description="Calibrate luminosity and contrast profile."
             >
               <button
                 onClick={toggleTheme}
-                className="btn-secondary capitalize"
+                className="w-full md:w-auto px-6 py-3 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white/10 transition-all rounded-sm"
               >
-                {theme}
+                {theme} Mode
               </button>
             </SettingItem>
 
             <SettingItem
-              label={t('settings.interface.accent')}
-              description="Choose accent color"
+              label="Accent Frequency"
+              description="Primary chromatic identifier for active elements."
             >
-              <div className="flex space-x-2">
+              <div className="flex items-center space-x-4 md:space-x-6 flex-wrap gap-y-2">
                 {accentOptions.map((color) => (
                   <button
                     key={color}
                     onClick={() => changeAccent(color)}
-                    className={`w-6 h-6 rounded-full border-2 transition-all duration-200 ${
+                    className={`w-9 h-9 rounded-sm border transition-all duration-700 relative group overflow-hidden ${
                       accent === color
-                        ? 'border-gray-900 dark:border-white scale-110'
-                        : 'border-gray-300 dark:border-gray-600'
+                        ? 'border-white border-opacity-100 scale-110 shadow-2xl'
+                        : 'border-white border-opacity-5 hover:border-opacity-30'
                     } ${
-                      color === 'blue' ? 'bg-blue-500' :
-                      color === 'red' ? 'bg-red-500' :
-                      color === 'green' ? 'bg-green-500' :
-                      color === 'purple' ? 'bg-purple-500' :
-                      'bg-orange-500'
+                      color === 'blue' ? 'bg-blue-600' :
+                      color === 'red' ? 'bg-cinema-red' :
+                      color === 'green' ? 'bg-green-600' :
+                      color === 'purple' ? 'bg-purple-600' :
+                      'bg-orange-600'
                     }`}
-                  />
+                  >
+                    {accent === color && (
+                      <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                    )}
+                  </button>
                 ))}
               </div>
             </SettingItem>
@@ -353,10 +337,10 @@ const Settings = () => {
         )}
 
         {activeTab === 'advanced' && (
-          <SettingSection icon={Sliders} title={t('settings.advanced.title')}>
+          <SettingSection icon={Sliders} title="System Logic">
             <SettingItem
-              label={t('settings.advanced.tagAudioFile')}
-              description="Extract metadata from video titles"
+              label="Metadata Extraction"
+              description="Automated log parsing for assets and session ID."
             >
               <Toggle
                 checked={settings.tagAudioFile}
@@ -365,34 +349,33 @@ const Settings = () => {
             </SettingItem>
 
             <SettingItem
-              label={t('settings.advanced.filenamePattern')}
-              description="Pattern for generating filenames"
+              label="Identifier Protocol"
+              description="Pattern schema for generating asset identifiers."
             >
               <input
                 type="text"
                 value={settings.filenamePattern}
                 onChange={(e) => updateSetting('filenamePattern', e.target.value)}
-                className="input-field w-48 text-sm"
-                placeholder="$title"
+                className="w-full md:w-auto bg-black/60 border border-white/5 px-5 py-3.5 text-[10px] font-black uppercase tracking-[0.4em] text-white focus:ring-0 focus:border-cinema-red rounded-sm md:min-w-[240px] font-mono"
+                placeholder="$LOG_TITLE"
               />
             </SettingItem>
 
             <SettingItem
-              label={t('settings.advanced.resetSettings')}
-              description="Reset all settings to default values"
+              label="System Wipe"
+              description="Permanent termination of all localized parameters."
             >
               <button
                 onClick={handleResetSettings}
-                className="flex items-center space-x-2 px-3 py-2 text-sm bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800 rounded-lg transition-colors duration-200"
+                className="w-full md:w-auto flex items-center justify-center space-x-3 px-6 py-3.5 bg-cinema-red/10 border border-cinema-red/20 text-cinema-red hover:bg-cinema-red hover:text-white transition-all duration-500 rounded-sm"
               >
-                <RotateCcw className="w-4 h-4" />
-                <span>Reset</span>
+                <RotateCcw className="w-4 h-4 flex-shrink-0" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Initialize Wipe</span>
               </button>
             </SettingItem>
           </SettingSection>
         )}
       </div>
-
     </div>
   );
 };

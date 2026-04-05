@@ -161,70 +161,79 @@ const WatchHistory = ({ onVideoSelect }) => {
   const VideoCard = ({ video }) => {
     return (
       <div 
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer overflow-hidden group"
+        className="group relative bg-cinema-surface/20 border border-white/5 rounded-sm overflow-hidden transition-all duration-700 hover:scale-[1.02] hover:bg-cinema-surface/40 hover:border-white/20 cursor-pointer"
         onClick={() => handleVideoClick(video)}
       >
-        <div className="relative">
+        {/* Cinematic Thumbnail */}
+        <div className="relative aspect-video overflow-hidden">
           <img 
             src={video.thumbnail} 
             alt={video.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-full object-cover transition-all duration-1000 grayscale group-hover:grayscale-0 scale-105 group-hover:scale-110"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+          
           {video.duration && (
-            <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
               {formatDuration(video.duration)}
             </div>
           )}
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
             <button
               onClick={(e) => handleRemoveVideo(video.id, e)}
-              className="p-1 bg-red-600 hover:bg-red-700 text-white rounded-full transition-colors duration-200"
-              title="Remove from history"
+              className="p-2 bg-cinema-red/80 backdrop-blur-md border border-cinema-red/20 hover:bg-cinema-red text-white rounded-sm transition-all shadow-2xl"
+              title="Purge Entry"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-            <Play className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-90 group-hover:scale-100">
+            <div className="w-12 h-12 bg-cinema-red rounded-full flex items-center justify-center shadow-2xl shadow-cinema-red/50 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+            </div>
           </div>
         </div>
         
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">
+        {/* Cinematic Log Data */}
+        <div className="p-5 space-y-4">
+          <h3 className="text-xs font-bold text-cinema-gray group-hover:text-white transition-colors line-clamp-2 leading-relaxed tracking-tight">
             {video.title}
           </h3>
           
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            {video.channel}
-          </p>
-          
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500 mb-2">
-            <div className="flex items-center space-x-3">
-              {video.viewCount && (
-                <div className="flex items-center space-x-1">
-                  <Eye className="w-3 h-3" />
-                  <span>{formatViewCount(video.viewCount)}</span>
-                </div>
-              )}
-              {video.publishedAt && (
-                <div className="flex items-center space-x-1">
-                  <Calendar className="w-3 h-3" />
-                  <span>{formatPublishDate(video.publishedAt)}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-            <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3" />
-              <span>Watched {formatPublishDate(video.watchedAt)}</span>
-            </div>
-            {video.watchCount > 1 && (
-              <span className="bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 px-2 py-1 rounded-full">
-                {video.watchCount}x
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 truncate max-w-[140px]">
+                {video.channel}
               </span>
-            )}
+              
+              <div className="flex items-center space-x-3 text-[9px] font-black text-cinema-gray/30 tabular-nums">
+                {video.viewCount && (
+                  <div className="flex items-center space-x-1">
+                    <span>{formatViewCount(video.viewCount)}</span>
+                  </div>
+                )}
+                {video.publishedAt && (
+                   <div className="flex items-center space-x-1">
+                     <span className="w-1 h-1 bg-white/10 rounded-full" />
+                     <span>{formatPublishDate(video.publishedAt)}</span>
+                   </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between text-[9px] font-black text-cinema-gray/40 border-t border-white/5 pt-3 uppercase tracking-widest">
+              <div className="flex items-center space-x-2">
+                <Clock className="w-3 h-3 text-cinema-red opacity-40" />
+                <span>Last Scan: {formatPublishDate(video.watchedAt)}</span>
+              </div>
+              {video.watchCount > 1 && (
+                <span className="bg-white/5 px-2 py-1 rounded-sm text-white border border-white/5">
+                  ID: {video.watchCount}x
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -234,178 +243,150 @@ const WatchHistory = ({ onVideoSelect }) => {
   const StatsPanel = () => {
     if (!stats) return null;
 
+    const statTiles = [
+      { label: 'Total Logs', value: stats.totalVideos, icon: Play, color: 'text-blue-400' },
+      { label: 'Air Time', value: formatWatchTime(stats.totalWatchTime), icon: Clock, color: 'text-cinema-red' },
+      { label: 'Network Spread', value: stats.uniqueChannels, icon: Eye, color: 'text-purple-400' },
+      { label: 'Primary Frequency', value: stats.topChannel?.name || 'N/A', icon: BarChart3, color: 'text-orange-400' }
+    ];
+
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <Play className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-slide-up">
+        {statTiles.map((tile, i) => (
+          <div key={i} className="relative group overflow-hidden bg-white/[0.02] border border-white/5 p-6 rounded-sm">
+            <div className={`absolute top-0 left-0 w-1 h-full bg-current ${tile.color} opacity-20`} />
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray/50">{tile.label}</span>
+              <tile.icon className={`w-4 h-4 ${tile.color} opacity-40`} />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Videos</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalVideos}</p>
+            <div className="text-xl font-black text-white uppercase tracking-tight truncate">
+              {tile.value}
             </div>
+            {i === 3 && stats.topChannel && (
+              <div className="mt-2 text-[9px] font-bold text-cinema-gray/30 uppercase tracking-widest">
+                Unit Match: {stats.topChannel.count} Assets
+              </div>
+            )}
           </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-              <Clock className="w-5 h-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Watch Time</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
-                {formatWatchTime(stats.totalWatchTime)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-              <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Unique Channels</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">{stats.uniqueChannels}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
-              <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Top Channel</p>
-              <p className="text-sm font-bold text-gray-900 dark:text-white line-clamp-1">
-                {stats.topChannel?.name || 'N/A'}
-              </p>
-              {stats.topChannel && (
-                <p className="text-xs text-gray-500">{stats.topChannel.count} videos</p>
-              )}
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     );
   };
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-        <p className="text-gray-600 dark:text-gray-400">Loading watch history...</p>
+      <div className="py-48 flex flex-col items-center justify-center space-y-8 animate-fade-in">
+        <div className="w-12 h-12 border-2 border-cinema-red border-t-transparent rounded-full animate-spin shadow-2xl shadow-cinema-red/20" />
+        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-cinema-gray animate-pulse">Retrieving Historical Records</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-            <History className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+    <div className="space-y-8 md:space-y-12 px-4 py-5 md:p-8 pb-24 xl:pb-8 animate-fade-in relative">
+      {/* Editorial Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 md:gap-8 border-b border-white/5 pb-5 md:pb-8">
+        <div className="flex items-center space-x-4">
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-10" />
+            <div className="p-3 bg-white/[0.02] border border-white/10 rounded-sm">
+              <History className="w-5 h-5 text-cinema-red" />
+            </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Watch History
+            <h1 className="text-xl md:text-3xl font-black uppercase tracking-[0.1em] md:tracking-[0.3em] text-white leading-none mb-1">
+              Director's <span className="text-cinema-red">Archive</span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {history.length} videos watched
+            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-cinema-gray/60">
+              {history.length} Entries
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowStats(!showStats)}
-            className="btn-secondary flex items-center space-x-2"
+            className={`px-4 py-2.5 rounded-sm flex items-center space-x-2 transition-all ${
+              showStats ? 'bg-white/10 text-white' : 'bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white'
+            }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>Stats</span>
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Stats</span>
           </button>
           
           <button
             onClick={handleExportData}
-            className="btn-secondary flex items-center space-x-2"
-            title="Export data"
+            className="p-2.5 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all"
+            title="Export"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
           </button>
 
-          <label className="btn-secondary flex items-center space-x-2 cursor-pointer">
-            <Upload className="w-4 h-4" />
-            <span>Import</span>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportData}
-              className="hidden"
-            />
+          <label className="p-2.5 bg-white/[0.02] border border-white/5 text-cinema-gray hover:text-white rounded-sm transition-all cursor-pointer">
+            <Upload className="w-3.5 h-3.5" />
+            <input type="file" accept=".json" onChange={handleImportData} className="hidden" />
           </label>
 
           {history.length > 0 && (
             <button
               onClick={handleClearHistory}
-              className="btn-secondary text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
+              className="p-2.5 bg-white/[0.02] border border-white/5 text-cinema-red/40 hover:text-cinema-red hover:bg-cinema-red/5 rounded-sm transition-all"
+              title="Clear History"
             >
-              <Trash2 className="w-4 h-4" />
-              <span>Clear All</span>
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Stats Panel */}
+      {/* Global Analytics Panel */}
       {showStats && <StatsPanel />}
 
-      {/* Search */}
+      {/* High-Fidelity Archive Filter */}
       {history.length > 0 && (
-        <div className="card p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search your watch history..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
+        <div className="relative group">
+          <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-cinema-gray/20 w-4 h-4" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="SCAN ARCHIVE RECORDS..."
+            className="w-full pl-14 pr-6 py-5 bg-white/[0.01] border border-white/5 rounded-sm text-[11px] font-black uppercase tracking-[0.4em] text-white focus:ring-0 focus:border-white/20 focus:bg-white/[0.02] transition-all placeholder:text-cinema-gray/10"
+          />
         </div>
       )}
 
-      {/* History Grid */}
+      {/* Synchronized Archive Grid */}
       {filteredHistory.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8 animate-slide-up">
           {filteredHistory.map((video) => (
             <VideoCard key={`${video.id}-${video.watchedAt}`} video={video} />
           ))}
         </div>
       ) : history.length > 0 ? (
-        <div className="text-center py-12">
-          <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No videos found
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Try adjusting your search terms.
+        <div className="py-32 text-center border border-dashed border-white/5 rounded-sm">
+          <Search className="w-12 h-12 text-cinema-gray/10 mx-auto mb-6" />
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray/40">
+            No matching records found in system archive
           </p>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <History className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No watch history yet
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Videos you watch will appear here.
-          </p>
+        <div className="py-48 text-center space-y-12">
+          <div className="space-y-6">
+            <History className="w-16 h-16 text-cinema-gray/10 mx-auto" />
+            <div className="space-y-3">
+              <h3 className="text-xl font-black uppercase tracking-[0.4em] text-white">Archive Null</h3>
+              <p className="text-[10px] font-medium text-cinema-gray uppercase tracking-widest max-w-sm mx-auto">
+                System awaiting first production session to initialize archival logging protocols.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/')}
+            className="px-12 py-5 bg-cinema-red text-white text-[10px] font-black uppercase tracking-[0.4em] hover:bg-red-700 transition-all shadow-2xl shadow-cinema-red/20"
+          >
+            Initiate Stream Frequency
+          </button>
         </div>
       )}
     </div>
