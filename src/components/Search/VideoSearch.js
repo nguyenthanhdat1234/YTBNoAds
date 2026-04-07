@@ -12,11 +12,13 @@ import {
   ChevronDown,
   ChevronUp,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Globe
 } from 'lucide-react';
 import { searchVideos, getVideoDetails, formatDuration, formatViewCount, formatPublishDate, isApiKeyConfigured } from '../../services/youtubeApi';
 import { parseYouTubeURL } from '../../utils/youtubeHelpers';
 import toast from 'react-hot-toast';
+import { useVideo } from '../../contexts/VideoContext';
 
 const VideoSearch = ({ onVideoSelect }) => {
   const { t } = useTranslation();
@@ -33,8 +35,11 @@ const VideoSearch = ({ onVideoSelect }) => {
     order: 'relevance', // relevance, date, rating, viewCount, title
     duration: 'any', // any, short, medium, long
     definition: 'any', // any, high, standard
-    maxResults: 25
+    maxResults: 25,
+    eventType: 'any' // any, live
   });
+
+  const { searchQuery, setSearchQuery } = useVideo();
 
   const orderOptions = [
     { value: 'relevance', label: t('search.options.relevance'), icon: Star },
@@ -57,6 +62,11 @@ const VideoSearch = ({ onVideoSelect }) => {
     { value: 'standard', label: t('search.options.sd') }
   ];
 
+  const eventTypeOptions = [
+    { value: 'any', label: 'All Content' },
+    { value: 'live', label: 'Live Streams' }
+  ];
+
   const performSearch = useCallback(async (searchQuery, searchFilters, pageToken = null) => {
     if (!searchQuery.trim()) return;
     
@@ -71,7 +81,8 @@ const VideoSearch = ({ onVideoSelect }) => {
     try {
       const response = await searchVideos(searchQuery, {
         ...searchFilters,
-        pageToken
+        pageToken,
+        eventType: searchFilters.eventType === 'any' ? null : searchFilters.eventType
       });
 
       if (pageToken) {
@@ -92,6 +103,21 @@ const VideoSearch = ({ onVideoSelect }) => {
       setLoading(false);
     }
   }, []);
+
+  // Watch for external search triggers (e.g. from Movie Explorer)
+  useEffect(() => {
+    if (searchQuery && searchQuery.trim()) {
+      setQuery(searchQuery);
+      setResults([]);
+      setNextPageToken(null);
+      setHasMore(false);
+      performSearch(searchQuery, filters);
+      
+      // Clear the trigger so it doesn't re-run in undesirable ways
+      // but keep the local state 'query' filled
+      setSearchQuery('');
+    }
+  }, [searchQuery, filters, performSearch, setSearchQuery]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -168,7 +194,8 @@ const VideoSearch = ({ onVideoSelect }) => {
         publishedAt: video.snippet.publishedAt,
         duration: video.contentDetails?.duration,
         viewCount: video.statistics?.viewCount,
-        likeCount: video.statistics?.likeCount
+        likeCount: video.statistics?.likeCount,
+        isLive: video.snippet?.liveBroadcastContent === 'live'
       };
       onVideoSelect(videoData);
       // Video will be played in the current tab (MainPlayer handles tab switching)
@@ -180,6 +207,7 @@ const VideoSearch = ({ onVideoSelect }) => {
     const duration = video.contentDetails?.duration;
     const viewCount = video.statistics?.viewCount;
     const publishedAt = video.snippet.publishedAt;
+    const isLive = video.snippet?.liveBroadcastContent === 'live';
 
     return (
       <div 
@@ -195,9 +223,15 @@ const VideoSearch = ({ onVideoSelect }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-30 group-hover:opacity-50 transition-opacity" />
           
-          {duration && (
+          {duration && !isLive && (
             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
               {formatDuration(duration)}
+            </div>
+          )}
+
+          {isLive && (
+            <div className="absolute bottom-2 right-2 bg-cinema-red text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase animate-pulse">
+              ● LIVE
             </div>
           )}
 
@@ -306,79 +340,46 @@ const VideoSearch = ({ onVideoSelect }) => {
                 <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('search.igniteScan')}</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowFilters(!showFilters)}
-                className={`px-8 flex items-center space-x-3 rounded-sm border border-white/5 transition-all ${
-                  showFilters ? 'bg-white/5 text-white border-white/10' : 'text-cinema-gray hover:text-white hover:bg-white/[0.02]'
-                }`}
-              >
-                <Filter className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('search.optimization')}</span>
-                {showFilters ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-              </button>
             </div>
           </div>
-
-          {/* Precision Filters */}
-          {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-white/[0.02] border border-white/5 rounded-sm animate-slide-up">
-              <div className="space-y-4">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                  <span>{t('search.sortLogic')}</span>
-                </label>
-                <select
-                  value={filters.order}
-                  onChange={(e) => handleFilterChange('order', e.target.value)}
-                  className="w-full bg-black/40 border border-white/5 rounded-sm py-4 px-4 text-xs font-bold text-white focus:ring-0 focus:border-cinema-red transition-all appearance-none"
-                >
-                  {orderOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-4">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                  <span>{t('search.chronology')}</span>
-                </label>
-                <select
-                  value={filters.duration}
-                  onChange={(e) => handleFilterChange('duration', e.target.value)}
-                  className="w-full bg-black/40 border border-white/5 rounded-sm py-4 px-4 text-xs font-bold text-white focus:ring-0 focus:border-cinema-red transition-all appearance-none"
-                >
-                  {durationOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-4">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-cinema-gray flex items-center space-x-2">
-                  <div className="w-1 h-1 bg-cinema-red rounded-full" />
-                  <span>{t('search.definitionQuality')}</span>
-                </label>
-                <select
-                  value={filters.definition}
-                  onChange={(e) => handleFilterChange('definition', e.target.value)}
-                  className="w-full bg-black/40 border border-white/5 rounded-sm py-4 px-4 text-xs font-bold text-white focus:ring-0 focus:border-cinema-red transition-all appearance-none"
-                >
-                  {definitionOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
         </form>
+
+        {/* Quick Filter Chips */}
+        <div className="flex flex-wrap items-center gap-3 pt-4">
+          <div className="flex items-center space-x-3 text-[9px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 mr-2">
+            <Filter className="w-3 h-3" />
+            <span>Quick Filters</span>
+          </div>
+          {[
+            { id: 'any', label: 'All Content', icon: Globe },
+            { id: 'live', label: 'Live Now', icon: Play, color: 'text-cinema-red border-cinema-red/20' },
+            { id: 'gaming', label: 'Gaming', query: 'gaming' },
+            { id: 'music', label: 'Music', query: 'music' }
+          ].map(chip => (
+            <button
+              key={chip.id}
+              onClick={() => {
+                if (chip.id === 'live') {
+                  handleFilterChange('eventType', filters.eventType === 'live' ? 'any' : 'live');
+                } else if (chip.query) {
+                  setQuery(chip.query);
+                  performSearch(chip.query, filters);
+                } else {
+                  handleFilterChange('eventType', 'any');
+                }
+              }}
+              className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest border rounded-sm transition-all flex items-center space-x-2 ${
+                (chip.id === 'live' && filters.eventType === 'live') || (chip.id === 'any' && filters.eventType === 'any' && !query.includes(chip.query || ''))
+                  ? 'bg-cinema-red text-white border-cinema-red shadow-lg shadow-cinema-red/20'
+                  : 'bg-white/5 border-white/5 text-cinema-gray/60 hover:text-white hover:bg-white/10 hover:border-white/10'
+              }`}
+            >
+              {chip.icon && <chip.icon className="w-3 h-3" />}
+              {chip.id === 'live' && <div className={`w-1 h-1 rounded-full bg-current ${filters.eventType === 'live' ? 'animate-pulse' : ''}`} />}
+              <span>{chip.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Synchronized Results Grid */}

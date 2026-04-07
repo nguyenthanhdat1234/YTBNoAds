@@ -76,7 +76,8 @@ export const searchVideos = async (query, options = {}) => {
     videoDuration = 'any', // any, short, medium, long
     videoDefinition = 'any', // any, high, standard
     regionCode = 'US',
-    pageToken = null
+    pageToken = null,
+    eventType = null // live, completed, upcoming
   } = options;
   
   const params = {
@@ -89,6 +90,10 @@ export const searchVideos = async (query, options = {}) => {
     videoDefinition,
     regionCode
   };
+
+  if (eventType) {
+    params.eventType = eventType;
+  }
   
   if (pageToken) {
     params.pageToken = pageToken;

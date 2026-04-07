@@ -86,7 +86,9 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
 
     const response = await searchVideos(searchQuery, {
       maxResults: 12,
-      order: 'relevance'
+      order: 'relevance',
+      eventType: currentVideo?.isLive ? 'live' : null,
+      type: 'video'
     });
 
     // Filter out current video
@@ -156,7 +158,10 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
       'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
       'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those',
       'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'my', 'your',
-      'his', 'her', 'its', 'our', 'their', 'video', 'youtube', 'watch', 'subscribe', 'like', 'comment'
+      'his', 'her', 'its', 'our', 'their', 'video', 'youtube', 'watch', 'subscribe', 'like', 'comment',
+      // Vietnamese stop words
+      'của', 'và', 'là', 'có', 'trong', 'được', 'cho', 'với', 'không', 'các', 'này', 'đến', 'mà', 'như',
+      'nhân', 'nhà', 'trước', 'sau', 'một', 'nhiều', 'khi', 'hoặc', 'nếu', 'về', 'tới', 'tại', 'vẫn', 'đang'
     ]);
 
     // Extract words and filter
@@ -192,7 +197,8 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
         publishedAt: video.snippet.publishedAt,
         duration: video.contentDetails?.duration,
         viewCount: video.statistics?.viewCount,
-        likeCount: video.statistics?.likeCount
+        likeCount: video.statistics?.likeCount,
+        isLive: video.snippet?.liveBroadcastContent === 'live'
       };
       onVideoSelect(videoData);
       // Video will be played in the current context (sidebar recommendations)
@@ -204,6 +210,7 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
     const duration = video.contentDetails?.duration;
     const viewCount = video.statistics?.viewCount;
     const publishedAt = video.snippet.publishedAt;
+    const isLive = video.snippet?.liveBroadcastContent === 'live';
 
     return (
       <div
@@ -219,9 +226,15 @@ const VideoRecommendations = ({ currentVideo, onVideoSelect }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
           
-          {duration && (
+          {duration && !isLive && (
             <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase tabular-nums">
               {formatDuration(duration)}
+            </div>
+          )}
+
+          {isLive && (
+            <div className="absolute bottom-2 right-2 bg-cinema-red text-white text-[9px] font-black tracking-widest px-2 py-1 rounded-sm border border-white/10 uppercase animate-pulse">
+              ● LIVE
             </div>
           )}
 

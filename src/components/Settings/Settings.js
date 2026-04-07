@@ -20,12 +20,14 @@ import QualitySettings from './QualitySettings';
 import toast from 'react-hot-toast';
 
 const Settings = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { settings, updateSetting, resetSettings } = useSettings();
   const { theme, accent, toggleTheme, changeAccent } = useTheme();
   const [activeTab, setActiveTab] = useState('video');
   const [apiKey, setApiKeyState] = useState(localStorage.getItem('youtube_api_key') || '');
+  const [tmdbKey, setTmdbKeyState] = useState(localStorage.getItem('tmdb_api_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
+  const [showTmdbKey, setShowTmdbKey] = useState(false);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -60,21 +62,39 @@ const Settings = () => {
     }
 
     try {
-      const originalKey = localStorage.getItem('youtube_api_key');
       setApiKey(apiKey);
-
       const { searchVideos } = await import('../../services/youtubeApi');
       await searchVideos('test', { maxResults: 1 });
-
       toast.success('API key is valid!');
     } catch (error) {
       toast.error(`API key test failed: ${error.message}`);
-      const originalKey = localStorage.getItem('youtube_api_key');
-      if (originalKey) {
-        setApiKey(originalKey);
+    }
+  };
+
+  const handleTmdbApiKeySave = () => {
+    try {
+      localStorage.setItem('tmdb_api_key', tmdbKey);
+      toast.success('Movie API key saved successfully!');
+    } catch (error) {
+      toast.error('Failed to save Movie API key');
+    }
+  };
+
+  const handleTmdbApiKeyTest = async () => {
+    if (!tmdbKey.trim()) {
+      toast.error('Please enter a TMDb API key first');
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://api.themoviedb.org/3/authentication/guest_session/new?api_key=${tmdbKey}`);
+      if (response.ok) {
+        toast.success('Movie API key is valid!');
       } else {
-        setApiKey('');
+        throw new Error('Invalid key');
       }
+    } catch (error) {
+      toast.error(`Movie API key test failed: ${error.message}`);
     }
   };
 
@@ -272,6 +292,45 @@ const Settings = () => {
                       className="px-4 py-3.5 bg-cinema-red text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20 shadow-lg shadow-cinema-red/10"
                     >
                       {t('settings.api.verifyLink')}
+                    </button>
+                  </div>
+                </div>
+              </SettingItem>
+              <SettingItem
+                label="Movie Protocol Nexus (TMDb)"
+                description="Enable professional movie discovery and metadata retrieval. Get your free key at developer.themoviedb.org"
+              >
+                <div className="space-y-4 w-full">
+                  <div className="relative">
+                    <input
+                      type={showTmdbKey ? 'text' : 'password'}
+                      value={tmdbKey}
+                      onChange={(e) => setTmdbKeyState(e.target.value)}
+                      placeholder="ENTER TMDB API KEY"
+                      className="w-full pl-4 pr-12 py-3.5 bg-black/40 border border-white/5 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] text-white placeholder:text-cinema-gray/20 focus:ring-0 focus:border-white/20 transition-all font-mono"
+                    />
+                    <button
+                      onClick={() => setShowTmdbKey(!showTmdbKey)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cinema-gray/30 hover:text-white transition-colors"
+                    >
+                      {showTmdbKey ? '🙈' : '👁️'}
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={handleTmdbApiKeySave}
+                      disabled={!tmdbKey.trim()}
+                      className="px-4 py-3.5 bg-white/5 hover:bg-white/10 text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20"
+                    >
+                      Sync Movie Logic
+                    </button>
+                    <button
+                      onClick={handleTmdbApiKeyTest}
+                      disabled={!tmdbKey.trim()}
+                      className="px-4 py-3.5 bg-cinema-red text-white text-[9px] font-black uppercase tracking-[0.3em] rounded-sm transition-all disabled:opacity-20 shadow-lg shadow-cinema-red/10"
+                    >
+                      Verify Movie Link
                     </button>
                   </div>
                 </div>

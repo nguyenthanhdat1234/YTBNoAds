@@ -31,9 +31,9 @@ const EnhancedVideoInfo = ({ video, onAddToPlaylist }) => {
 
   const metadata = video ? formatMetadataForDisplay(video.metadata) : null;
 
-  // Simulate fetching video details from YouTube API
+  // Fetch real video and channel details from YouTube API
   useEffect(() => {
-    const fetchVideoDetails = async () => {
+    const fetchFullDetails = async () => {
       if (!video?.id) {
         setVideoDetails(null);
         setLoading(false);
@@ -42,31 +42,65 @@ const EnhancedVideoInfo = ({ video, onAddToPlaylist }) => {
 
       setLoading(true);
       try {
-        // In a real implementation, you would fetch from YouTube API
-        // For now, we'll simulate with mock data
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const { getVideoDetails, getChannelDetails } = await import('../../services/youtubeApi');
+        
+        // 1. Get video statistics (views, likes)
+        const videoResponse = await getVideoDetails(video.id);
+        if (!videoResponse.items || videoResponse.items.length === 0) {
+          throw new Error('Video details not found');
+        }
+        
+        const v = videoResponse.items[0];
+        
+        // 2. Get channel statistics (subscribers)
+        let channelData = {
+          name: v.snippet.channelTitle,
+          subscribers: 0,
+          verified: false,
+          avatar: null
+        };
+
+        if (v.snippet.channelId) {
+          const channelResponse = await getChannelDetails(v.snippet.channelId);
+          if (channelResponse.items && channelResponse.items.length > 0) {
+            const block = channelResponse.items[0];
+            channelData = {
+              name: block.snippet.title,
+              subscribers: parseInt(block.statistics.subscriberCount),
+              verified: block.status?.isLinked || false, // verified indicator varies
+              avatar: block.snippet.thumbnails?.default?.url
+            };
+          }
+        }
 
         setVideoDetails({
-          views: Math.floor(Math.random() * 10000000),
-          likes: Math.floor(Math.random() * 100000),
-          publishedAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-          description: `This is a sample description for the video "${video.title}". In a real implementation, this would be fetched from the YouTube API along with other metadata like view count, likes, and publish date.`,
-          channel: {
-            name: video.author?.name || 'Unknown Channel',
-            subscribers: Math.floor(Math.random() * 1000000),
-            verified: Math.random() > 0.5
-          }
+          views: parseInt(v.statistics.viewCount),
+          likes: parseInt(v.statistics.likeCount || 0),
+          publishedAt: v.snippet.publishedAt,
+          description: v.snippet.description,
+          channel: channelData
         });
       } catch (error) {
-        console.error('Error fetching video details:', error);
-        setVideoDetails(null);
+        console.error('Error fetching real video details:', error);
+        // Fallback to minimal data if API fails
+        setVideoDetails({
+          views: 0,
+          likes: 0,
+          publishedAt: video.publishedAt || new Date(),
+          description: video.description || 'No description available.',
+          channel: {
+            name: video.author?.name || video.channel || 'Unknown Channel',
+            subscribers: 0,
+            verified: false
+          }
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVideoDetails();
-  }, [video?.id, video?.title, video?.author]);
+    fetchFullDetails();
+  }, [video?.id, video?.title]);
 
   if (!video) return null;
 
@@ -148,7 +182,7 @@ const EnhancedVideoInfo = ({ video, onAddToPlaylist }) => {
               
               <div className="flex items-center space-x-2 group border-l border-white/10 pl-8">
                 <Calendar className="w-3.5 h-3.5 transition-colors group-hover:text-white" />
-                <span className="group-hover:text-white transition-colors">{formatDate(videoDetails.publishedAt)}</span>
+                <span className="group-hover:text-white transition-colors">{new Date(videoDetails.publishedAt).toLocaleDateString()}</span>
               </div>
             </>
           ) : null}
@@ -156,7 +190,9 @@ const EnhancedVideoInfo = ({ video, onAddToPlaylist }) => {
           {video.duration && (
             <div className="flex items-center space-x-2 group border-l border-white/10 pl-8">
               <Clock className="w-3.5 h-3.5 transition-colors group-hover:text-white" />
-              <span className="group-hover:text-white transition-colors">{formatDuration(video.duration)}</span>
+              <span className="group-hover:text-white transition-colors">
+                {video.duration.startsWith('PT') ? video.duration.replace('PT', '').toLowerCase() : video.duration}
+              </span>
             </div>
           )}
         </div>
@@ -166,9 +202,17 @@ const EnhancedVideoInfo = ({ video, onAddToPlaylist }) => {
           <div className="flex items-center space-x-5">
             <div className="group relative">
               <div className="absolute inset-0 bg-cinema-red blur-lg opacity-0 group-hover:opacity-20 transition-opacity" />
-              <div className="w-14 h-14 bg-cinema-surface border border-white/10 rounded-full flex items-center justify-center relative overflow-hidden">
-                <User className="w-6 h-6 text-white" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-cinema-red/10 to-transparent" />
+              <div className="w-14 h-14 bg-cinema-surface border border-white/10 rounded-full flex items-center justify-center relative overflow-hidden group-hover:border-cinema-red/30 transition-all">
+                {videoDetails?.channel?.avatar ? (
+                  <img 
+                    src={videoDetails.channel.avatar} 
+                    alt={videoDetails.channel.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-6 h-6 text-white" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-tr from-cinema-red/10 to-transparent opacity-40" />
               </div>
             </div>
             <div className="space-y-1">

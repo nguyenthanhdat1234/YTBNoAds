@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import { Search, TrendingUp, Clapperboard } from 'lucide-react';
+import { Search, TrendingUp, Clapperboard, Film } from 'lucide-react';
 
 import URLInput from './URLInput';
 import VideoPlayer from './VideoPlayer';
@@ -13,6 +13,7 @@ import VideoSearch from '../Search/VideoSearch';
 import TrendingVideos from '../Trending/TrendingVideos';
 import VideoRecommendations from '../Recommendations/VideoRecommendations';
 import MiniPlayer from './MiniPlayer';
+import MovieExplorer from '../Movies/MovieExplorer';
 
 import { useVideo } from '../../contexts/VideoContext';
 import { parseYouTubeURL } from '../../utils/youtubeHelpers';
@@ -27,7 +28,8 @@ const MainPlayer = () => {
     setIsMinimized,
     activeTab,
     setActiveTab,
-    setPlaying
+    setPlaying,
+    setSearchQuery
   } = useVideo();
   const [playlist, setPlaylist] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -123,12 +125,30 @@ const MainPlayer = () => {
   };
 
   const handleVideoSelect = (video) => {
+    if (video.isSearchQuery) {
+        setSearchQuery(video.query);
+        setActiveTab('search');
+        // Scroll to search component
+        const element = document.getElementById('cinematic-search-hub');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        return;
+    }
+    
     selectVideo(video);
     setActiveTab('search');
     setError(null);
     setIsMinimized(false);
     // Smooth scroll to playback interface
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const element = document.getElementById('cinematic-playback-engine');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleMinimize = () => {
@@ -148,6 +168,7 @@ const MainPlayer = () => {
   const tabs = [
     { id: 'search', label: t('main.director'), shortLabel: t('main.director'), icon: Clapperboard },
     { id: 'trending', label: t('main.trends'), shortLabel: t('main.trends'), icon: TrendingUp },
+    { id: 'movies', label: 'Cinema HUB', shortLabel: 'Phim', icon: Film },
   ];
 
   return (
@@ -188,9 +209,19 @@ const MainPlayer = () => {
         {/* Tab Content */}
         <div className="space-y-6 md:space-y-8 animate-fade-in">
 
-          {/* Player Grid - Primary Playback Zone (Now at Top) */}
+          {/* Search/Director Tab content - Priority Discovery Zone */}
+          {activeTab === 'search' && !isMinimized && (
+            <div id="cinematic-search-hub" className="animate-fade-in mb-8 md:mb-12">
+              <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl relative">
+                <div className="absolute top-0 left-0 w-1 h-full bg-cinema-red opacity-50" />
+                <VideoSearch onVideoSelect={handleVideoSelect} />
+              </div>
+            </div>
+          )}
+
+          {/* Player Grid - Primary Playback Zone */}
           {currentVideo && !loading && !isMinimized && (
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12 animate-slide-up">
+            <div id="cinematic-playback-engine" className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12 animate-slide-up scroll-mt-20">
               {/* Main Content */}
               <div className="xl:col-span-8 space-y-6 md:space-y-8">
                 {/* Video Wrapper */}
@@ -255,14 +286,7 @@ const MainPlayer = () => {
             </div>
           )}
 
-          {/* Search/Director Tab content */}
-          {activeTab === 'search' && !isMinimized && (
-            <div className="animate-fade-in">
-              <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
-                <VideoSearch onVideoSelect={handleVideoSelect} />
-              </div>
-            </div>
-          )}
+
 
           {/* Spotlight Section (Suggested Videos) */}
           {activeTab === 'search' && !isMinimized && !currentVideo && !loading && !error && (
@@ -280,6 +304,12 @@ const MainPlayer = () => {
           {activeTab === 'trending' && !isMinimized && (
             <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
               <TrendingVideos onVideoSelect={handleVideoSelect} />
+            </div>
+          )}
+
+          {activeTab === 'movies' && !isMinimized && (
+            <div className="animate-fade-in">
+              <MovieExplorer onVideoSelect={handleVideoSelect} />
             </div>
           )}
 

@@ -23,6 +23,7 @@ export const VideoProvider = ({ children }) => {
   const [muted, setMuted] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [activeTab, setActiveTab] = useState('search');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const selectVideo = useCallback(async (video) => {
     if (!video) {
@@ -47,7 +48,8 @@ export const VideoProvider = ({ children }) => {
               thumbnail: v.snippet.thumbnails?.maxresdefault?.url || v.snippet.thumbnails?.high?.url,
               channel: v.snippet.channelTitle,
               author: { name: v.snippet.channelTitle, channelId: v.snippet.channelId },
-              duration: v.contentDetails?.duration
+              duration: v.contentDetails?.duration,
+              isLive: v.snippet.liveBroadcastContent === 'live'
             };
             setCurrentVideo(videoData);
           } else {
@@ -130,7 +132,9 @@ export const VideoProvider = ({ children }) => {
     playFromPlaylist,
     playNext,
     playPrevious,
-    setPlaylist
+    setPlaylist,
+    searchQuery,
+    setSearchQuery
   };
 
   return (

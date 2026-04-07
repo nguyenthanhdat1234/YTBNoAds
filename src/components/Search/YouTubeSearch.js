@@ -10,61 +10,16 @@ import {
   TrendingUp
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { searchVideos, formatDuration, formatViewCount, isApiKeyConfigured } from '../../services/youtubeApi';
 
 const YouTubeSearch = ({ onVideoSelect, onAddToPlaylist, isOpen, onClose }) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [isLiveOnly, setIsLiveOnly] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const searchInputRef = useRef(null);
-
-  const mockSearchResults = [
-    {
-      id: 'dQw4w9WgXcQ',
-      title: 'Rick Astley - Never Gonna Give You Up (Official Video)',
-      channel: 'Rick Astley',
-      views: '1.4B',
-      duration: '3:33',
-      publishedAt: '2009-10-25',
-      thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      description: 'The official video for "Never Gonna Give You Up" by Rick Astley.',
-    },
-    {
-      id: 'kJQP7kiw5Fk',
-      title: 'Luis Fonsi - Despacito ft. Daddy Yankee',
-      channel: 'Luis Fonsi',
-      views: '8.1B',
-      duration: '4:42',
-      publishedAt: '2017-01-12',
-      thumbnail: 'https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg',
-      url: 'https://www.youtube.com/watch?v=kJQP7kiw5Fk',
-      description: '"Despacito" available everywhere now!',
-    },
-    {
-      id: 'fJ9rUzIMcZQ',
-      title: 'Queen – Bohemian Rhapsody (Official Video)',
-      channel: 'Queen Official',
-      views: '1.9B',
-      duration: '5:55',
-      publishedAt: '2008-08-01',
-      thumbnail: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/hqdefault.jpg',
-      url: 'https://www.youtube.com/watch?v=fJ9rUzIMcZQ',
-      description: 'Taken from A Night At The Opera, 1975.',
-    },
-    {
-      id: 'YQHsXMglC9A',
-      title: 'Adele - Hello (Official Music Video)',
-      channel: 'Adele',
-      views: '3.2B',
-      duration: '6:07',
-      publishedAt: '2015-10-22',
-      thumbnail: 'https://img.youtube.com/vi/YQHsXMglC9A/hqdefault.jpg',
-      url: 'https://www.youtube.com/watch?v=YQHsXMglC9A',
-      description: '"Hello" is taken from the new album, 25.',
-    },
-  ];
 
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
@@ -86,15 +41,37 @@ const YouTubeSearch = ({ onVideoSelect, onAddToPlaylist, isOpen, onClose }) => {
       return;
     }
 
+    if (!isApiKeyConfigured()) {
+      toast.error('YouTube API key is required. Please set it in Settings.');
+      return;
+    }
+
     setIsSearching(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const filtered = mockSearchResults.filter(video =>
-        video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        video.channel.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setSearchResults(filtered);
-      if (filtered.length === 0) toast.info('No videos found. Try a different search term.');
+      const response = await searchVideos(searchQuery, {
+        maxResults: 20,
+        eventType: isLiveOnly ? 'live' : null,
+        type: 'video'
+      });
+      
+      const formattedResults = response.items.map(item => {
+        const isLive = item.snippet?.liveBroadcastContent === 'live';
+        return {
+          id: item.id.videoId,
+          title: item.snippet.title,
+          channel: item.snippet.channelTitle,
+          views: formatViewCount(item.statistics?.viewCount),
+          duration: isLive ? 'LIVE' : formatDuration(item.contentDetails?.duration),
+          publishedAt: item.snippet.publishedAt,
+          thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.high?.url,
+          url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+          description: item.snippet.description,
+          isLive
+        };
+      });
+      
+      setSearchResults(formattedResults);
+      if (formattedResults.length === 0) toast.info('No videos found.');
     } catch (error) {
       toast.error('Search failed. Please try again.');
     } finally {
@@ -155,7 +132,7 @@ const YouTubeSearch = ({ onVideoSelect, onAddToPlaylist, isOpen, onClose }) => {
 
         {/* Search Input */}
         <div className="px-5 py-4 md:px-6 border-b border-white/5 flex-shrink-0">
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-cinema-gray/40" />
               <input
@@ -164,25 +141,39 @@ const YouTubeSearch = ({ onVideoSelect, onAddToPlaylist, isOpen, onClose }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Search videos, artists, songs..."
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/5 rounded-sm text-sm text-white placeholder:text-cinema-gray/30 focus:outline-none focus:border-cinema-red/40 focus:bg-white/10 transition-all"
+                placeholder="Search videos, live streams..."
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/5 rounded-sm text-sm text-white placeholder:text-cinema-gray/30 focus:outline-none focus:border-cinema-red/40 focus:bg-white/10 transition-all font-medium"
                 disabled={isSearching}
               />
             </div>
-            <button
-              onClick={handleSearch}
-              disabled={!searchQuery.trim() || isSearching}
-              className="flex items-center space-x-2 px-5 py-3 bg-cinema-red hover:bg-red-700 text-white rounded-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
-            >
-              {isSearching ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Search className="w-4 h-4" />
-              )}
-              <span className="hidden sm:inline text-[10px] font-black uppercase tracking-[0.2em]">
-                {isSearching ? 'Scanning...' : 'Search'}
-              </span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsLiveOnly(!isLiveOnly)}
+                className={`px-3 py-3 border transition-all flex items-center space-x-2 rounded-sm ${
+                  isLiveOnly 
+                    ? 'bg-cinema-red/20 border-cinema-red text-cinema-red' 
+                    : 'bg-white/5 border-white/5 text-cinema-gray/40'
+                }`}
+                title="Search Live Streams Only"
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${isLiveOnly ? 'bg-cinema-red animate-pulse' : 'bg-cinema-gray/20'}`} />
+                <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Live Only</span>
+              </button>
+              <button
+                onClick={handleSearch}
+                disabled={!searchQuery.trim() || isSearching}
+                className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-6 py-3 bg-cinema-red hover:bg-red-700 text-white rounded-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {isSearching ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <Search className="w-4 h-4" />
+                )}
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  {isSearching ? 'Scanning...' : 'Search'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -210,7 +201,7 @@ const YouTubeSearch = ({ onVideoSelect, onAddToPlaylist, isOpen, onClose }) => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => { e.target.src = `https://img.youtube.com/vi/${video.id}/default.jpg`; }}
                     />
-                    <div className="absolute bottom-1 right-1 bg-black/80 text-white text-[8px] font-black px-1 py-0.5 rounded-sm tracking-widest">
+                    <div className={`absolute bottom-1 right-1 ${video.isLive ? 'bg-cinema-red' : 'bg-black/80'} text-white text-[8px] font-black px-1 py-0.5 rounded-sm tracking-widest uppercase`}>
                       {video.duration}
                     </div>
                     <div className="absolute inset-0 bg-black/20" />

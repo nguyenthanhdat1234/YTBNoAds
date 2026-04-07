@@ -20,7 +20,9 @@ import {
   Gauge,
   Heart,
   Bell,
-  BellOff
+  BellOff,
+  MessageSquare,
+  X
 } from 'lucide-react';
 
 import { useSettings } from '../../contexts/SettingsContext';
@@ -62,9 +64,12 @@ const VideoPlayer = ({ video }) => {
   const [isPiPActive, setIsPiPActive] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [hasAddedToHistory, setHasAddedToHistory] = useState(false);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [wasPlayingBeforeHidden, setWasPlayingBeforeHidden] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [hasAddedToHistory, setHasAddedToHistory] = useState(false);
+
+  const isLive = video.isLive || duration === Infinity || duration === 0;
 
   // Sync logic: Resume from global progress if available
   useEffect(() => {
@@ -536,165 +541,205 @@ const VideoPlayer = ({ video }) => {
 
   const videoUrlWithQuality = getVideoUrlWithQuality(video.url, settings.quality);
 
+  const toggleChat = () => {
+    setShowChat(!showChat);
+  };
+
   return (
-    <div className={`relative overflow-hidden group shadow-2xl ${theaterMode ? 'fixed inset-x-0 top-0 z-40 rounded-none' : 'rounded-sm'}`}>
-      <div
-        ref={playerContainerRef}
-        className={`relative bg-black group focus:outline-none transition-all duration-500 ${
-          isFullscreen
-            ? 'fixed inset-0 z-50'
-            : theaterMode
-              ? 'h-screen w-full'
-              : 'aspect-video'
-        }`}
-        onMouseEnter={showControlsTemporarily}
-        onMouseMove={showControlsTemporarily}
-        onMouseLeave={hideControlsImmediately}
-        onTouchStart={toggleControls}
-        onClick={toggleControls}
-        tabIndex={0}
-      >
-        {/* React Player Engine */}
-        <div className="absolute inset-0 z-0">
-          <ReactPlayer
-            key={`${video.url}-${settings.quality}`}
-            ref={playerRef}
-            url={videoUrlWithQuality}
-            width="100%"
-            height="100%"
-            playing={playing}
-            volume={muted ? 0 : volume}
-            playbackRate={playbackRate}
-            loop={loop}
-            onProgress={handleProgress}
-            onDuration={handleDuration}
-            onEnded={() => !loop && setPlaying(false)}
-            config={playerConfig}
-            className="absolute inset-0"
-          />
-        </div>
-
-        {/* Cinematic Interface Overlay */}
-        <div 
-          className={`absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-700 ease-out pointer-events-none ${
-            showControls ? 'opacity-100' : 'opacity-0'
+    <div className={`relative flex flex-col lg:flex-row gap-4 ${theaterMode ? 'fixed inset-0 z-40 bg-black pt-16 px-4 pb-4' : 'w-full'}`}>
+      <div className={`relative overflow-hidden group shadow-2xl flex-1 ${theaterMode ? 'rounded-none' : 'rounded-sm'}`}>
+        <div
+          ref={playerContainerRef}
+          className={`relative bg-black group focus:outline-none transition-all duration-500 ${
+            isFullscreen
+              ? 'fixed inset-0 z-50'
+              : theaterMode
+                ? 'h-full w-full'
+                : 'aspect-video'
           }`}
+          onMouseEnter={showControlsTemporarily}
+          onMouseMove={showControlsTemporarily}
+          onMouseLeave={hideControlsImmediately}
+          onTouchStart={toggleControls}
+          onClick={toggleControls}
+          tabIndex={0}
         >
-          {/* Central Play/Pause State Indicator */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePlayPause();
-              }}
-              className="w-20 h-20 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl transition-all duration-500 hover:scale-110 active:scale-95 group/play"
-            >
-              <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-0 group-hover/play:opacity-20 transition-opacity" />
-              {playing ? (
-                <Pause className="w-8 h-8 text-white fill-white" />
-              ) : (
-                <Play className="w-8 h-8 text-white fill-white ml-1" />
-              )}
-            </button>
+          {/* React Player Engine */}
+          <div className="absolute inset-0 z-0">
+            <ReactPlayer
+              key={`${video.url}-${settings.quality}`}
+              ref={playerRef}
+              url={videoUrlWithQuality}
+              width="100%"
+              height="100%"
+              playing={playing}
+              volume={muted ? 0 : volume}
+              playbackRate={playbackRate}
+              loop={loop}
+              onProgress={handleProgress}
+              onDuration={handleDuration}
+              onEnded={() => !loop && setPlaying(false)}
+              config={playerConfig}
+              className="absolute inset-0"
+            />
           </div>
-          <div
-            className="absolute bottom-0 left-0 right-0 px-8 py-6 space-y-6 pointer-events-auto"
-            onClick={(e) => e.stopPropagation()}
+
+          {/* Cinematic Interface Overlay */}
+          <div 
+            className={`absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-700 ease-out pointer-events-none ${
+              showControls ? 'opacity-100' : 'opacity-0'
+            }`}
           >
-            {/* Precision Scrub Bar */}
-            <div className="flex flex-col space-y-2 group/scrub">
-              <div className="flex justify-between items-center opacity-0 group-hover/scrub:opacity-100 transition-opacity duration-300">
-                <span className="text-[10px] font-black tracking-widest text-white uppercase tabular-nums">
-                  {formatTime(duration * played)}
-                </span>
-                <span className="text-[10px] font-black tracking-widest text-cinema-gray uppercase tabular-nums">
-                  {formatTime(duration)}
-                </span>
-              </div>
-              
-              <div className="relative h-1 w-full bg-white/10 overflow-hidden cursor-pointer rounded-full group-hover/scrub:h-1.5 transition-all">
-                <div 
-                  className="absolute top-0 left-0 h-full bg-cinema-red shadow-[0_0_10px_rgba(229,9,20,0.8)] z-20" 
-                  style={{ width: `${played * 100}%` }}
-                />
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.001}
-                  value={played}
-                  onChange={handleSeekChange}
-                  className="absolute inset-0 w-full opacity-0 z-30 cursor-pointer"
-                />
-              </div>
+            {/* Central Play/Pause State Indicator */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePlayPause();
+                }}
+                className="w-20 h-20 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl transition-all duration-500 hover:scale-110 active:scale-95 group/play"
+              >
+                <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-0 group-hover/play:opacity-20 transition-opacity" />
+                {playing ? (
+                  <Pause className="w-8 h-8 text-white fill-white" />
+                ) : (
+                  <Play className="w-8 h-8 text-white fill-white ml-1" />
+                )}
+              </button>
             </div>
-
-            {/* Navigation & Preferences Row */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                {/* Playback Cluster */}
-                <div className="flex items-center space-x-2">
-                   <button onClick={handleSeekBackward} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                     <SkipBack className="w-5 h-5" />
-                   </button>
-                   <button onClick={handlePlayPause} className="p-2 text-white hover:scale-110 transition-all">
-                     {playing ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
-                   </button>
-                   <button onClick={handleSeekForward} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                     <SkipForward className="w-5 h-5" />
-                   </button>
+            <div
+              className="absolute bottom-0 left-0 right-0 px-8 py-6 space-y-6 pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Precision Scrub Bar */}
+              <div className="flex flex-col space-y-2 group/scrub">
+                <div className="flex justify-between items-center opacity-0 group-hover/scrub:opacity-100 transition-opacity duration-300">
+                  <span className={`text-[10px] font-black tracking-widest uppercase tabular-nums ${isLive ? 'text-cinema-red animate-pulse' : 'text-white'}`}>
+                    {isLive ? '● LIVE' : formatTime(duration * played)}
+                  </span>
+                  {!isLive && (
+                    <span className="text-[10px] font-black tracking-widest text-cinema-gray uppercase tabular-nums">
+                      {formatTime(duration)}
+                    </span>
+                  )}
                 </div>
-
-                {/* Audio Cluster */}
-                <div className="flex items-center space-x-4 group/vol">
-                  <button onClick={handleToggleMute} className="text-cinema-gray hover:text-white transition-colors">
-                    {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                  </button>
-                  <div className="w-0 group-hover/vol:w-24 overflow-hidden transition-all duration-500">
+                
+                <div className={`relative h-1 w-full bg-white/10 overflow-hidden rounded-full transition-all ${!isLive ? 'cursor-pointer group-hover/scrub:h-1.5' : 'opacity-30'}`}>
+                  <div 
+                    className={`absolute top-0 left-0 h-full bg-cinema-red shadow-[0_0_10px_rgba(229,9,20,0.8)] z-20 ${isLive ? 'w-full' : ''}`} 
+                    style={!isLive ? { width: `${played * 100}%` } : {}}
+                  />
+                  {!isLive && (
                     <input
                       type="range"
                       min={0}
                       max={1}
-                      step={0.1}
-                      value={muted ? 0 : volume}
-                      onChange={handleVolumeChange}
-                      className="w-20 h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
+                      step={0.001}
+                      value={played}
+                      onChange={handleSeekChange}
+                      className="absolute inset-0 w-full opacity-0 z-30 cursor-pointer"
                     />
-                  </div>
-                </div>
-
-                {/* Metadata Sneak Peak */}
-                <div className="hidden lg:block border-l border-white/10 pl-6">
-                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray mb-1 block">Live Playback</span>
-                   <span className="text-xs font-bold text-white max-w-xs truncate block">{video.title}</span>
+                  )}
                 </div>
               </div>
 
-              {/* Advanced Utility Cluster */}
-              <div className="flex items-center space-x-2">
-                <QualitySelector
-                   currentQuality={currentQuality}
-                   onQualityChange={handleQualityChange}
-                />
-                
-                <div className="flex items-center bg-white/5 p-1 rounded-sm border border-white/5">
-                  <button onClick={handleToggleSubscription} className={`p-2 transition-colors ${isSubscribed ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
-                    <Bell className="w-4 h-4" />
-                  </button>
-                  <button onClick={handleToggleFavorite} className={`p-2 transition-colors ${isFavorite ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
-                    <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
-                  </button>
-                  <button onClick={handleTheaterMode} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                    <Monitor className="w-4 h-4" />
-                  </button>
-                  <button onClick={handleFullscreen} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                    <Maximize className="w-4 h-4" />
-                  </button>
+              {/* Navigation & Preferences Row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-6">
+                  {/* Playback Cluster */}
+                  <div className="flex items-center space-x-2">
+                    {!isLive && (
+                      <button onClick={handleSeekBackward} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                        <SkipBack className="w-5 h-5" />
+                      </button>
+                    )}
+                    <button onClick={handlePlayPause} className="p-2 text-white hover:scale-110 transition-all">
+                      {playing ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
+                    </button>
+                    {!isLive && (
+                      <button onClick={handleSeekForward} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                        <SkipForward className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Audio Cluster */}
+                  <div className="flex items-center space-x-4 group/vol">
+                    <button onClick={handleToggleMute} className="text-cinema-gray hover:text-white transition-colors">
+                      {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    </button>
+                    <div className="w-0 group-hover/vol:w-24 overflow-hidden transition-all duration-500">
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={muted ? 0 : volume}
+                        onChange={handleVolumeChange}
+                        className="w-20 h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Metadata Sneak Peak */}
+                  <div className="hidden lg:block border-l border-white/10 pl-6">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cinema-gray mb-1 block">
+                      {isLive ? <span className="text-cinema-red">LIVE Content</span> : 'Cinema Playback'}
+                    </span>
+                    <span className="text-xs font-bold text-white max-w-xs truncate block">{video.title}</span>
+                  </div>
+                </div>
+
+                {/* Advanced Utility Cluster */}
+                <div className="flex items-center space-x-2">
+                  <QualitySelector
+                    currentQuality={currentQuality}
+                    onQualityChange={handleQualityChange}
+                  />
+                  
+                  <div className="flex items-center bg-white/5 p-1 rounded-sm border border-white/5">
+                    <button onClick={handleToggleSubscription} className={`p-2 transition-colors ${isSubscribed ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                      <Bell className="w-4 h-4" />
+                    </button>
+                    <button onClick={handleToggleFavorite} className={`p-2 transition-colors ${isFavorite ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                      <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+                    </button>
+                    {isLive && (
+                      <button onClick={toggleChat} className={`p-2 transition-colors ${showChat ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                        <MessageSquare className="w-4 h-4" />
+                      </button>
+                    )}
+                    <button onClick={handleTheaterMode} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                      <Monitor className="w-4 h-4" />
+                    </button>
+                    <button onClick={handleFullscreen} className="p-2 text-cinema-gray hover:text-white transition-colors">
+                      <Maximize className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Live Chat Panel */}
+        {isLive && showChat && (
+          <div className={`bg-cinema-surface border border-white/5 flex flex-col animate-slide-left ${theaterMode ? 'w-full lg:w-96' : 'w-full lg:w-80 rounded-sm overflow-hidden'}`}>
+            <div className="p-4 border-b border-white/5 flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Live Chat</span>
+              <button onClick={toggleChat} className="text-cinema-gray hover:text-white transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 min-h-[400px] bg-black">
+              <iframe
+                src={`https://www.youtube.com/live_chat?v=${video.id}&embed_domain=${window.location.hostname}&dark_theme=1`}
+                className="w-full h-full border-none"
+                title="YouTube Live Chat"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
