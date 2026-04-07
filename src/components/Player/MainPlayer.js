@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import { Search, TrendingUp, Clapperboard, Film } from 'lucide-react';
+import { Search, Clapperboard, Film } from 'lucide-react';
 
 import URLInput from './URLInput';
 import VideoPlayer from './VideoPlayer';
@@ -10,7 +10,6 @@ import PlaylistManager from '../Playlist/PlaylistManager';
 import LoadingSpinner from '../UI/LoadingSpinner';
 import SuggestedVideos from '../Home/SuggestedVideos';
 import VideoSearch from '../Search/VideoSearch';
-import TrendingVideos from '../Trending/TrendingVideos';
 import VideoRecommendations from '../Recommendations/VideoRecommendations';
 import MiniPlayer from './MiniPlayer';
 import MovieExplorer from '../Movies/MovieExplorer';
@@ -139,7 +138,10 @@ const MainPlayer = () => {
     }
     
     selectVideo(video);
-    setActiveTab('search');
+    // Only switch to search if not already in a content tab that supports playback or if specifically requested
+    if (activeTab !== 'movies') {
+      setActiveTab('search');
+    }
     setError(null);
     setIsMinimized(false);
     // Smooth scroll to playback interface
@@ -167,7 +169,6 @@ const MainPlayer = () => {
 
   const tabs = [
     { id: 'search', label: t('main.director'), shortLabel: t('main.director'), icon: Clapperboard },
-    { id: 'trending', label: t('main.trends'), shortLabel: t('main.trends'), icon: TrendingUp },
     { id: 'movies', label: 'Cinema HUB', shortLabel: 'Phim', icon: Film },
   ];
 
@@ -221,7 +222,22 @@ const MainPlayer = () => {
 
           {/* Player Grid - Primary Playback Zone */}
           {currentVideo && !loading && !isMinimized && (
-            <div id="cinematic-playback-engine" className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12 animate-slide-up scroll-mt-20">
+            <div id="cinematic-playback-engine" className="animate-slide-up scroll-mt-20">
+              {activeTab === 'movies' && (
+                <button 
+                  onClick={() => setIsMinimized(true)}
+                  className="mb-6 flex items-center space-x-2 text-cinema-gray hover:text-white transition-all group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-cinema-red group-hover:border-cinema-red transition-all">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">QUAY LẠI CINEMA HUB</span>
+                </button>
+              )}
+              
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8 items-start mb-12">
               {/* Main Content */}
               <div className="xl:col-span-8 space-y-6 md:space-y-8">
                 {/* Video Wrapper */}
@@ -284,7 +300,8 @@ const MainPlayer = () => {
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
 
 
@@ -300,14 +317,9 @@ const MainPlayer = () => {
             </div>
           )}
 
-          {/* Trending Tab Content */}
-          {activeTab === 'trending' && !isMinimized && (
-            <div className="bg-cinema-surface rounded-sm overflow-hidden border border-white/5 shadow-2xl">
-              <TrendingVideos onVideoSelect={handleVideoSelect} />
-            </div>
-          )}
 
-          {activeTab === 'movies' && !isMinimized && (
+
+          {activeTab === 'movies' && (
             <div className="animate-fade-in">
               <MovieExplorer onVideoSelect={handleVideoSelect} />
             </div>
@@ -333,8 +345,8 @@ const MainPlayer = () => {
 
         </div>
 
-        {/* Minimized State */}
-        {isMinimized && (
+        {/* Minimized State - Only show for Director tab and when not in movies tab */}
+        {isMinimized && activeTab !== 'movies' && (
           <div className="max-w-2xl mx-auto py-16 md:py-20 text-center space-y-6 md:space-y-8 animate-in slide-in-from-bottom-5 duration-700">
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-cinema-red blur-3xl opacity-10" />

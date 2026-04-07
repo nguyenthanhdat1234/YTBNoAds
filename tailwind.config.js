@@ -28,9 +28,14 @@ module.exports = {
           900: '#1e3a8a',
         },
         cinema: {
-          black: '#141414',
-          surface: '#1c1b1b',
-          'surface-high': '#2a2a2a',
+          black: '#131313',
+          surface: {
+            DEFAULT: '#131313',
+            lowest: '#0e0e0e',
+            low: '#1c1b1b',
+            high: '#2a2a2a',
+            highest: '#353534',
+          },
           depth: '#0e0e0e',
           red: '#E50914',
           'red-muted': '#930007',

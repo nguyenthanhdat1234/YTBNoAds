@@ -27,6 +27,7 @@ const MiniPlayer = () => {
     volume, 
     muted, 
     setMuted,
+    isMinimized,
     setIsMinimized,
     selectVideo
   } = useVideo();
@@ -72,8 +73,8 @@ const MiniPlayer = () => {
     setIsMinimized(false);
   };
 
-  // Auto-hide when on main player route
-  const isVisible = video && location.pathname !== '/';
+  // Visible when not on main player route OR when manually minimized
+  const isVisible = video && (location.pathname !== '/' || isMinimized);
 
   const handleSeekForward = () => {
     const newTime = Math.min(1, played + 10 / duration);

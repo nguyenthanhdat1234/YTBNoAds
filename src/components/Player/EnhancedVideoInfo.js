@@ -34,6 +34,25 @@ const EnhancedVideoInfo = ({ video, onAddToPlaylist }) => {
   // Fetch real video and channel details from YouTube API
   useEffect(() => {
     const fetchFullDetails = async () => {
+      // If it's a cinematic movie from OPhim, skip YouTube fetch and use passed data
+      if (video?.movieSource === 'ophim') {
+        setVideoDetails({
+          views: video.views || 0,
+          likes: video.likes || 0,
+          publishedAt: video.release_date || new Date(),
+          description: video.description || 'Không có mô tả.',
+          channel: {
+            name: video.author?.name || 'Cinema HUB',
+            subscribers: 0,
+            verified: true,
+            avatar: video.thumbnail || null
+          },
+          isMovie: true
+        });
+        setLoading(false);
+        return;
+      }
+
       if (!video?.id) {
         setVideoDetails(null);
         setLoading(false);

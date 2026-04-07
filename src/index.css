@@ -5,16 +5,21 @@
 @tailwind utilities;
 
 :root {
-  --cinema-black: #141414;
-  --cinema-surface: #1c1b1b;
+  --cinema-black: #131313;
+  --cinema-surface: #131313;
+  --cinema-surface-low: #1c1b1b;
   --cinema-surface-high: #2a2a2a;
-  --cinema-depth: #0e0e0e;
+  --cinema-surface-highest: #353534;
+  --cinema-surface-lowest: #0e0e0e;
   --cinema-red: #E50914;
-  --cinema-red-muted: #930007;
-  --cinema-gray: #B3B3B3;
+  --cinema-red-glow: rgba(229, 9, 20, 0.4);
+  --cinema-gray: #e5e2e1;
+  --cinema-gray-variant: #e9bcb6;
+  --cinema-outline: #5e3f3b;
   
-  --glass-bg: rgba(20, 20, 20, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(20, 20, 20, 0.8);
+  --glass-blur: 12px;
+  --glass-border: rgba(94, 63, 59, 0.15);
 }
 
 @layer base {
@@ -33,45 +38,61 @@
   /* THE DIGITAL PROSCENIUM: Cinematic UI Components */
 
   .glass-card {
-    @apply relative overflow-hidden bg-cinema-surface/30 backdrop-blur-xl border border-white/5 rounded-sm;
+    @apply relative overflow-hidden bg-cinema-black/80 border border-white/5 rounded-xl;
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .btn-cinema {
-    @apply relative overflow-hidden bg-cinema-red hover:bg-cinema-red-muted text-white font-bold py-2 px-6 rounded-sm transition-all duration-300 transform active:scale-95 shadow-lg;
-    letter-spacing: 0.05em;
+    @apply relative overflow-hidden bg-cinema-red text-white font-bold py-3 px-8 rounded-md transition-all duration-300 transform active:scale-95 shadow-lg flex items-center justify-center;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    background: radial-gradient(circle at center, #e50914, #c0000c);
+  }
+
+  .btn-cinema:hover {
+    @apply scale-105 shadow-cinema-red/30;
+    box-shadow: 0 0 20px var(--cinema-red-glow);
   }
 
   .btn-cinema-ghost {
-    @apply backdrop-blur-md bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-6 rounded-sm transition-all duration-300 border border-white/10;
+    @apply backdrop-blur-md bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-md transition-all duration-300 border border-white/5 flex items-center justify-center whitespace-nowrap;
+    letter-spacing: 0.1em;
   }
 
   .card-cinema {
-    @apply relative overflow-hidden bg-cinema-surface rounded-md shadow-2xl transition-all duration-500 hover:z-10 hover:scale-105;
-    background-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.8) 100%);
+    @apply relative overflow-hidden bg-cinema-surface-low rounded-xl shadow-2xl transition-all duration-500 hover:scale-105;
   }
 
   .glass-header {
-    @apply fixed top-0 w-full z-50 backdrop-blur-xl bg-cinema-black/80 border-b border-white/5;
-    transition: background 0.3s ease;
+    @apply fixed top-0 w-full z-50 bg-cinema-black/80;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
   }
 
   /* No-Line surfaces */
-  .surface-depth { @apply bg-cinema-depth; }
-  .surface-base { @apply bg-cinema-black; }
-  .surface-low { @apply bg-cinema-surface; }
-  .surface-high { @apply bg-cinema-surface-high; }
+  .surface-lowest { background-color: var(--cinema-surface-lowest); }
+  .surface-low { background-color: var(--cinema-surface-low); }
+  .surface-high { background-color: var(--cinema-surface-high); }
+  .surface-highest { background-color: var(--cinema-surface-highest); }
 
-  /* Typography */
-  .display-cinematic {
-    font-family: 'Sora', 'Be Vietnam Pro', sans-serif;
-    @apply font-extrabold tracking-tighter;
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    line-height: 1.1;
+  /* Typography: Editorial Voice */
+  .display-lg {
+    @apply font-extrabold;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-weight: 800;
   }
 
-  .headline-editorial {
+  .headline-sm {
     @apply text-xl font-bold uppercase tracking-widest text-cinema-gray mb-4;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .body-variant {
+    @apply text-sm leading-relaxed;
+    color: var(--cinema-gray-variant);
   }
 
   /* Video Progress Bar Simulation overlay */
@@ -138,11 +159,23 @@
     text-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
   }
 
-  .hero-shim {
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(20,20,20,0) 0%, rgba(20,20,20,1) 100%);
+  .hero-fade {
+    background: linear-gradient(to top, var(--cinema-black) 0%, transparent 100%);
+  }
+
+  .thumbnail-fade {
+    background: linear-gradient(to top, var(--cinema-surface-lowest) 0%, transparent 40%);
   }
   
+  .animate-ken-burns {
+    animation: kenburns 40s ease-in-out infinite alternate;
+  }
+
+  @keyframes kenburns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+  }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -162,5 +195,16 @@
   /* Safe area padding for mobile (bottom nav) */
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Shimmer effect for skeleton loading — optimized Discovery performance */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
   }
 }

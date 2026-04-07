@@ -566,28 +566,41 @@ const VideoPlayer = ({ video }) => {
         >
           {/* React Player Engine */}
           <div className="absolute inset-0 z-0">
-            <ReactPlayer
-              key={`${video.url}-${settings.quality}`}
-              ref={playerRef}
-              url={videoUrlWithQuality}
-              width="100%"
-              height="100%"
-              playing={playing}
-              volume={muted ? 0 : volume}
-              playbackRate={playbackRate}
-              loop={loop}
-              onProgress={handleProgress}
-              onDuration={handleDuration}
-              onEnded={() => !loop && setPlaying(false)}
-              config={playerConfig}
-              className="absolute inset-0"
-            />
+            {video.isEmbed ? (
+              <iframe
+                src={video.embedUrl}
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; encrypted-media"
+                className="absolute inset-0 w-full h-full"
+                title={video.title}
+              />
+            ) : (
+              <ReactPlayer
+                key={`${video.url}-${settings.quality}`}
+                ref={playerRef}
+                url={videoUrlWithQuality}
+                width="100%"
+                height="100%"
+                playing={playing}
+                volume={muted ? 0 : volume}
+                playbackRate={playbackRate}
+                loop={loop}
+                onProgress={handleProgress}
+                onDuration={handleDuration}
+                onEnded={() => !loop && setPlaying(false)}
+                config={playerConfig}
+                className="absolute inset-0"
+              />
+            )}
           </div>
 
           {/* Cinematic Interface Overlay */}
           <div 
             className={`absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-700 ease-out pointer-events-none ${
-              showControls ? 'opacity-100' : 'opacity-0'
+              showControls && !video.isEmbed ? 'opacity-100' : 'opacity-0'
             }`}
           >
             {/* Central Play/Pause State Indicator */}

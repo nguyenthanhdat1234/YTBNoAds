@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Search, 
   Film, 
@@ -13,7 +13,8 @@ import {
   AlertCircle,
   Clock,
   X,
-  ExternalLink
+  ExternalLink,
+  Plus
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -23,11 +24,16 @@ import {
   getMoviePoster, 
   getMovieBackdrop, 
   isMovieApiConfigured,
-  getMovieDetails
+  getMovieDetails,
+  getOPhimTrending,
+  searchOPhim,
+  getOPhimDetails
 } from '../../services/movieApi';
+import { useVideo } from '../../contexts/VideoContext';
 
 const MovieExplorer = ({ onVideoSelect }) => {
   const { t } = useTranslation();
+  const { isMinimized, setIsMinimized } = useVideo();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [trending, setTrending] = useState([]);
@@ -35,65 +41,100 @@ const MovieExplorer = ({ onVideoSelect }) => {
   const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const [heroMovie, setHeroMovie] = useState(null);
+  const [heroImgSrc, setHeroImgSrc] = useState('');
+  const [heroMirrorIndex, setHeroMirrorIndex] = useState(0);
+  const resultsRef = useRef(null);
+
+  const handleBackToList = useCallback(() => {
+    setSelectedMovie(null);
+    setIsMinimized(true);
+    // Smooth scroll back to top of list
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [setIsMinimized]);
+
+  const fetchTrending = useCallback(async (p = 1) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = isMovieApiConfigured() 
+        ? await getTrendingMovies(p)
+        : await getOPhimTrending(p);
+
+      setTrending(data.results);
+      setTotalPages(data.total_pages || 1);
+      if (p === 1 && data.results.length > 0) {
+        setHeroMovie(data.results[0]);
+      }
+    } catch (err) {
+      setError(t('movies.fetchError'));
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+  
+  useEffect(() => {
+    if (heroMovie) {
+        setHeroImgSrc(getMovieBackdrop(heroMovie.backdrop_path || heroMovie.poster_path));
+        setHeroMirrorIndex(0);
+    }
+  }, [heroMovie]);
+
+  const handleHeroImgError = () => {
+    const mirrors = heroMovie?.image_mirrors || [];
+    if (heroMirrorIndex < mirrors.length - 1) {
+      const nextIndex = heroMirrorIndex + 1;
+      setHeroMirrorIndex(nextIndex);
+      setHeroImgSrc(mirrors[nextIndex]);
+    }
+  };
+
+  const performSearch = useCallback(async (p = 1) => {
+    if (!query.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = isMovieApiConfigured()
+        ? await searchMovies(query, p)
+        : await searchOPhim(query, p);
+      setResults(data.results);
+      setTotalPages(data.total_pages || 1);
+      
+      if (p === 1 && data.results.length > 0) {
+        setHeroMovie(data.results[0]);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [query]);
 
   useEffect(() => {
-    if (isMovieApiConfigured()) {
-      fetchTrending();
-    }
-  }, []);
-
-  const fetchTrending = async (p = 1) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getTrendingMovies(p);
-      if (p === 1) {
-        setTrending(data.results);
-      } else {
-        setTrending(prev => [...prev, ...data.results]);
-      }
-      setHasMore(data.page < data.total_pages);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = async (e) => {
-    if (e) e.preventDefault();
-    if (!query.trim()) return;
-
-    setLoading(true);
-    setError(null);
-    setResults([]);
-    try {
-      const data = await searchMovies(query);
-      setResults(data.results);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    if (query) {
-      // search more...
+    if (!query) {
+      fetchTrending(page);
     } else {
-      fetchTrending(nextPage);
+      performSearch(page);
+    }
+  }, [page, query, fetchTrending, performSearch]);
+
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    setPage(1);
+    if (resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   const handleMovieClick = async (movie) => {
     setLoading(true);
     try {
-      const details = await getMovieDetails(movie.id);
+      const details = isMovieApiConfigured()
+        ? await getMovieDetails(movie.id)
+        : await getOPhimDetails(movie.id);
       setSelectedMovie(details);
-      // Smooth scroll to top of details
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       toast.error('Failed to load movie details');
@@ -103,226 +144,344 @@ const MovieExplorer = ({ onVideoSelect }) => {
   };
 
   const startWatching = (movie) => {
-    // Strategy: Search for Full Movie on YouTube via the existing player
-    const searchString = `${movie.title} full movie`;
-    // We pass this as a "virtual" video or just trigger a search in MainPlayer
-    // But since MovieExplorer is a tab, we can use onVideoSelect with a special search protocol
-    
-    // For now, let's create a "Search Video" metadata
-    const videoData = {
-      isSearchQuery: true,
-      query: searchString,
-      title: movie.title,
-      description: movie.overview,
-      thumbnail: getMoviePoster(movie.poster_path),
-      isMovie: true,
-      movieId: movie.id
-    };
-    
-    onVideoSelect(videoData);
+    let embedUrl = null;
+    if (movie.source === 'ophim' && movie.episodes) {
+      if (Array.isArray(movie.episodes)) {
+        for (const ep of movie.episodes) {
+          if (ep.link_embed) {
+            embedUrl = ep.link_embed;
+            break;
+          }
+        }
+      }
+    }
+
+    if (embedUrl) {
+      onVideoSelect({
+        id: movie.id,
+        title: movie.title,
+        description: movie.description || movie.overview,
+        thumbnail: movie.poster_path,
+        url: embedUrl,
+        isEmbed: true,
+        embedUrl: embedUrl,
+        movieSource: 'ophim'
+      });
+      setSelectedMovie(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      toast.error('Không tìm thấy nguồn phát trực tiếp cho phim này. Vui lòng thử lại sau.');
+    }
   };
 
-  if (!isMovieApiConfigured()) {
-    return (
-      <div className="py-24 text-center space-y-12 animate-fade-in flex flex-col items-center">
-        <div className="relative">
-          <div className="absolute inset-0 bg-cinema-red blur-3xl opacity-10 animate-pulse" />
-          <Film className="w-20 h-20 text-cinema-red relative mb-8" />
-        </div>
-        <div className="space-y-4 max-w-lg mx-auto">
-          <h2 className="text-2xl font-black uppercase tracking-[0.4em] text-white">
-            Cinema Protocol Unavailable
-          </h2>
-          <p className="text-sm font-medium text-cinema-gray/60 leading-relaxed uppercase tracking-widest">
-            To activate professional movie discovery, please configure your TMDb Movie API Key in the System Control Room.
-          </p>
-        </div>
-        <a 
-          href="/settings"
-          className="btn-cinema px-12 py-4 text-[10px] font-black uppercase tracking-[0.4em]"
-        >
-          Configure Nexus Key
-        </a>
-      </div>
-    );
-  }
+  const MovieCard = ({ movie }) => {
+    const [imgSrc, setImgSrc] = React.useState(getMoviePoster(movie.poster_path));
+    const [mirrorIndex, setMirrorIndex] = React.useState(0);
+    const [isLoaded, setIsLoaded] = React.useState(false);
+    const mirrors = movie.image_mirrors || [];
 
-  const MovieCard = ({ movie }) => (
-    <div 
-      className="group relative bg-white/[0.02] border border-white/5 rounded-sm overflow-hidden transition-all duration-700 hover:scale-[1.05] hover:bg-white/[0.05] hover:border-white/10 cursor-pointer shadow-2xl"
-      onClick={() => handleMovieClick(movie)}
-    >
-      <div className="relative aspect-[2/3] overflow-hidden">
-        <img 
-          src={getMoviePoster(movie.poster_path) || 'https://placehold.co/500x750/000000/FFFFFF/png?text=No+Poster'} 
-          alt={movie.title}
-          className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-xl border border-white/10 px-2 py-1 flex items-center space-x-1">
-          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-          <span className="text-[10px] font-black text-white tabular-nums">{movie.vote_average?.toFixed(1)}</span>
+    const handleImgError = useCallback(() => {
+      if (mirrorIndex < mirrors.length - 1) {
+        const nextIndex = mirrorIndex + 1;
+        setMirrorIndex(nextIndex);
+        setImgSrc(mirrors[nextIndex]);
+      }
+    }, [mirrorIndex, mirrors]);
+
+    useEffect(() => {
+      if (!isLoaded && mirrorIndex < mirrors.length - 1) {
+        const timeout = setTimeout(() => {
+          if (!isLoaded) handleImgError();
+        }, 5000);
+        return () => clearTimeout(timeout);
+      }
+    }, [mirrorIndex, isLoaded, handleImgError]);
+
+    return (
+      <div 
+        className="group relative surface-low rounded-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl"
+        onClick={() => handleMovieClick(movie)}
+      >
+        <div className="aspect-video relative overflow-hidden bg-cinema-surface-lowest">
+          {!isLoaded && <div className="absolute inset-0 animate-shimmer" />}
+          <img 
+            src={imgSrc} 
+            alt={movie.title}
+            loading="lazy"
+            onLoad={() => setIsLoaded(true)}
+            onError={handleImgError}
+            className={`w-full h-full object-cover transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'} group-hover:scale-110`}
+          />
+          <div className="absolute inset-0 thumbnail-fade opacity-80" />
+          
+          <div className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+             <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                   <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                      <Play className="w-4 h-4 text-black fill-black" />
+                   </div>
+                   <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
+                      <Plus className="w-4 h-4 text-white" />
+                   </div>
+                </div>
+                <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
+                   <Info className="w-4 h-4 text-white" />
+                </div>
+             </div>
+          </div>
         </div>
         
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/40 backdrop-blur-sm">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center scale-90 group-hover:scale-100 transition-transform shadow-2xl">
-             <Info className="w-6 h-6 text-black" />
+        <div className="p-3">
+          <h3 className="text-[11px] font-bold text-white truncate uppercase tracking-wider">
+            {movie.title}
+          </h3>
+          <div className="flex items-center space-x-2 mt-1">
+            <span className="text-[9px] font-bold text-cinema-red">{movie.vote_average?.toFixed(1)} / 10</span>
+            <span className="text-[9px] text-white/40">•</span>
+            <span className="text-[9px] text-white/40">{movie.release_date?.split('-')[0]}</span>
           </div>
         </div>
       </div>
-      
-      <div className="p-4 space-y-2">
-        <h3 className="text-xs font-black uppercase tracking-widest text-white truncate group-hover:text-cinema-red transition-colors">
-          {movie.title}
-        </h3>
-        <div className="flex items-center justify-between text-[9px] font-black text-cinema-gray uppercase tracking-tighter">
-          <div className="flex items-center space-x-1">
-            <Calendar className="w-2.5 h-2.5" />
-            <span>{movie.release_date?.split('-')[0]}</span>
-          </div>
-          <span className="px-1.5 py-0.5 border border-white/5 rounded-sm">MOVIE</span>
-        </div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="space-y-12 pb-20 animate-fade-in">
-      {/* Search Hub */}
-      <div className="bg-cinema-surface/50 backdrop-blur-3xl border border-white/5 p-8 rounded-sm shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-cinema-red" />
-        <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-6">
-          <div className="flex-1 relative group">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-cinema-gray group-focus-within:text-cinema-red transition-colors w-4 h-4" />
-            <input 
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="QUÉT TẦN SỐ PHIM (TITLES, GENRES, YEARS)..."
-              className="w-full pl-14 pr-6 py-5 bg-white/[0.02] border border-white/5 rounded-sm text-white placeholder:text-cinema-gray/20 text-[10px] font-black uppercase tracking-[0.2em] focus:ring-0 focus:border-white/10 focus:bg-white/[0.04] transition-all"
-            />
-          </div>
-          <button 
-            type="submit"
-            className="btn-cinema py-5 px-12 text-[10px] font-black uppercase tracking-[0.4em]"
-          >
-            KÍCH HOẠT QUÉT
-          </button>
-        </form>
-      </div>
-
-      {/* Movie Detail Spotlight Overlay (Inline) */}
-      {selectedMovie && (
-        <div className="relative group animate-slide-up bg-black border border-white/5 rounded-sm overflow-hidden shadow-2xl">
+    <div className="min-h-screen surface-lowest text-white pb-20 animate-fade-in relative overflow-hidden">
+      {/* Hero Section */}
+      {heroMovie && (
+        <div className="relative h-[80vh] w-full overflow-hidden">
           <div className="absolute inset-0">
-             <img 
-               src={getMovieBackdrop(selectedMovie.backdrop_path)} 
-               alt="" 
-               className="w-full h-full object-cover opacity-30 blur-sm"
-             />
-             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+            <img 
+              key={`${heroMovie.id}-${heroMirrorIndex}`}
+              src={heroImgSrc} 
+              onError={handleHeroImgError}
+              className="w-full h-full object-cover opacity-60 scale-105 transition-all duration-1000 ease-in-out animate-ken-burns"
+              alt={heroMovie.title}
+            />
+            <div className="absolute inset-0 hero-fade" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cinema-black via-cinema-black/60 to-transparent" />
           </div>
           
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-10 p-10">
-            <div className="md:col-span-3">
-              <img 
-                src={getMoviePoster(selectedMovie.poster_path)} 
-                alt={selectedMovie.title}
-                className="w-full rounded-sm shadow-2xl border border-white/10"
-              />
+          <div className="relative z-10 h-full flex flex-col justify-center px-10 md:px-20 space-y-6 max-w-4xl">
+            {/* Back Button for Detail View */}
+            {selectedMovie && (
+              <button 
+                onClick={handleBackToList}
+                className="group flex items-center space-x-2 text-white/60 hover:text-white transition-colors duration-300 w-fit"
+              >
+                <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">QUAY LẠI DANH SÁCH</span>
+              </button>
+            )}
+
+            <div className="flex items-center space-x-4 text-cinema-red font-bold tracking-[0.3em] text-[10px]">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4" />
+                <span>SỰ KIỆN NỔI BẬT HÔM NAY</span>
+              </div>
+              <div className="w-1 h-1 rounded-full bg-white/20" />
+              <div className="flex items-center space-x-2 text-white">
+                <Star className="w-3 h-3 text-cinema-red fill-cinema-red" />
+                <span>{heroMovie.vote_average?.toFixed(1)} / 10</span>
+              </div>
             </div>
             
-            <div className="md:col-span-9 space-y-8 flex flex-col justify-center">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <h2 className="text-4xl font-black uppercase tracking-[0.2em] text-white">
-                    {selectedMovie.title}
-                  </h2>
-                  <button 
-                    onClick={() => setSelectedMovie(null)}
-                    className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-all"
-                  >
-                    <X className="w-5 h-5 text-white" />
-                  </button>
-                </div>
-                
-                <div className="flex flex-wrap items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">
-                  <div className="flex items-center space-x-2">
-                    <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                    <span className="text-white">{selectedMovie.vote_average.toFixed(1)} Rating</span>
-                  </div>
-                  <div className="flex items-center space-x-2 border-l border-white/10 pl-6">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{selectedMovie.release_date}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 border-l border-white/10 pl-6">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{selectedMovie.runtime} MINS</span>
-                  </div>
-                </div>
-              </div>
-              
-              <p className="text-sm font-medium text-cinema-gray/80 leading-relaxed max-w-2xl line-clamp-4">
-                {selectedMovie.overview}
-              </p>
-              
-              <div className="flex flex-wrap gap-4 pt-4">
-                <button 
-                  onClick={() => startWatching(selectedMovie)}
-                  className="flex items-center space-x-4 px-10 py-4 bg-cinema-red text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-sm hover:scale-105 transition-all shadow-2xl shadow-cinema-red/20"
-                >
-                  <Play className="w-4 h-4 fill-white" />
-                  <span>XEM NGAY (YOUTUBE)</span>
-                </button>
-                <button className="flex items-center space-x-4 px-10 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-sm hover:bg-white/10 transition-all">
-                  <ExternalLink className="w-4 h-4" />
-                  <span>TRAILER</span>
-                </button>
-              </div>
+            <h1 className="display-lg text-white">
+              {heroMovie.title}
+            </h1>
+            
+            <p className="body-variant max-w-xl line-clamp-3 md:line-clamp-none">
+              {heroMovie.overview || "Khám phá câu chuyện điện ảnh đầy mê hoặc với những cảnh quay đỉnh cao và diễn xuất ấn tượng."}
+            </p>
+            
+            <div className="flex items-center gap-4 pt-4">
+              <button 
+                onClick={() => handleMovieClick(heroMovie)}
+                className="btn-cinema"
+              >
+                <Play className="w-5 h-5 mr-3 fill-white" />
+                CHI TIẾT PHIM
+              </button>
+              <button 
+                className="btn-cinema-ghost"
+                onClick={() => toast.success('Đã thêm vào danh sách yêu thích')}
+              >
+                <Plus className="w-5 h-5 mr-3" />
+                YÊU THÍCH
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Grid Content */}
-      <div className="space-y-12">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray flex items-center space-x-4">
-            <div className="w-3 h-[1px] bg-cinema-red" />
-            <span>{results.length > 0 ? 'KẾT QUẢ QUÉT' : 'TOP PHIM THỊNH HÀNH'}</span>
-          </h2>
-          <div className="flex items-center space-x-2 text-[9px] font-black text-cinema-gray/30 tracking-[0.2em] uppercase">
-            <span>Protocol v3.0</span>
+      {/* Floating Glass Search */}
+      <div className={`sticky top-20 z-40 px-10 md:px-20 transition-all duration-500 ${selectedMovie ? 'opacity-0 pointer-events-none' : 'opacity-100 py-8'}`}>
+        <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-cinema-gray group-focus-within:text-cinema-red transition-colors w-4 h-4" />
+            <input 
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Tên phim, thể loại, diễn viên..."
+              className="w-full pl-14 pr-6 py-4 bg-transparent border-b border-white/10 text-white placeholder:text-cinema-gray-variant/30 text-xs font-bold uppercase tracking-[0.2em] focus:ring-0 focus:border-cinema-red focus:bg-white/[0.02] transition-all outline-none"
+            />
+            {query && (
+                <button 
+                    type="button"
+                    onClick={() => { setQuery(''); setResults([]); setPage(1); }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                >
+                    <X className="w-4 h-4" />
+                </button>
+            )}
           </div>
-        </div>
-
-        {loading && !trending.length && (
-          <div className="py-32 flex flex-col items-center space-y-6">
-            <Loader2 className="w-10 h-10 text-cinema-red animate-spin" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray animate-pulse">Initializing Cinema Link...</span>
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-          {(results.length > 0 ? results : trending).map((movie, index) => (
-            <MovieCard key={`${movie.id}-${index}`} movie={movie} />
-          ))}
-        </div>
-
-        {hasMore && !loading && (
-          <div className="pt-16 text-center">
-            <button 
-              onClick={loadMore}
-              className="px-16 py-5 border border-white/5 hover:border-cinema-red rounded-sm text-[10px] font-black uppercase tracking-[0.4em] text-cinema-gray hover:text-white transition-all group"
-            >
-              <span className="flex items-center space-x-4">
-                <span>EXTEND SCAN AREA</span>
-                <TrendingUp className="w-4 h-4 group-hover:translate-y-[-2px] transition-transform" />
-              </span>
-            </button>
-          </div>
-        )}
+        </form>
       </div>
+
+      {/* Detailed Movie View (Modified Overlay Style) */}
+      {selectedMovie && (
+        <div className="relative z-50 animate-slide-up px-10 md:px-20 py-10">
+          <div className="glass-card grid grid-cols-1 md:grid-cols-12 gap-0">
+             <div className="md:col-span-4 relative aspect-[2/3]">
+                <img 
+                    src={getMoviePoster(selectedMovie.poster_path)} 
+                    className="w-full h-full object-cover"
+                    alt={selectedMovie.title}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-transparent to-transparent" />
+             </div>
+             
+             <div className="md:col-span-8 p-10 flex flex-col justify-center space-y-8 surface-low">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="display-lg text-white">
+                      {selectedMovie.title}
+                    </h2>
+                    <button 
+                      onClick={() => setSelectedMovie(null)}
+                      className="p-3 hover:bg-white/10 rounded-full transition-all"
+                    >
+                      <X className="w-6 h-6 text-white" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-6 text-[11px] font-bold uppercase tracking-[0.2em] text-cinema-gray-variant">
+                    <div className="flex items-center space-x-2">
+                      <Star className="w-4 h-4 text-cinema-red fill-cinema-red" />
+                      <span className="text-white">{selectedMovie.vote_average?.toFixed(1)} / 10</span>
+                    </div>
+                    <div className="w-1 h-1 rounded-full bg-white/20" />
+                    <span>{selectedMovie.release_date}</span>
+                    <div className="w-1 h-1 rounded-full bg-white/20" />
+                    <span>{selectedMovie.runtime} MINS</span>
+                  </div>
+                </div>
+                
+                <p className="body-variant text-base leading-relaxed max-w-2xl">
+                  {selectedMovie.overview || selectedMovie.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-4">
+                  <button 
+                    onClick={() => startWatching(selectedMovie)}
+                    className="btn-cinema px-12 py-4"
+                  >
+                    <Play className="w-5 h-5 mr-3 fill-white" />
+                    PHÁT NGAY
+                  </button>
+                  <button 
+                    className="btn-cinema-ghost px-12 py-4"
+                    onClick={() => setSelectedMovie(null)}
+                  >
+                    QUAY LẠI
+                  </button>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Content Sections */}
+      <div className="px-10 md:px-20 space-y-20 relative z-10" id="cinema-hub-results" ref={resultsRef}>
+        <div className="space-y-8">
+          <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <h2 className="headline-sm m-0">
+              {results.length > 0 ? 'KẾT QUẢ TÌM KIẾM' : 'DANH SÁCH THỜI THƯỢNG'}
+            </h2>
+            <div className="flex items-center space-x-2 text-[10px] font-bold text-cinema-red tracking-[0.2em]">
+               <div className="w-2 h-2 rounded-full bg-cinema-red animate-pulse" />
+               <span>TRỰC TIẾP TỪ SERVER</span>
+            </div>
+          </div>
+
+          {loading && !trending.length && !results.length ? (
+            <div className="py-32 flex flex-col items-center space-y-6">
+              <Loader2 className="w-12 h-12 text-cinema-red animate-spin" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-cinema-gray animate-pulse">Initializing Cinematic Buffer...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-y-10 gap-x-6">
+              {(results.length > 0 ? results : trending).map((movie, index) => (
+                <MovieCard key={`${movie.id}-${index}`} movie={movie} />
+              ))}
+            </div>
+          )}
+
+          {totalPages > 1 && !loading && (
+            <div className="pt-16 flex flex-col items-center space-y-8">
+              <div className="flex items-center space-x-3">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  className="w-12 h-12 flex items-center justify-center rounded-full border border-white/10 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                
+                <div className="flex items-center space-x-2">
+                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                    let pNum;
+                    if (totalPages <= 5) pNum = i + 1;
+                    else if (page <= 3) pNum = i + 1;
+                    else if (page >= totalPages - 2) pNum = totalPages - 4 + i;
+                    else pNum = page - 2 + i;
+                    
+                    return (
+                      <button
+                        key={pNum}
+                        onClick={() => setPage(pNum)}
+                        className={`w-12 h-12 flex items-center justify-center rounded-full border transition-all text-sm font-bold ${
+                          page === pNum 
+                            ? 'bg-cinema-red border-cinema-red text-white shadow-lg shadow-cinema-red/20' 
+                            : 'border-white/10 hover:border-white/30 text-cinema-gray'
+                        }`}
+                      >
+                        {pNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  disabled={page === totalPages}
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  className="w-12 h-12 flex items-center justify-center rounded-full border border-white/10 hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20">
+                FRAME {page} // {totalPages}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className="fixed bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cinema-red/40 to-transparent z-50 pointer-events-none" />
     </div>
   );
 };
