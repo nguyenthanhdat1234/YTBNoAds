@@ -226,14 +226,14 @@ const MainPlayer = () => {
               {activeTab === 'movies' && (
                 <button 
                   onClick={() => setIsMinimized(true)}
-                  className="mb-6 flex items-center space-x-2 text-cinema-gray hover:text-white transition-all group"
+                  className="mb-4 md:mb-6 flex items-center space-x-2 text-cinema-gray hover:text-white transition-all group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-cinema-red group-hover:border-cinema-red transition-all">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-cinema-red group-hover:border-cinema-red transition-all">
+                    <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">QUAY LẠI CINEMA HUB</span>
+                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.2em]">QUAY LẠI CINEMA HUB</span>
                 </button>
               )}
               
@@ -244,11 +244,11 @@ const MainPlayer = () => {
                 <div className="relative group rounded-sm overflow-hidden bg-black shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/5">
                   <button
                     onClick={handleMinimize}
-                    className="absolute top-4 right-4 z-20 bg-black/40 backdrop-blur-xl border border-white/10 text-white p-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    className="absolute top-2 right-2 md:top-4 md:right-4 z-20 bg-black/60 backdrop-blur-xl border border-white/10 text-white p-2 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-all duration-300"
                     title="Minimize"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                   <VideoPlayer video={currentVideo} />

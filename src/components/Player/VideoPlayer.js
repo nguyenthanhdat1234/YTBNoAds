@@ -621,17 +621,17 @@ const VideoPlayer = ({ video }) => {
               </button>
             </div>
             <div
-              className="absolute bottom-0 left-0 right-0 px-8 py-6 space-y-6 pointer-events-auto"
+              className="absolute bottom-0 left-0 right-0 px-4 md:px-8 py-4 md:py-6 space-y-4 md:space-y-6 pointer-events-auto bg-gradient-to-t from-black/80 via-black/40 to-transparent"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Precision Scrub Bar */}
-              <div className="flex flex-col space-y-2 group/scrub">
-                <div className="flex justify-between items-center opacity-0 group-hover/scrub:opacity-100 transition-opacity duration-300">
-                  <span className={`text-[10px] font-black tracking-widest uppercase tabular-nums ${isLive ? 'text-cinema-red animate-pulse' : 'text-white'}`}>
+              <div className="flex flex-col space-y-1 md:space-y-2 group/scrub">
+                <div className="flex justify-between items-center opacity-70 md:opacity-0 group-hover/scrub:opacity-100 transition-opacity duration-300">
+                  <span className={`text-[10px] md:text-[10px] font-black tracking-widest uppercase tabular-nums ${isLive ? 'text-cinema-red animate-pulse' : 'text-white'}`}>
                     {isLive ? '● LIVE' : formatTime(duration * played)}
                   </span>
                   {!isLive && (
-                    <span className="text-[10px] font-black tracking-widest text-cinema-gray uppercase tabular-nums">
+                    <span className="text-[10px] md:text-[10px] font-black tracking-widest text-cinema-gray uppercase tabular-nums">
                       {formatTime(duration)}
                     </span>
                   )}
@@ -657,27 +657,27 @@ const VideoPlayer = ({ video }) => {
               </div>
 
               {/* Navigation & Preferences Row */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center space-x-2 md:space-x-6">
                   {/* Playback Cluster */}
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center -space-x-1 md:space-x-2">
                     {!isLive && (
                       <button onClick={handleSeekBackward} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                        <SkipBack className="w-5 h-5" />
+                        <SkipBack className="w-4 h-4 md:w-5 md:h-5" />
                       </button>
                     )}
                     <button onClick={handlePlayPause} className="p-2 text-white hover:scale-110 transition-all">
-                      {playing ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current" />}
+                      {playing ? <Pause className="w-5 h-5 md:w-6 md:h-6 fill-current" /> : <Play className="w-5 h-5 md:w-6 md:h-6 fill-current" />}
                     </button>
                     {!isLive && (
                       <button onClick={handleSeekForward} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                        <SkipForward className="w-5 h-5" />
+                        <SkipForward className="w-4 h-4 md:w-5 md:h-5" />
                       </button>
                     )}
                   </div>
 
-                  {/* Audio Cluster */}
-                  <div className="flex items-center space-x-4 group/vol">
+                  {/* Audio Cluster - Hidden on mobile to save space, shown on md+ */}
+                  <div className="hidden md:flex items-center space-x-4 group/vol">
                     <button onClick={handleToggleMute} className="text-cinema-gray hover:text-white transition-colors">
                       {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                     </button>
@@ -704,29 +704,28 @@ const VideoPlayer = ({ video }) => {
                 </div>
 
                 {/* Advanced Utility Cluster */}
-                <div className="flex items-center space-x-2">
-                  <QualitySelector
-                    currentQuality={currentQuality}
-                    onQualityChange={handleQualityChange}
-                  />
+                <div className="flex items-center space-x-1 md:space-x-2">
+                  <div className="scale-75 md:scale-100 origin-right">
+                    <QualitySelector
+                      currentQuality={currentQuality}
+                      onQualityChange={handleQualityChange}
+                    />
+                  </div>
                   
-                  <div className="flex items-center bg-white/5 p-1 rounded-sm border border-white/5">
-                    <button onClick={handleToggleSubscription} className={`p-2 transition-colors ${isSubscribed ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
-                      <Bell className="w-4 h-4" />
-                    </button>
-                    <button onClick={handleToggleFavorite} className={`p-2 transition-colors ${isFavorite ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
-                      <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+                  <div className="flex items-center bg-white/5 p-0.5 md:p-1 rounded-sm border border-white/5">
+                    <button onClick={handleToggleFavorite} className={`p-1.5 md:p-2 transition-colors ${isFavorite ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                      <Heart className={`w-3.5 h-3.5 md:w-4 md:h-4 ${isFavorite ? 'fill-current' : ''}`} />
                     </button>
                     {isLive && (
-                      <button onClick={toggleChat} className={`p-2 transition-colors ${showChat ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
-                        <MessageSquare className="w-4 h-4" />
+                      <button onClick={toggleChat} className={`p-1.5 md:p-2 transition-colors ${showChat ? 'text-cinema-red' : 'text-cinema-gray hover:text-white'}`}>
+                        <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </button>
                     )}
-                    <button onClick={handleTheaterMode} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                      <Monitor className="w-4 h-4" />
+                    <button onClick={handleTheaterMode} className="hidden sm:block p-1.5 md:p-2 text-cinema-gray hover:text-white transition-colors">
+                      <Monitor className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
-                    <button onClick={handleFullscreen} className="p-2 text-cinema-gray hover:text-white transition-colors">
-                      <Maximize className="w-4 h-4" />
+                    <button onClick={handleFullscreen} className="p-1.5 md:p-2 text-cinema-gray hover:text-white transition-colors">
+                      <Maximize className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                   </div>
                 </div>
