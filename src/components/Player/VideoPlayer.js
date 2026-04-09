@@ -626,13 +626,13 @@ const VideoPlayer = ({ video }) => {
                   e.stopPropagation();
                   handlePlayPause();
                 }}
-                className="w-20 h-20 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl transition-all duration-500 hover:scale-110 active:scale-95 group/play"
+                className="w-14 h-14 md:w-20 md:h-20 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center justify-center backdrop-blur-3xl transition-all duration-500 hover:scale-110 active:scale-95 group/play"
               >
                 <div className="absolute inset-0 bg-cinema-red blur-2xl opacity-0 group-hover/play:opacity-20 transition-opacity" />
                 {playing ? (
-                  <Pause className="w-8 h-8 text-white fill-white" />
+                  <Pause className="w-6 h-6 md:w-8 md:h-8 text-white fill-white" />
                 ) : (
-                  <Play className="w-8 h-8 text-white fill-white ml-1" />
+                  <Play className="w-6 h-6 md:w-8 md:h-8 text-white fill-white ml-0.5 md:ml-1" />
                 )}
               </button>
             </div>
