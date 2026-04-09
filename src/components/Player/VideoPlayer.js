@@ -68,6 +68,8 @@ const VideoPlayer = ({ video }) => {
   const [wasPlayingBeforeHidden, setWasPlayingBeforeHidden] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [hasAddedToHistory, setHasAddedToHistory] = useState(false);
+  const [isFastForwarding, setIsFastForwarding] = useState(false);
+  const originalPlaybackRateRef = useRef(1);
 
   const isLive = video.isLive || duration === Infinity || duration === 0;
 
@@ -100,18 +102,21 @@ const VideoPlayer = ({ video }) => {
   const lastToggleTimeRef = useRef(0);
 
   const handleToggleControls = (e) => {
+    // If we are currently fast-forwarding or just finished, don't toggle
+    if (isFastForwarding) return;
+    
+    // If there's an active long press timer that we just cleared, 
+    // it means it was a short tap, so we proceed.
+    // If the timer was already triggered and cleared, we don't proceed.
+    
     // Prevent rapid toggling (debounce)
     const now = Date.now();
     if (now - lastToggleTimeRef.current < 300) return;
     lastToggleTimeRef.current = now;
 
     // If the click/touch started on an interactive element, ignore it here
-    // as those elements have their own handlers and stopPropagation.
-    // We only want to toggle when clicking the "empty" space of the player.
     if (e && e.target !== e.currentTarget && !e.target.classList.contains('absolute')) {
-      // If it's not the container itself or one of our decorative overlays,
-      // it might be an interactive element we don't want to interfere with.
-      // But since we use stopPropagation on buttons, we usually don't get here for buttons.
+      // Buttons etc.
     }
 
     if (showControls) {
@@ -265,6 +270,42 @@ const VideoPlayer = ({ video }) => {
       toast.success(isSubscribed ? 'Unsubscribed successfully' : 'Subscribed successfully');
     } else {
       toast.error('Failed to update subscription');
+    }
+  };
+
+  const longPressTimerRef = useRef(null);
+
+  const handleSpeedBoostStart = (e) => {
+    if (isLive) return;
+
+    // We use a timer to distinguish between a tap and a long press
+    const rect = playerContainerRef.current.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const isRightSide = x > rect.width * 0.6;
+
+    if (isRightSide) {
+      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+      
+      longPressTimerRef.current = setTimeout(() => {
+        originalPlaybackRateRef.current = playbackRate;
+        setPlaybackRate(2);
+        setIsFastForwarding(true);
+        setShowControls(false); // Hide controls for cleaner view during 2x
+      }, 500); // 500ms hold to activate 2x
+    }
+  };
+
+  const handleSpeedBoostEnd = (e) => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+
+    if (isFastForwarding) {
+      setPlaybackRate(originalPlaybackRateRef.current);
+      setIsFastForwarding(false);
+      // Optional: Prevent the subsequent click event if we were fast forwarding
+      if (e) e.preventDefault();
     }
   };
 
@@ -575,11 +616,28 @@ const VideoPlayer = ({ video }) => {
           }`}
           onMouseEnter={showControlsTemporarily}
           onMouseMove={showControlsTemporarily}
-          onMouseLeave={hideControlsImmediately}
+          onMouseLeave={() => {
+            hideControlsImmediately();
+            handleSpeedBoostEnd();
+          }}
           onClick={handleToggleControls}
-          onTouchEnd={handleToggleControls}
+          onMouseDown={handleSpeedBoostStart}
+          onMouseUp={handleSpeedBoostEnd}
+          onTouchStart={handleSpeedBoostStart}
+          onTouchEnd={(e) => {
+            handleSpeedBoostEnd(e);
+            handleToggleControls(e);
+          }}
           tabIndex={0}
         >
+          {/* 2X Speed Indicator */}
+          {isFastForwarding && (
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2 bg-black/40 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10 animate-pulse pointer-events-none">
+              <Gauge className="w-4 h-4 text-cinema-red" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">2X SPEED CONTENT</span>
+            </div>
+          )}
+
           {/* React Player Engine */}
           <div className="absolute inset-0 z-0">
             {video.isEmbed ? (
