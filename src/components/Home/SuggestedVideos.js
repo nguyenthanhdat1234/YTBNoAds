@@ -75,18 +75,24 @@ const SuggestedVideos = () => {
 
   return (
     <div className="space-y-6 md:space-y-12 py-4 md:py-8 animate-fade-in">
-      {/* Header */}
-      <div className="text-center space-y-3 md:space-y-4 px-2">
-        <div className="inline-flex items-center space-x-3 px-4 py-1 bg-cinema-red/10 border border-cinema-red/20 rounded-full mb-2 md:mb-4">
-          <TrendingUp className="w-3 h-3 text-cinema-red animate-pulse" />
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-cinema-red">{t('discover.signal')}</span>
+      {/* Header Banner - Cinematic Spotlight */}
+      <div className="relative overflow-hidden rounded-sm bg-black/40 border border-white/5 p-8 md:p-14 text-center space-y-4 md:space-y-6">
+        <div className="absolute inset-0 bg-gradient-to-b from-cinema-red/5 to-transparent opacity-30" />
+        
+        <div className="relative z-10 flex flex-col items-center space-y-4">
+          <div className="inline-flex items-center space-x-3 px-6 py-2 bg-cinema-red/10 border border-cinema-red/20 rounded-full">
+            <TrendingUp className="w-3 h-3 text-cinema-red animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-red">{t('discover.signal')}</span>
+          </div>
+          
+          <h2 className="text-3xl md:text-6xl font-black uppercase tracking-tight text-white leading-none">
+            {t('discover.global')} <span className="text-cinema-red">{t('discover.frequencies')}</span>
+          </h2>
+          
+          <p className="text-[11px] md:text-sm font-bold tracking-[0.1em] text-cinema-gray/40 max-w-lg mx-auto leading-relaxed">
+            {t('discover.curated')}
+          </p>
         </div>
-        <h2 className="text-2xl md:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
-          {t('discover.global')} <span className="text-cinema-red">{t('discover.frequencies')}</span>
-        </h2>
-        <p className="text-[10px] font-bold tracking-[0.15em] text-cinema-gray/40 max-w-lg mx-auto">
-          {t('discover.curated')}
-        </p>
       </div>
 
       {/* Category Filters — horizontally scrollable on mobile */}

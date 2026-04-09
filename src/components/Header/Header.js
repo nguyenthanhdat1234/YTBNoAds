@@ -76,20 +76,19 @@ const Header = ({ onVideoSelect }) => {
             <Link 
               to="/" 
               onClick={() => setActiveTab('search')}
-              className="flex items-center space-x-2.5 group flex-shrink-0"
+              className="flex items-center space-x-3 group flex-shrink-0"
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-cinema-red blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-                <div className="relative p-0.5 bg-white/5 backdrop-blur-sm rounded-sm transform group-hover:scale-110 transition-transform duration-500 overflow-hidden border border-white/5">
-                  <img src="/logo.png" alt="Logo" className="w-8 h-8 md:w-10 md:h-10 object-contain shadow-2xl" />
+                <div className="relative p-1 bg-black border border-white/10 rounded sm:rounded-md transform group-hover:scale-110 transition-transform duration-500 overflow-hidden shadow-2xl">
+                  {/* Small Clapperboard Icon inside the box */}
+                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center relative">
+                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-col -space-y-0.5">
-                <span className="text-sm md:text-base font-black tracking-tighter text-white uppercase font-display leading-none">
-                  Cinema <span className="text-cinema-red">Flow</span>
-                </span>
-                <span className="hidden sm:block text-[9px] font-bold text-cinema-gray uppercase tracking-[0.2em]">
-                  {t('settings.systemCore')}
+              <div className="flex items-center">
+                <span className="text-sm md:text-lg font-black tracking-tighter text-white uppercase font-display leading-none">
+                  CINEMA <span className="text-cinema-red">FLOW</span>
                 </span>
               </div>
             </Link>

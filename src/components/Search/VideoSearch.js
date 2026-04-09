@@ -309,8 +309,8 @@ const VideoSearch = ({ onVideoSelect }) => {
       <div className="relative group">
         <div className="absolute inset-x-0 -top-20 h-40 bg-cinema-red opacity-[0.02] blur-[120px] pointer-events-none" />
         
-        <form onSubmit={handleSearch} className="space-y-8 relative">
-          <div className="flex flex-col md:flex-row gap-4">
+        <form onSubmit={handleSearch} className="space-y-4 md:space-y-8 relative">
+          <div className="flex flex-col gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-cinema-gray/30 w-4 h-4" />
               <input
@@ -318,67 +318,66 @@ const VideoSearch = ({ onVideoSelect }) => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('search.placeholder')}
-                className="w-full pl-14 pr-6 py-5 bg-white/[0.02] border border-white/5 rounded-sm text-white placeholder:text-cinema-gray/20 text-sm font-medium focus:ring-0 focus:border-white/10 focus:bg-white/[0.04] transition-all tracking-wide shadow-2xl"
+                className="w-full pl-14 pr-6 py-4 md:py-6 bg-white/[0.03] border border-white/5 rounded-sm text-white placeholder:text-cinema-gray/20 text-sm font-medium focus:ring-0 focus:border-white/10 focus:bg-white/[0.05] transition-all tracking-wide shadow-2xl"
               />
             </div>
             
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={loading || !query.trim()}
-                className={`px-10 flex items-center space-x-3 rounded-sm transition-all duration-500 ${
-                  loading || !query.trim()
-                    ? 'bg-white/5 text-cinema-gray/30'
-                    : 'bg-cinema-red text-white hover:bg-red-700 shadow-xl shadow-cinema-red/10 animate-hover-scale'
-                }`}
-              >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Search className="w-4 h-4" />
-                )}
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('search.igniteScan')}</span>
-              </button>
-
-            </div>
+            <button
+              type="submit"
+              disabled={loading || !query.trim()}
+              className={`w-full py-2.5 md:py-4 flex items-center justify-center space-x-3 rounded-sm transition-all duration-500 border border-white/5 uppercase ${
+                loading || !query.trim()
+                  ? 'bg-white/5 text-cinema-gray/30'
+                  : 'bg-white/[0.04] text-cinema-gray hover:text-white hover:bg-white/10 hover:border-white/10'
+              }`}
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Search className="w-3.5 h-3.5" />
+              )}
+              <span className="text-[10px] font-black tracking-[0.2em]">{t('search.igniteScan')}</span>
+            </button>
           </div>
         </form>
 
-        {/* Quick Filter Chips */}
-        <div className="flex flex-wrap items-center gap-3 pt-4">
-          <div className="flex items-center space-x-3 text-[9px] font-black uppercase tracking-[0.2em] text-cinema-gray/40 mr-2">
-            <Filter className="w-3 h-3" />
+        {/* Quick Filter Section */}
+        <div className="pt-8 space-y-4">
+          <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray/30">
+            <Filter className="w-3.5 h-3.5" />
             <span>Quick Filters</span>
           </div>
-          {[
-            { id: 'any', label: 'All Content', icon: Globe },
-            { id: 'live', label: 'Live Now', icon: Play, color: 'text-cinema-red border-cinema-red/20' },
-            { id: 'gaming', label: 'Gaming', query: 'gaming' },
-            { id: 'music', label: 'Music', query: 'music' }
-          ].map(chip => (
-            <button
-              key={chip.id}
-              onClick={() => {
-                if (chip.id === 'live') {
-                  handleFilterChange('eventType', filters.eventType === 'live' ? 'any' : 'live');
-                } else if (chip.query) {
-                  setQuery(chip.query);
-                  performSearch(chip.query, filters);
-                } else {
-                  handleFilterChange('eventType', 'any');
-                }
-              }}
-              className={`px-4 py-2 text-[9px] font-black uppercase tracking-widest border rounded-sm transition-all flex items-center space-x-2 ${
-                (chip.id === 'live' && filters.eventType === 'live') || (chip.id === 'any' && filters.eventType === 'any' && !query.includes(chip.query || ''))
-                  ? 'bg-cinema-red text-white border-cinema-red shadow-lg shadow-cinema-red/20'
-                  : 'bg-white/5 border-white/5 text-cinema-gray/60 hover:text-white hover:bg-white/10 hover:border-white/10'
-              }`}
-            >
-              {chip.icon && <chip.icon className="w-3 h-3" />}
-              {chip.id === 'live' && <div className={`w-1 h-1 rounded-full bg-current ${filters.eventType === 'live' ? 'animate-pulse' : ''}`} />}
-              <span>{chip.label}</span>
-            </button>
-          ))}
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { id: 'any', label: 'ALL CONTENT', icon: Globe },
+              { id: 'live', label: 'LIVE NOW', icon: Play, dot: true },
+              { id: 'gaming', label: 'GAMING', query: 'gaming' },
+              { id: 'music', label: 'MUSIC', query: 'music' }
+            ].map(chip => (
+              <button
+                key={chip.id}
+                onClick={() => {
+                  if (chip.id === 'live') {
+                    handleFilterChange('eventType', filters.eventType === 'live' ? 'any' : 'live');
+                  } else if (chip.query) {
+                    setQuery(chip.query);
+                    performSearch(chip.query, filters);
+                  } else {
+                    handleFilterChange('eventType', 'any');
+                  }
+                }}
+                className={`px-5 py-3 text-[10px] font-black uppercase tracking-widest border rounded-sm transition-all flex items-center space-x-3 ${
+                  (chip.id === 'live' && filters.eventType === 'live') || (chip.id === 'any' && filters.eventType === 'any' && !query.includes(chip.query || ''))
+                    ? 'bg-white/10 text-white border-white/20 shadow-xl'
+                    : 'bg-white/[0.02] border-white/5 text-cinema-gray/40 hover:text-white hover:bg-white/5 hover:border-white/10'
+                }`}
+              >
+                {chip.icon && <chip.icon className={`w-3 h-3 ${chip.id === 'live' ? 'text-cinema-red' : ''}`} />}
+                {chip.dot && <div className="w-1 h-1 rounded-full bg-cinema-red animate-pulse" />}
+                <span>{chip.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

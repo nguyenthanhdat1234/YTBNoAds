@@ -169,32 +169,32 @@ const MainPlayer = () => {
 
   const tabs = [
     { id: 'search', label: t('main.director'), shortLabel: t('main.director'), icon: Clapperboard },
-    { id: 'movies', label: 'Cinema HUB', shortLabel: 'Phim', icon: Film },
+    { id: 'movies', label: 'Cinema HUB', shortLabel: 'PHIM', icon: Film },
   ];
 
   return (
     <>
       {/* Main wrapper — adds bottom padding on mobile for bottom nav bar */}
-      <div className="max-w-[1700px] mx-auto px-4 md:px-6 py-4 md:py-8 pb-20 xl:pb-8 transition-all duration-500">
+      <div className="max-w-[1700px] mx-auto px-4 md:px-6 py-4 md:py-8 pb-32 xl:pb-8 transition-all duration-500">
 
         {/* Cinematic Tab Nav */}
         <div className="flex items-center justify-between mb-6 md:mb-8 pb-4 border-b border-white/5 overflow-x-auto no-scrollbar">
-          <div className="flex space-x-1 md:space-x-8 flex-shrink-0">
+          <div className="flex space-x-2 md:space-x-8 flex-shrink-0">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`group relative py-2 px-3 md:px-0 transition-all duration-300 flex-shrink-0 ${
+                className={`group relative py-2 px-4 md:px-0 transition-all duration-300 flex-shrink-0 ${
                   activeTab === tab.id ? 'text-white' : 'text-cinema-gray hover:text-white'
                 }`}
               >
-                <div className="flex items-center space-x-2">
-                  <tab.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${activeTab === tab.id ? 'text-cinema-red' : ''}`} />
-                  <span className="hidden sm:block text-xs font-bold uppercase tracking-[0.2em] whitespace-nowrap">{tab.label}</span>
-                  <span className="sm:hidden text-[10px] font-bold uppercase tracking-widest">{tab.shortLabel}</span>
+                <div className="flex items-center space-x-2.5">
+                  <tab.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${activeTab === tab.id ? 'text-cinema-red' : 'opacity-40'}`} />
+                  <span className="hidden sm:block text-xs font-black uppercase tracking-[0.2em] whitespace-nowrap">{tab.label}</span>
+                  <span className="sm:hidden text-xs font-black uppercase tracking-widest">{tab.shortLabel}</span>
                 </div>
                 {activeTab === tab.id && (
-                  <div className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.4)]" />
+                  <div className="absolute -bottom-[17px] left-0 right-0 h-[2px] bg-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.6)]" />
                 )}
               </button>
             ))}
@@ -307,19 +307,18 @@ const MainPlayer = () => {
 
           {/* Spotlight Section (Suggested Videos) */}
           {activeTab === 'search' && !isMinimized && !currentVideo && !loading && !error && (
-            <div className="pt-8 md:pt-12 border-t border-white/5">
-              <div className="flex items-center justify-between mb-6 md:mb-8">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cinema-gray">{t('main.spotlight')}</h3>
+            <div className="pt-8 md:pt-12">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xs font-black uppercase tracking-[0.4em] text-cinema-gray/60">{t('main.spotlight')}</h3>
               </div>
-              <div className="bg-cinema-surface rounded-sm border border-white/5 p-2">
-                <SuggestedVideos />
-              </div>
+              <SuggestedVideos />
             </div>
           )}
 
 
 
-          {activeTab === 'movies' && (
+          {/* Movie Catalog / Theater Transition */}
+          {activeTab === 'movies' && (!currentVideo || isMinimized) && (
             <div className="animate-fade-in">
               <MovieExplorer onVideoSelect={handleVideoSelect} />
             </div>

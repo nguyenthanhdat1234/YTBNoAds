@@ -13,7 +13,10 @@ export const getMovieApiKey = () => MOVIE_API_KEY;
 export const isMovieApiConfigured = () => !!MOVIE_API_KEY;
 
 export const searchMovies = async (query, page = 1) => {
-  if (!MOVIE_API_KEY) throw new Error('TMDb API Key not configured');
+  if (!MOVIE_API_KEY) {
+      const data = await searchOPhim(query, page);
+      return data.results;
+  }
   
   const response = await fetch(
     `${TMDB_BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&page=${page}&language=vi-VN&include_adult=false`
@@ -24,7 +27,8 @@ export const searchMovies = async (query, page = 1) => {
     throw new Error(error.status_message || 'Failed to search movies');
   }
   
-  return response.json();
+  const data = await response.json();
+  return data.results;
 };
 
 export const getTrendingMovies = async (page = 1) => {
@@ -176,3 +180,34 @@ export const getOPhimDetails = async (slug) => {
     vote_average: movie.tmdb?.vote_average || movie.imdb?.vote_average || 0
   };
 };
+
+// Unified Unified Wrappers for Browser UI
+export const fetchTrending = async (page = 1) => {
+  try {
+      if (!MOVIE_API_KEY) throw new Error('TMDB Key missing');
+      const data = await getTrendingMovies(page);
+      return data.results;
+  } catch (err) {
+      const data = await getOPhimTrending(page);
+      return data.results;
+  }
+};
+
+export const getMovieStream = async (movieId, title) => {
+  try {
+      // For now, assume OPhim slugs are used as IDs for direct mirror access
+      const details = await getOPhimDetails(movieId);
+      const episode = details.episodes?.[0];
+      if (episode && (episode.link_m3u8 || episode.link_embed)) {
+          return {
+              url: episode.link_m3u8 || episode.link_embed,
+              mirrors: details.episodes.map(e => e.link_m3u8 || e.link_embed).filter(Boolean)
+          };
+      }
+      throw new Error('No stream found');
+  } catch (err) {
+      console.error('Error fetching stream:', err);
+      throw err;
+  }
+};
+
