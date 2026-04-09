@@ -97,7 +97,23 @@ const VideoPlayer = ({ video }) => {
     }, 3000);
   };
 
-  const toggleControls = () => {
+  const lastToggleTimeRef = useRef(0);
+
+  const handleToggleControls = (e) => {
+    // Prevent rapid toggling (debounce)
+    const now = Date.now();
+    if (now - lastToggleTimeRef.current < 300) return;
+    lastToggleTimeRef.current = now;
+
+    // If the click/touch started on an interactive element, ignore it here
+    // as those elements have their own handlers and stopPropagation.
+    // We only want to toggle when clicking the "empty" space of the player.
+    if (e && e.target !== e.currentTarget && !e.target.classList.contains('absolute')) {
+      // If it's not the container itself or one of our decorative overlays,
+      // it might be an interactive element we don't want to interfere with.
+      // But since we use stopPropagation on buttons, we usually don't get here for buttons.
+    }
+
     if (showControls) {
       // If controls are visible, hide them immediately
       if (controlsTimeoutRef.current) {
@@ -560,8 +576,8 @@ const VideoPlayer = ({ video }) => {
           onMouseEnter={showControlsTemporarily}
           onMouseMove={showControlsTemporarily}
           onMouseLeave={hideControlsImmediately}
-          onTouchStart={toggleControls}
-          onClick={toggleControls}
+          onClick={handleToggleControls}
+          onTouchEnd={handleToggleControls}
           tabIndex={0}
         >
           {/* React Player Engine */}
